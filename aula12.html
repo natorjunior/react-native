@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 03</title>
+
+    <!-- Reveal.js -->
+    <link rel="stylesheet" href="./dist/reveal.css">
+    <link rel="stylesheet" href="./dist/theme/white.css" id="theme">
+
+    <!-- Tema para código -->
+    <link rel="stylesheet" href="./plugin/highlight/atom-one-dark.css">
+    <!-- <link rel="stylesheet" href="./plugin/highlight/atom-one-dark.css"> -->
+    <link rel="stylesheet" href="aula04-materials/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+
+
+    <!-- Menu plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+    <link href=" https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css " rel="stylesheet">
+
+    <style>
+        .reveal h1,
+        .reveal h2 {
+            color: #0056b3;
+        }
+
+        .reveal pre code {
+            font-size: 1em;
+            background: #222;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .reveal p {
+            font-size: 1.1em;
+        }
+
+        .test-button {
+            background-color: #0056b3;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .test-button:hover {
+            background-color: #003d80;
+        }
+
+        .output {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-top: 5px;
+            color: #333;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+        }
+
+        .comparison-box {
+            width: 48%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Slide 1 - Título -->
+            <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <br><br><br><br>
+                <h4 style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
+                    Programação para dispositivos Móveis
+                </h4>
+                <p style="color: white; font-size: .5em; font-weight: 300; margin-top: 10px;">
+                    Prof. Msc. Nator Junior Carvalho da Costa
+                </p>
+                <h6 style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
+                    Aula 03 - Criação de Componentes e Uso de Props
+                </h6>
+                <h1>🐢</h1>
+            </section>
+            <!-- Slide 2 - Agenda da Aula -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <br><br>
+                <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); margin-left: 40px;">
+                    Agenda da Aula
+                </h2>
+                <ul
+                    style="color: white; font-size: 1.2em; margin: 20px 0 0 60px; list-style: disc; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);">
+                    <!-- <li>Introdução ao React Native</li> -->
+                    <li>Criação de Componentes</li>
+                    <li>Uso de Props</li>
+                    <!-- <li>Gerenciamento de Estado e Hooks</li> -->
+                    <li>Exercícios Práticos</li>
+                </ul>
+            </section>
+
+
+
+            <!-- Slide 4 - Criação de Componentes -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <section>
+                    <br><br>
+                    <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin-left: 40px;">
+                        Criação de Componentes
+                    </h2>
+                    <p
+                        style="color: white; font-size: 1em; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Componentes são blocos reutilizáveis que constroem a interface do seu app. Em React Native,
+                        usamos
+                        componentes nativos como <code>&lt;View&gt;</code> e <code>&lt;Text&gt;</code> para estruturar a
+                        UI.
+                    </p>
+                </section>
+
+                <section>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 5px; margin: 2px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+<code data-line-numbers>// HelloWorld.js
+import React from 'react';
+import { View, Text } from 'react-native';
+    
+export default function HelloWorld(){
+    return (
+        &lt;View&gt;
+            &lt;Text&gt;Olá, Mundo!&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+}</code>
+        </pre>
+                </section>
+
+
+
+                <!-- Exemplo 2: Uso do componente em App.js -->
+                <section data-auto-animate>
+                    <h6>Arquivo principal app.js</h6>
+                    <pre data-id="code-animation"
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 1px 20px; border-radius: 4px; color: white; overflow-x: auto;">
+            <code data-line-numbers="1-10|4|9">// App.js
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+import HelloWorld from './HelloWorld';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;HelloWorld /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}</code>
+        </pre>
+                </section>
+                <section data-auto-animate>
+                    <h6>Arquivo HelloWorld.js</h6>
+                    <pre data-id="code-animation"
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 1px 20px; border-radius: 4px; color: white; overflow-x: auto;">
+<code data-line-numbers>// HelloWorld.js
+import React from 'react';
+import { View, Text } from 'react-native';
+    
+export default function HelloWorld(){
+    return (
+        &lt;View&gt;
+            &lt;Text&gt;Olá, Mundo!&lt;/Text&gt;
+        &lt;/View&gt;
+    );
+}</code>
+        </pre>
+                </section>
+                <!-- Slide: Introdução ao <Text> com Expo Snack lado a lado -->
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/ex-components1" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <!-- Atividade 1: Componente HelloWorld -->
+
+                <section>
+                    <!-- <br><br> -->
+                    <h4 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 1: Componente HelloWorld
+                    </h4>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>HelloWorld</code> que renderize o texto "Olá,
+                        Mundo!".
+                    </p>
+                    <ul>
+                        <li style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">Crie um
+                            arquivo HelloWorld.js</li>
+                        <li style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">Importe
+                            React, View e Text do react-native.</li>
+                        <li style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">Defina o
+                            componente que retorna um <View> com um <Text> exibindo a mensagem.</li>
+                        <li style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">Exporte o
+                            componente para uso em outros arquivos.
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section data-auto-animate>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+            <code class="language-jsx" data-line-numbers="16|16-26|3|8|1-11">import React from 'react';
+import { SafeAreaView } from 'react-native';
+import HelloWorld from './HelloWorld';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;HelloWorld /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+
+//- ----------------------------------------------------------------------------
+
+
+// HelloWorld.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const HelloWorld = () => (
+    &lt;View&gt;
+        &lt;Text&gt;Olá, Mundo!&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default HelloWorld;
+            </code>
+        </pre>
+                </section>
+
+
+                <!-- Atividade 2: Saudação Fixa -->
+
+                <section>
+                    <br><br>
+                    <h2 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 2: Saudação Fixa
+                    </h2>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>Greeting</code> que renderize uma saudação fixa:
+                        "Bem-vindo ao React Native!".
+                    </p>
+                </section>
+                <section>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+<code class="language-jsx" data-line-numbers="15|16-26|3|8|1-11">import React from 'react';
+import { SafeAreaView } from 'react-native';
+import Greeting from './Greeting';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;Greeting /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+
+//- ----------------------------------------------------------------------------
+    
+// Greeting.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Greeting = () => (
+    &lt;View&gt;
+        &lt;Text&gt;Bem-vindo ao React Native!&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default Greeting;
+            </code>
+        </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/ex-greeting" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Atividade 3: Componente Card Estático -->
+                <section>
+                    <br><br>
+                    <h2 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 3: Componente Card Estático
+                    </h2>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>Card</code> que renderize um cartão com um título
+                        fixo e uma descrição fixa.
+                    </p>
+                </section>
+                <section>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+<code class="language-jsx" data-line-numbers="16|16-27|3|8|1-11">import React from 'react';
+import { SafeAreaView } from 'react-native';
+import Card from './Card';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;Card /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+
+
+
+//- ----------------------------------------------------------------------------
+// Card.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Card = () => (
+    &lt;View style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, margin: 5 }}&gt;
+        &lt;Text style={{ fontSize: 18, fontWeight: 'bold' }}&gt;Título do Cartão&lt;/Text&gt;
+        &lt;Text&gt;Esta é a descrição do cartão.&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default Card;
+            </code>
+        </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/ex-card" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+
+
+
+
+                <section>
+                    <br><br>
+                    <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); margin-left: 40px;">
+                        Uso de Props
+                    </h2>
+                    <p
+                        style="color: white; font-size: 1.1em; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Props permitem a passagem de dados para os componentes, tornando-os dinâmicos e personalizáveis.
+                    </p>
+                    <ul
+                        style="color: white; font-size: 1.2em; margin: 20px 0 0 60px; list-style: disc; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        <li>Personalização e reutilização</li>
+                        <li>Passagem de informações via atributos</li>
+                    </ul>
+                </section>
+
+                <section>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+<code class="language-jsx" data-line-numbers="16|21|21,23-24|3|8|1-11">import React from 'react';
+import { SafeAreaView } from 'react-native';
+import Card from './Card';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;Card title="Meu Cartão" description="Esta é a descrição do cartão."/&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+
+
+
+//- ----------------------------------------------------------------------------
+// Card.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+// Exemplo de componente com props
+const Card = ({ title, description }) => (
+    &lt;View style={{ padding: 10, borderWidth: 1, borderColor: '#fff' }}&gt;
+        &lt;Text&gt;{title}&lt;/Text&gt;
+        &lt;Text&gt;{description}&lt;/Text&gt;
+    &lt;/View&gt;
+);</code>
+        </pre>
+
+                </section>
+            </section>
+
+
+
+
+
+
+
+            <!-- Atividade 1: Componente HelloWorld com Props -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <section>
+                    <h4 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 1: Componente HelloWorld com Props
+                    </h4>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>HelloWorld</code> que receba uma prop
+                        <code>message</code> e renderize o texto recebido.
+                    </p>
+
+                </section>
+                <section data-auto-animate>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+        <code class="language-jsx" data-line-numbers="14-16|18-28|22|24|4|9||1-13">// App.js
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+import HelloWorld from './HelloWorld';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;HelloWorld message="Olá, Mundo!" /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+
+//-------------------------------------------------------------------
+//-------------ARQUIVO HelloWorld.js----------------------------------
+//--------------------------------------------------------------------
+
+// HelloWorld.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const HelloWorld = ({ message }) => (
+    &lt;View&gt;
+        &lt;Text&gt;{message}&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default HelloWorld;</code>
+      </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/components-props-1" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Atividade 2: Componente Greeting com Props -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <section>
+                    <h4 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 2: Componente Greeting com Props
+                    </h4>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>Greeting</code> que receba uma prop
+                        <code>greeting</code> e renderize o texto passado.
+                    </p>
+                </section>
+                <section data-auto-animate>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+        <code class="language-jsx" data-line-numbers>// Greeting.js
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Greeting = ({ greeting }) => (
+    &lt;View&gt;
+        &lt;Text&gt;{greeting}&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default Greeting;
+
+// App.js
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+import Greeting from './Greeting';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;Greeting greeting="Bem-vindo ao React Native!" /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+        </code>
+      </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/components-props-2" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Atividade 3: Componente Card Dinâmico com Props -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <section>
+                    <h4 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 3: Componente Card Dinâmico com Props
+                    </h4>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>Card</code> que receba as props <code>title</code> e
+                        <code>description</code> e renderize um cartão com essas informações.
+                    </p>
+                </section>
+                <section data-auto-animate>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+        <code class="language-jsx" data-line-numbers>
+// Card.js  
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Card = ({ title, description }) => (
+    &lt;View style={{ padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 4, margin: 5 }}&gt;
+        &lt;Text style={{ fontSize: 18, fontWeight: 'bold' }}&gt;{title}&lt;/Text&gt;
+        &lt;Text&gt;{description}&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default Card;
+
+// App.js
+import React from 'react';
+import { SafeAreaView } from 'react-native';
+import Card from './Card';
+
+export default function App() {
+    return (
+        &lt;SafeAreaView&gt;
+            &lt;Card title="Meu Cartão" description="Esta é a descrição do cartão." /&gt;
+        &lt;/SafeAreaView&gt;
+    );
+}
+        </code>
+      </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/components-props-3" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- Atividade 4: Componente Profile com Props -->
+            <section data-align="left" data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+                <section>
+                    <h4 style="color: white; margin-left: 40px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+                        Atividade 4: Componente Profile com Props
+                    </h4>
+                    <p style="color: white; margin: 20px 40px; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);">
+                        Crie um componente funcional chamado <code>Profile</code> que receba as props <code>name</code>,
+                        <code>age</code> e <code>bio</code> e renderize as informações do perfil.
+                    </p>
+                </section>
+                <section data-auto-animate>
+                    <pre
+                        style="background-color: rgba(255,255,255,0.1); padding: 10px; margin: 20px 40px; border-radius: 4px; color: white; overflow-x: auto;">
+        <code class="language-jsx" data-line-numbers>
+// Profile.js&lt;View&gt;
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const Profile = ({ name, age, bio }) => (
+    &lt;View style={{ padding: 10, margin: 5, borderWidth: 1, borderColor: '#aaa', borderRadius: 4 }}&gt;
+        &lt;Text style={{ fontSize: 20, fontWeight: 'bold' }}&gt;{name}&lt;/Text&gt;
+        &lt;Text&gt;Idade: {age}&lt;/Text&gt;
+        &lt;Text&gt;{bio}&lt;/Text&gt;
+    &lt;/View&gt;
+);
+
+export default Profile;
+  
+  // App.js
+  import React from 'react';
+  import { SafeAreaView } from 'react-native';
+  import Profile from './Profile';
+  
+  export default function App() {
+      return (
+           &lt;SafeAreaView&gt;
+               &lt;Profile name="João Silva" age={30} bio="Desenvolvedor apaixonado por React Native." /&gt;
+           &lt;/SafeAreaView&gt;
+      );
+  }
+        </code>
+      </pre>
+                </section>
+                <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+                    style="padding: 20px;">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+                        <!-- Coluna 2: Embed do Expo Snack -->
+                        <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+                            <div data-snack-id="@natorjunior/components-props-4" data-snack-platform="web"
+                                data-snack-preview="true" data-snack-theme="light"
+                                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+                            </div>
+                            <script async src="https://snack.expo.dev/embed.js"></script>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts Reveal.js -->
+    <script src="./dist/reveal.js"></script>
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+
+    <script src="./aula04-materials/script.js"></script>
+
+    <script>
+
+        Reveal.initialize({
+
+            center: false,
+            controls: true,
+            progress: true,
+
+            slideNumber: true,
+            history: true,
+            transition: 'convex',
+            plugins: [RevealMarkdown, RevealHighlight, RevealMenu],
+            markdown: {
+                smartypants: true,
+            }
+        });
+
+    </script>
+</body>
+
+</html>

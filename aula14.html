@@ -153,7 +153,154 @@
       margin: 0;
       max-width: 820px;
     }
-  </style>
+
+    /* Estilos exclusivos da segunda parte: useEffect. */
+
+      .reveal .effect-lesson {
+        color: #24364b;
+      }
+      .reveal .slides section.effect-lesson {
+        box-sizing: border-box;
+        padding: 28px 36px;
+      }
+      .reveal .effect-lesson h1,
+      .reveal .effect-lesson h2 {
+        color: #0056b3;
+        text-transform: none;
+      }
+      .reveal .effect-lesson h2 {
+        font-size: 1.35em;
+        margin-bottom: 28px;
+      }
+      .reveal .effect-lesson p,
+      .reveal .effect-lesson li {
+        font-size: 0.78em;
+        line-height: 1.5;
+      }
+      .reveal .effect-lesson li {
+        margin-bottom: 18px;
+      }
+      .reveal .effect-lesson .kicker {
+        color: #506a8d;
+        font-size: 0.46em;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin: 0 0 18px;
+      }
+      .reveal .effect-lesson pre {
+        width: 100%;
+        margin: 20px auto;
+        font-size: 0.53em;
+        box-shadow: none;
+      }
+      .reveal .effect-lesson pre code {
+        font-size: .85em;
+        max-height: 590px;
+        line-height: 1.38;
+        padding: 18px;
+        border-radius: 10px;
+        background: #222;
+      }
+      .reveal .effect-lesson .callout {
+        background: #edf5ff;
+        border-left: 5px solid #1673ce;
+        border-radius: 6px;
+        padding: 18px 24px;
+        text-align: left;
+        font-size: 0.7em;
+      }
+      .reveal .effect-lesson .small {
+        font-size: 0.54em;
+        color: #526478;
+      }
+      .reveal .effect-lesson table:not(.hljs-ln) {
+        width: 100%;
+        font-size: 0.65em;
+        line-height: 1.45;
+      }
+      .reveal .effect-lesson table:not(.hljs-ln) th {
+        background: #edf5ff;
+        color: #0056b3;
+      }
+      .reveal .effect-lesson table:not(.hljs-ln) td,
+      .reveal .effect-lesson table:not(.hljs-ln) th {
+        padding: 18px 16px;
+      }
+      .reveal .effect-lesson .flow {
+        display: flex;
+        gap: 18px;
+        margin: 38px 0;
+      }
+      .reveal .effect-lesson .flow > div {
+        flex: 1;
+        padding: 24px 16px;
+        background: #edf5ff;
+        border-top: 4px solid #1673ce;
+        border-radius: 8px;
+        font-size: 0.65em;
+        line-height: 1.55;
+      }
+      .reveal .effect-lesson .cover {
+        padding-top: 130px;
+      }
+      .reveal .effect-lesson .cover h1,
+      .reveal .effect-lesson .cover h3,
+      .reveal .effect-lesson .cover p {
+        color: white;
+      }
+      .reveal .effect-lesson .cover h1 {
+        font-size: 2.8em;
+      }
+      .reveal .effect-lesson a {
+        color: #0056b3;
+      }
+
+    /* Mesmo modelo visual da primeira parte, apenas nos novos slides. */
+    .reveal .effect-lesson { color: white; }
+    .reveal .effect-lesson h2 { color: white; text-shadow: 2px 2px 4px rgba(0,0,0,.25); }
+    .reveal .effect-lesson .kicker, .reveal .effect-lesson .small { color: #d1e8ff; }
+    .reveal .effect-lesson .callout { background: rgba(255,255,255,.12); border-color: #61dafb; }
+    .reveal .effect-lesson .flow > div { background: rgba(255,255,255,.12); border-color: #61dafb; }
+    .reveal .effect-lesson table:not(.hljs-ln) th { background: rgba(255,255,255,.12); color: #d1e8ff; }
+    .reveal .effect-lesson a { color: #a9e4ff; }
+    .reveal .effect-lesson.subsection-cover { padding-top: 190px; }
+    .reveal .effect-lesson.subsection-cover h2 { font-size: 1.6em; }
+    .reveal .effect-lesson.sketch-slide { color: #24364b; }
+    .reveal .effect-lesson.sketch-slide h2 { color: #0056b3; text-shadow: none; }
+    .reveal .effect-lesson.sketch-slide .kicker { color: #506a8d; }
+    .reveal .effect-lesson.sketch-slide .callout { background: #edf5ff; font-size: .62em; }
+    .effect-sketch {
+      position: relative; height: 440px; width: 100%; text-align: left;
+      border: 1px solid #e2eaf1; border-radius: 18px;
+      background: radial-gradient(circle, #dce6ef 1px, transparent 1px) 12px 12px / 24px 24px;
+      box-sizing: border-box;
+    }
+    .effect-sketch .sketch-token {
+      position: absolute; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 34px; line-height: 60px; white-space: pre;
+    }
+    .effect-sketch .sketch-label {
+      position: absolute; font-family: 'Chalkboard SE', 'Comic Sans MS', cursive;
+      font-size: 30px; line-height: 1.35; white-space: nowrap;
+    }
+    .effect-sketch .ink-blue { color: #2679c7; }
+    .effect-sketch .ink-green { color: #288b42; }
+    .effect-sketch .ink-red { color: #d93640; }
+    .effect-sketch .sketch-slot {
+      position: absolute; height: 54px; border: 2px dashed #aec4d8;
+      border-radius: 10px; box-sizing: border-box; background: #f5f9fd;
+    }
+    .effect-sketch .sketch-arrow { position: absolute; width: 0; border-left: 2px solid currentColor; }
+    .effect-sketch .sketch-arrow::after {
+      content: ''; position: absolute; bottom: 0; left: -7px; width: 10px; height: 10px;
+      border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg);
+    }
+    .effect-sketch .sketch-arrow.up::after { top: 0; bottom: auto; transform: rotate(225deg); }
+    .reveal .effect-lesson.sketch-slide .callout { margin-top: 20px; min-height: 76px; box-sizing: border-box; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal [data-auto-animate] [data-auto-animate-target] { transition-duration: 0s !important; }
+    }
+      </style>
 </head>
 
 <body>
@@ -401,789 +548,567 @@ const TaskApp = () => {
               </div>
           </div>
         </section>  
-      </section>
-
-
-
-
-
-
-	      <!-- Slide 2: Ponte visual antes do useEffect -->
-	      <section data-background-color="#e9e9e6">
-	        <section data-auto-animate>
-	          <div class="anatomy-stage">
-	            <div>
-	              <p class="anatomy-kicker" data-id="anatomy-kicker">Antes do useEffect()</p>
-	              <h2 class="anatomy-title" data-id="anatomy-title">Estrutura de um componente React Native</h2>
-	            </div>
-
-	            <div class="anatomy-line" data-id="anatomy-line">
-	              <div class="anatomy-segment" data-id="anatomy-part-1">
-	                <span><span class="anatomy-blue">const</span> <span class="anatomy-red">MensagemBoasVindas</span> = () =&gt; {</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-2">
-	                <span><span class="anatomy-blue">useEffect</span>(() =&gt; { ... },</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-3">
-	                <span><span class="anatomy-orange">[]</span>);</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-4">
-	                <span><span class="anatomy-green">return</span> (&lt;View&gt;...&lt;/View&gt;);</span>
-	              </div>
-	            </div>
-
-	            <div class="anatomy-footer">
-	              <p class="anatomy-step" data-id="anatomy-step">Visão geral</p>
-	              <p class="anatomy-description" data-id="anatomy-description">O <code>useEffect()</code> aparece dentro do componente, antes do <code>return</code>, e controla efeitos colaterais da tela.</p>
-	            </div>
-	          </div>
-	        </section>
-
-	        <section data-auto-animate>
-	          <div class="anatomy-stage">
-	            <div>
-	              <p class="anatomy-kicker" data-id="anatomy-kicker">Antes do useEffect()</p>
-	              <h2 class="anatomy-title" data-id="anatomy-title">Estrutura de um componente React Native</h2>
-	            </div>
-
-	            <div class="anatomy-line" data-id="anatomy-line">
-	              <div class="anatomy-segment is-active" data-id="anatomy-part-1">
-	                <span><span class="anatomy-blue">const</span> <span class="anatomy-red">MensagemBoasVindas</span> = () =&gt; {</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-2">
-	                <span><span class="anatomy-blue">useEffect</span>(() =&gt; { ... },</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-3">
-	                <span><span class="anatomy-orange">[]</span>);</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-4">
-	                <span><span class="anatomy-green">return</span> (&lt;View&gt;...&lt;/View&gt;);</span>
-	              </div>
-	            </div>
-
-	            <div class="anatomy-footer">
-	              <p class="anatomy-step" data-id="anatomy-step">Passo 1: Declaração do componente</p>
-	              <p class="anatomy-description" data-id="anatomy-description">Aqui definimos o nome do componente e abrimos o bloco onde ficam estado, efeitos e a interface.</p>
-	            </div>
-	          </div>
-	        </section>
-
-	        <section data-auto-animate>
-	          <div class="anatomy-stage">
-	            <div>
-	              <p class="anatomy-kicker" data-id="anatomy-kicker">Antes do useEffect()</p>
-	              <h2 class="anatomy-title" data-id="anatomy-title">Estrutura de um componente React Native</h2>
-	            </div>
-
-	            <div class="anatomy-line" data-id="anatomy-line">
-	              <div class="anatomy-segment" data-id="anatomy-part-1">
-	                <span><span class="anatomy-blue">const</span> <span class="anatomy-red">MensagemBoasVindas</span> = () =&gt; {</span>
-	              </div>
-	              <div class="anatomy-segment is-active" data-id="anatomy-part-2">
-	                <span><span class="anatomy-blue">useEffect</span>(() =&gt; { ... },</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-3">
-	                <span><span class="anatomy-orange">[]</span>);</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-4">
-	                <span><span class="anatomy-green">return</span> (&lt;View&gt;...&lt;/View&gt;);</span>
-	              </div>
-	            </div>
-
-	            <div class="anatomy-footer">
-	              <p class="anatomy-step" data-id="anatomy-step">Passo 2: Função do useEffect()</p>
-	              <p class="anatomy-description" data-id="anatomy-description">Esse trecho executa uma ação extra, como buscar dados, iniciar um timer ou reagir a mudanças na tela.</p>
-	            </div>
-	          </div>
-	        </section>
-
-	        <section data-auto-animate>
-	          <div class="anatomy-stage">
-	            <div>
-	              <p class="anatomy-kicker" data-id="anatomy-kicker">Antes do useEffect()</p>
-	              <h2 class="anatomy-title" data-id="anatomy-title">Estrutura de um componente React Native</h2>
-	            </div>
-
-	            <div class="anatomy-line" data-id="anatomy-line">
-	              <div class="anatomy-segment" data-id="anatomy-part-1">
-	                <span><span class="anatomy-blue">const</span> <span class="anatomy-red">MensagemBoasVindas</span> = () =&gt; {</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-2">
-	                <span><span class="anatomy-blue">useEffect</span>(() =&gt; { ... },</span>
-	              </div>
-	              <div class="anatomy-segment is-active" data-id="anatomy-part-3">
-	                <span><span class="anatomy-orange">[]</span>);</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-4">
-	                <span><span class="anatomy-green">return</span> (&lt;View&gt;...&lt;/View&gt;);</span>
-	              </div>
-	            </div>
-
-	            <div class="anatomy-footer">
-	              <p class="anatomy-step" data-id="anatomy-step">Passo 3: Array de dependências</p>
-	              <p class="anatomy-description" data-id="anatomy-description">Esse array diz quando o efeito deve rodar. Com <code>[]</code>, ele executa uma vez; com valores, reage às mudanças desses valores.</p>
-	            </div>
-	          </div>
-	        </section>
-
-	        <section data-auto-animate>
-	          <div class="anatomy-stage">
-	            <div>
-	              <p class="anatomy-kicker" data-id="anatomy-kicker">Antes do useEffect()</p>
-	              <h2 class="anatomy-title" data-id="anatomy-title">Estrutura de um componente React Native</h2>
-	            </div>
-
-	            <div class="anatomy-line" data-id="anatomy-line">
-	              <div class="anatomy-segment" data-id="anatomy-part-1">
-	                <span><span class="anatomy-blue">const</span> <span class="anatomy-red">MensagemBoasVindas</span> = () =&gt; {</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-2">
-	                <span><span class="anatomy-blue">useEffect</span>(() =&gt; { ... },</span>
-	              </div>
-	              <div class="anatomy-segment" data-id="anatomy-part-3">
-	                <span><span class="anatomy-orange">[]</span>);</span>
-	              </div>
-	              <div class="anatomy-segment is-active" data-id="anatomy-part-4">
-	                <span><span class="anatomy-green">return</span> (&lt;View&gt;...&lt;/View&gt;);</span>
-	              </div>
-	            </div>
-
-	            <div class="anatomy-footer">
-	              <p class="anatomy-step" data-id="anatomy-step">Passo 4: Interface exibida na tela</p>
-	              <p class="anatomy-description" data-id="anatomy-description">O <code>return</code> monta o que o usuário vê. O efeito trabalha nos bastidores e a interface mostra o resultado.</p>
-	            </div>
-	          </div>
-	        </section>
-	      </section>
-
-	      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-	        <h2 style="color: white;">O que é useEffect?</h2>
-	        <div class="example-box fragment fade-up">
-          <p style="color: white; font-size: 1.2em;">
-            É como um "assistente" que nos ajuda a executar ações extras em nossos componentes:
-          </p>
-          <ul style="color: white; font-size: 1.1em;">
-            <li class="fragment fade-right">🔄 Executa código quando algo muda</li>
-            <li class="fragment fade-right">🎬 Roda quando o componente aparece na tela</li>
-            <li class="fragment fade-right">🧹 Limpa quando o componente some da tela</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Slide 3: Primeiro Exemplo - Muito Básico -->
-      <section data-background-color="#2c3e50">
-        <section data-auto-animate>
-          <h2 class="fragment fade-in" style="color: white;">Exemplo Básico do useEffect</h2>
-          
-          <div class="example-box fragment fade-up" style="margin-bottom: 20px;">
-            <p style="color: white;" class="fragment fade-right">
-              👨‍💻 Vamos criar um componente simples que:
-            </p>
-            <ul style="color: white;">
-              <li class="fragment fade-right">✨ Começa com uma mensagem de carregamento</li>
-              <li class="fragment fade-right">🔄 Usa useEffect para atualizar a mensagem</li>
-              <li class="fragment fade-right">📱 Mostra a mensagem na tela</li>
-            </ul>
-          </div>
-        </section>
-
-        <section data-auto-animate>
-          <pre data-id="code-animation"><code class="language-jsx" data-trim data-line-numbers >
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-
-const MensagemBoasVindas = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
-...
-};</code></pre>
-        </section>
-
-        <section data-auto-animate>
-          <pre data-id="code-animation" ><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-
-const MensagemBoasVindas = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
-
-  useEffect(() => {
-    // Este código roda quando o componente aparece
-    setMensagem('Bem-vindo ao App!');
-  }, []); // Array vazio = roda apenas uma vez
-...
-};</code></pre>
-        </section>
-
-        <section data-auto-animate>
-          <pre data-id="code-animation" style="height: 65vh;"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
-
-const MensagemBoasVindas = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
-
-  useEffect(() => {
-    // Este código roda quando o componente aparece
-    setMensagem('Bem-vindo ao App!');
-  }, []); // Array vazio = roda apenas uma vez
-
-  return (
-    &lt;View style={{ padding: 20 }}&gt;
-      &lt;Text style={{ fontSize: 20 }}&gt;
-        {mensagem}
-      &lt;/Text&gt;
-    &lt;/View&gt;
-  );
-};</code></pre>
-        </section>
 
 
         <section data-auto-animate>
-          <h2 style="color: white;">Demonstração Visual</h2>
-          
-          <div class="fragment fade-up" style="display: flex; justify-content: center; align-items: center; height: 400px;">
-            <div style="background: #2c3e50; padding: 20px; border-radius: 15px; width: 300px;">
-              <div style="background: #34495e; padding: 40px; border-radius: 10px; text-align: center;">
-                <p style="color: #bdc3c7; font-size: 24px;" data-fragment-index="1">Carregando...</p>
-                <p style="color: #2ecc71; font-size: 24px;" data-fragment-index="2">Bem-vindo ao App! 👋</p>
-              </div>
-            </div>
-          </div>
+  <p class="kicker" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Atividade</p>
 
-          <div class="fragment fade-up" style="margin-top: 30px;">
-            <p style="color: white; text-align: center;">
-              ⚡ O useEffect automaticamente atualiza a mensagem quando o componente é montado!
-            </p>
-          </div>
-        </section>
+  <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">📝 Adicione uma nova tarefa</h2>
 
-        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
-        style="padding: 20px;">
-        <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+  <p style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+    Complete a aplicação para permitir que o usuário
+    <strong>adicione tarefas à lista</strong>.
+  </p>
 
-            <!-- Coluna 2: Embed do Expo Snack -->
-            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
-                <div data-snack-id="@natorjunior/useeffect1" data-snack-platform="web"
-                    data-snack-preview="true" data-snack-theme="light"
-                    style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
-                </div>
-                <script async src="https://snack.expo.dev/embed.js"></script>
-            </div>
-        </div>
-    </section>
-  </section>
-  <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-      <!-- Slide 4: Primeira Atividade Prática - Muito Simples -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-        <h2 style="color: white;">Atividade 1: Mensagem do Dia</h2>
-        <div class="example-box">
-          <p style="color: white;">Crie um componente que:</p>
-          <ul style="color: white; font-size: 1.1em;">
-            <li class="fragment fade-right">1. Comece com a mensagem "Carregando..."</li>
-            <li class="fragment fade-right">2. Use useEffect para mudar para "Bom dia!" após 2 segundos</li>
-            <li class="fragment fade-right">3. Adicione um emoji ☀️ no final da mensagem</li>
-            <li class="fragment fade-right">4. Use o setTimeout para contagem </li>
-            
-          </ul>
-        </div>
-      </section>
+  <ul style="font-size: .75em; line-height: 1.8;">
+    <li class="fragment" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+      Crie um estado <code>novaTarefa</code> para armazenar o texto digitado.
+    </li>
 
-      <!-- Slide 5: Solução da Primeira Atividade -->
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Mensagem do Dia</h2>
-        <pre data-id="code-animation-4"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+    <li class="fragment" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+      Use um <code>TextInput</code> para atualizar esse estado.
+    </li>
 
-const MensagemDoDia = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
-...
-};</code></pre>
-      </section>
+    <li class="fragment" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+      Ao pressionar o botão <strong>Adicionar</strong>, inclua um novo objeto em
+      <code>tasks</code>.
+    </li>
 
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Mensagem do Dia</h2>
-        <pre data-id="code-animation-4"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+    <li class="fragment" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+      O novo objeto deve possuir:
+      <code>{ id, text, done: false }</code>.
+    </li>
 
-const MensagemDoDia = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
+    <li class="fragment" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">
+      Depois de adicionar, limpe o campo de texto.
+    </li>
+  </ul>
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMensagem('Bom dia! ☀️');
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-...
-};</code></pre>
-      </section>
-
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Mensagem do Dia</h2>
-        <pre data-id="code-animation-4" style="height: 75vh;"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
-const MensagemDoDia = () => {
-  const [mensagem, setMensagem] = useState('Carregando...');
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMensagem('Bom dia! ☀️');
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    &lt;View style={styles.container}&gt;
-      &lt;Text style={styles.texto}&gt;{mensagem}&lt;/Text&gt;
-    &lt;/View&gt;
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  texto: {
-    fontSize: 24,
-    color: '#2c3e50',
-  },
-});</code></pre>
-      </section>
-
-      <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
-      style="padding: 20px;">
-      <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
-
-          <!-- Coluna 2: Embed do Expo Snack -->
-          <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
-              <div data-snack-id="@natorjunior/usereffect2" data-snack-platform="web"
-                  data-snack-preview="true" data-snack-theme="light"
-                  style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
-              </div>
-              <script async src="https://snack.expo.dev/embed.js"></script>
-          </div>
-      </div>
-    </section>
-  </section>
+  <div
+    class="fragment"
+    style="
+      margin-top: 25px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.12);
+      font-size: .7em;
+    "
+  >
+    💡 Utilize <code>setTasks</code> sem alterar diretamente o array original.
+  </div>
+</section>
 
 
+<section data-auto-animate>
+  <!-- <p class="kicker">Resolução</p> -->
 
 
+  <pre style="height: 72vh;"><code class="language-jsx" data-trim data-line-numbers="1-4|6-12|16-21|23-29">
+const TaskApp = () => {
 
+  const [tasks, setTasks] = useState([]);
+  const [novaTarefa, setNovaTarefa] = useState('');
 
+  const adicionarTarefa = () => {
+    const tarefa = {
+      id: Date.now(),
+      text: novaTarefa,
+      done: false
+    };
 
-
-
-
-      <!-- Slide 6: useEffect com Dependências - Conceito Básico -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
-        <h2 style="color: white;">useEffect com Dependências</h2>
-        <div class="example-box">
-          <p style="color: white; font-size: 1.2em;">
-            O useEffect pode "observar" mudanças em valores:
-          </p>
-          <pre data-id="code-animation-5"><code class="language-jsx" data-trim data-line-numbers>
-const [nome, setNome] = useState('');
-...</code></pre>
-        </div>
-      </section>
-
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
-        <h2 style="color: white;">useEffect com Dependências</h2>
-        <div class="example-box">
-          <p style="color: white; font-size: 1.2em;">
-            O useEffect pode "observar" mudanças em valores:
-          </p>
-          <pre data-id="code-animation-5"><code class="language-jsx" data-trim data-line-numbers>
-const [nome, setNome] = useState('');
-
-useEffect(() => {
-  // Roda sempre que 'nome' mudar
-  console.log('O nome mudou para:', nome);
-}, [nome]);</code></pre>
-        </div>
-      </section>
-
-      <!-- Slide 7: Segunda Atividade - Contador Simples -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-        <h2 style="color: white;">Atividade 2: Contador com Mensagem</h2>
-        <div class="example-box">
-          <p style="color: white;">Crie um contador que:</p>
-          <ul style="color: white; font-size: 1.1em;">
-            <li class="fragment fade-right">1. Tenha um botão para aumentar o número</li>
-            <li class="fragment fade-right">2. Use useEffect para mostrar "Número par!" quando o contador for par</li>
-            <li class="fragment fade-right">3. Mostre "Número ímpar!" quando for ímpar</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Slide 8: Solução da Segunda Atividade -->
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Contador com Mensagem</h2>
-        <pre data-id="code-animation-6"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-
-const ContadorMensagem = () => {
-  const [contador, setContador] = useState(0);
-  const [mensagem, setMensagem] = useState('');
-...
-};</code></pre>
-      </section>
-
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Contador com Mensagem</h2>
-        <pre data-id="code-animation-6"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-
-const ContadorMensagem = () => {
-  const [contador, setContador] = useState(0);
-  const [mensagem, setMensagem] = useState('');
-
-  useEffect(() => {
-    if (contador % 2 === 0) {
-      setMensagem('Número par! 👍');
-    } else {
-      setMensagem('Número ímpar! 👆');
-    }
-  }, [contador]);
-...
-};</code></pre>
-      </section>
-
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Contador com Mensagem</h2>
-        <pre data-id="code-animation-6" style="height: 75vh;"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
-const ContadorMensagem = () => {
-  const [contador, setContador] = useState(0);
-  const [mensagem, setMensagem] = useState('');
-
-  useEffect(() => {
-    if (contador % 2 === 0) {
-      setMensagem('Número par! 👍');
-    } else {
-      setMensagem('Número ímpar! 👆');
-    }
-  }, [contador]);
-
-  return (
-    &lt;View style={styles.container}&gt;
-      &lt;Text style={styles.numero}&gt;{contador}&lt;/Text&gt;
-      &lt;Text style={styles.mensagem}&gt;{mensagem}&lt;/Text&gt;
-      &lt;TouchableOpacity
-        style={styles.botao}
-        onPress={() => setContador(contador + 1)}
-      &gt;
-        &lt;Text style={styles.textoBotao}&gt;Aumentar&lt;/Text&gt;
-      &lt;/TouchableOpacity&gt;
-    &lt;/View&gt;
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  numero: {
-    fontSize: 48,
-    marginBottom: 10,
-  },
-  mensagem: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: '#34495e',
-  },
-  botao: {
-    backgroundColor: '#3498db',
-    padding: 15,
-    borderRadius: 10,
-  },
-  textoBotao: {
-    color: 'white',
-    fontSize: 18,
-  },
-});</code></pre>
-      </section>
-
-      <!-- Slide 9: Limpeza no useEffect - Conceito Básico -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
-        <h2 style="color: white;">Limpeza no useEffect</h2>
-        <div class="example-box">
-          <p style="color: white; font-size: 1.2em;">
-            Às vezes precisamos "limpar" algo quando o componente some:
-          </p>
-          <pre data-id="code-animation-7"><code class="language-jsx" data-trim data-line-numbers>
-useEffect(() => {
-  const timer = setTimeout(() => {
-    console.log('Olá!');
-  }, 1000);
-...
-}, []);</code></pre>
-        </div>
-      </section>
-
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
-        <h2 style="color: white;">Limpeza no useEffect</h2>
-        <div class="example-box">
-          <p style="color: white; font-size: 1.2em;">
-            Às vezes precisamos "limpar" algo quando o componente some:
-          </p>
-          <pre data-id="code-animation-7"><code class="language-jsx" data-trim data-line-numbers>
-useEffect(() => {
-  const timer = setTimeout(() => {
-    console.log('Olá!');
-  }, 1000);
-
-  return () => {
-    clearTimeout(timer);
+    setTasks([...tasks, tarefa]);
+    setNovaTarefa('');
   };
-}, []);</code></pre>
-        </div>
-      </section>
-
-      <!-- Slide 10: Terceira Atividade - Timer Simples -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-        <h2 style="color: white;">Atividade 3: Timer Simples</h2>
-        <div class="example-box">
-          <p style="color: white;">Crie um timer que:</p>
-          <ul style="color: white; font-size: 1.1em;">
-            <li class="fragment fade-right">1. Mostre os segundos passando</li>
-            <li class="fragment fade-right">2. Tenha um botão para iniciar/pausar</li>
-            <li class="fragment fade-right">3. Limpe o timer quando pausar</li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Slide 11: Solução da Terceira Atividade -->
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Timer Simples</h2>
-        <pre data-id="code-animation-8"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-
-const TimerSimples = () => {
-  const [segundos, setSegundos] = useState(0);
-  const [ativo, setAtivo] = useState(false);
-...
-};</code></pre>
-      </section>
-
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Timer Simples</h2>
-        <pre data-id="code-animation-8"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-
-const TimerSimples = () => {
-  const [segundos, setSegundos] = useState(0);
-  const [ativo, setAtivo] = useState(false);
-
-  useEffect(() => {
-    let timer = null;
-
-    if (ativo) {
-      timer = setInterval(() => {
-        setSegundos(s => s + 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [ativo]);
-...
-};</code></pre>
-      </section>
-
-      <section data-background-color="#2c3e50" data-auto-animate>
-        <h2 style="color: white;">Solução: Timer Simples</h2>
-        <pre data-id="code-animation-8" style="height: 75vh;"><code class="language-jsx" data-trim data-line-numbers>
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
-const TimerSimples = () => {
-  const [segundos, setSegundos] = useState(0);
-  const [ativo, setAtivo] = useState(false);
-
-  useEffect(() => {
-    let timer = null;
-
-    if (ativo) {
-      timer = setInterval(() => {
-        setSegundos(s => s + 1);
-      }, 1000);
-    }
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [ativo]);
-
-  const alternarTimer = () => setAtivo(!ativo);
 
   return (
     &lt;View style={styles.container}&gt;
-      &lt;Text style={styles.timer}&gt;
-        {segundos} segundos
-      &lt;/Text&gt;
-      &lt;TouchableOpacity
-        style={styles.botao}
-        onPress={alternarTimer}
-      &gt;
-        &lt;Text style={styles.textoBotao}&gt;
-          {ativo ? 'Pausar' : 'Iniciar'}
-        &lt;/Text&gt;
-      &lt;/TouchableOpacity&gt;
+
+      &lt;TextInput
+        placeholder="Digite uma tarefa"
+        value={novaTarefa}
+        onChangeText={setNovaTarefa}
+      /&gt;
+
+      &lt;Button
+        title="Adicionar"
+        onPress={adicionarTarefa}
+      /&gt;
+
+      {
+        tasks.map(task =&gt; (
+          &lt;Text key={task.id}&gt;
+            • {task.text}
+          &lt;/Text&gt;
+        ))
+      }
+
     &lt;/View&gt;
   );
 };
+  </code></pre>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  timer: {
-    fontSize: 36,
-    marginBottom: 20,
-  },
-  botao: {
-    backgroundColor: '#2ecc71',
-    padding: 15,
-    borderRadius: 10,
-    minWidth: 120,
-    alignItems: 'center',
-  },
-  textoBotao: {
-    color: 'white',
-    fontSize: 18,
-  },
-});</code></pre>
+  <p class="fragment" style="font-size: .65em;">
+    <code>novaTarefa</code> controla o campo e
+    <code>tasks</code> mantém a lista de tarefas.
+  </p>
+</section>
+
+
+
       </section>
 
-      <!-- Ciclo de Vida com useEffect -->
-      <section data-background-color="#34495e">
-        <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">O Ciclo de Vida com useEffect</h2>
-        <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
-          <div class="example-box fragment fade-left" style="flex: 1; min-width: 250px; margin: 10px;">
-            <h3 style="color: #61dafb;">🎬 Montagem</h3>
-            <pre><code class="language-jsx" data-trim>
-useEffect(() => {
-  // Roda uma única vez, quando o
-  // componente aparece na tela
-  buscarDados();
-}, []);</code></pre>
-          </div>
 
-          <div class="example-box fragment fade-up" style="flex: 1; min-width: 250px; margin: 10px;">
-            <h3 style="color: #61dafb;">🔄 Atualização</h3>
-            <pre><code class="language-jsx" data-trim>
-useEffect(() => {
-  // Roda de novo sempre que
-  // 'contador' mudar de valor
-  console.log(contador);
+
+
+
+
+
+<section data-background-gradient="radial-gradient(#1e3c72, #2a5298)" data-effect-group="02">
+<section class="effect-lesson subsection-cover"><p class="kicker">Segunda parte · 02</p><h2>Entendendo a estrutura</h2><p>Primeiro, a ilustração. Depois, o mesmo Hook dentro de um componente.</p></section>
+
+<section class="effect-lesson sketch-slide" data-background-color="#fff" data-auto-animate data-auto-animate-id="effect-anatomy" data-auto-animate-duration="0.8" data-auto-animate-easing="ease-in-out">
+  <p class="kicker">02 · Anatomia visual · 1/5</p>
+  <h2 data-id="sketch-title">A chamada do Hook</h2>
+  <div class="effect-sketch" role="img" aria-label="Dois espaços para preencher: o trabalho do efeito e suas dependências." data-id="sketch-board">
+    <span class="sketch-slot" data-id="effect-slot" style="left:384px;top:208px;opacity:1;width:144px;"></span>
+    <span class="sketch-slot" data-id="deps-slot" style="left:568px;top:208px;opacity:1;width:106px;"></span>
+    <span class="ink-blue sketch-token" data-id="hook" style="left:180px;top:205px;opacity:1;">useEffect(</span>
+    <span class="ink-green sketch-token" data-id="effect" style="left:384px;top:205px;opacity:0;">effect</span>
+    <span class="ink-green sketch-token" data-id="effect-body" style="left:220px;top:200px;opacity:0;">console.log("Executado");</span>
+    <span class="ink-green sketch-token" data-id="effect-brace" style="left:180px;top:260px;opacity:0;">}</span>
+    <span class="ink-blue sketch-token" data-id="comma" style="left:528px;top:205px;opacity:1;">,</span>
+    <span class="ink-red sketch-token" data-id="deps" style="left:570px;top:205px;opacity:0;">deps</span>
+    <span class="ink-blue sketch-token" data-id="close" style="left:672px;top:205px;opacity:1;">)</span>
+    <span class="ink-green sketch-label" data-id="effect-label" style="left:350px;top:20px;opacity:0;">Efeito · função</span>
+    <span class="sketch-arrow ink-green" data-id="effect-arrow" style="left:448px;top:70px;opacity:0;height:125px;"></span>
+    <span class="ink-red sketch-label" data-id="deps-label" style="left:510px;top:378px;opacity:0;">Dependências</span>
+    <span class="sketch-arrow up ink-red" data-id="deps-arrow" style="left:609px;top:272px;opacity:0;height:94px;"></span>
+  </div>
+  <p class="callout" data-id="sketch-caption">Dois espaços para preencher: <strong>o trabalho do efeito</strong> e <strong>suas dependências</strong>.</p>
+</section>
+
+<section class="effect-lesson sketch-slide" data-background-color="#fff" data-auto-animate data-auto-animate-id="effect-anatomy" data-auto-animate-duration="0.8" data-auto-animate-easing="ease-in-out">
+  <p class="kicker">02 · Anatomia visual · 2/5</p>
+  <h2 data-id="sketch-title">O primeiro argumento</h2>
+  <div class="effect-sketch" role="img" aria-label="effect é uma função. React a executa após o commit; aqui estamos apenas declarando o trabalho." data-id="sketch-board">
+    <span class="sketch-slot" data-id="effect-slot" style="left:384px;top:208px;opacity:0;width:144px;"></span>
+    <span class="sketch-slot" data-id="deps-slot" style="left:568px;top:208px;opacity:1;width:106px;"></span>
+    <span class="ink-blue sketch-token" data-id="hook" style="left:180px;top:205px;opacity:1;">useEffect(</span>
+    <span class="ink-green sketch-token" data-id="effect" style="left:384px;top:205px;opacity:1;">effect</span>
+    <span class="ink-green sketch-token" data-id="effect-body" style="left:220px;top:200px;opacity:0;">console.log("Executado");</span>
+    <span class="ink-green sketch-token" data-id="effect-brace" style="left:180px;top:260px;opacity:0;">}</span>
+    <span class="ink-blue sketch-token" data-id="comma" style="left:528px;top:205px;opacity:1;">,</span>
+    <span class="ink-red sketch-token" data-id="deps" style="left:570px;top:205px;opacity:0;">deps</span>
+    <span class="ink-blue sketch-token" data-id="close" style="left:672px;top:205px;opacity:1;">)</span>
+    <span class="ink-green sketch-label" data-id="effect-label" style="left:350px;top:20px;opacity:1;">Efeito · função</span>
+    <span class="sketch-arrow ink-green" data-id="effect-arrow" style="left:448px;top:70px;opacity:1;height:125px;"></span>
+    <span class="ink-red sketch-label" data-id="deps-label" style="left:510px;top:378px;opacity:0;">Dependências</span>
+    <span class="sketch-arrow up ink-red" data-id="deps-arrow" style="left:609px;top:272px;opacity:0;height:94px;"></span>
+  </div>
+  <p class="callout" data-id="sketch-caption"><strong>effect é uma função.</strong> React a executa após o commit; aqui estamos apenas declarando o trabalho.</p>
+</section>
+
+<section class="effect-lesson sketch-slide" data-background-color="#fff" data-auto-animate data-auto-animate-id="effect-anatomy" data-auto-animate-duration="0.8" data-auto-animate-easing="ease-in-out">
+  <p class="kicker">02 · Anatomia visual · 3/5</p>
+  <h2 data-id="sketch-title">O segundo argumento</h2>
+  <div class="effect-sketch" role="img" aria-label="deps representa uma lista. React compara seus valores para decidir se o efeito precisa executar novamente." data-id="sketch-board">
+    <span class="sketch-slot" data-id="effect-slot" style="left:384px;top:208px;opacity:0;width:144px;"></span>
+    <span class="sketch-slot" data-id="deps-slot" style="left:568px;top:208px;opacity:0;width:106px;"></span>
+    <span class="ink-blue sketch-token" data-id="hook" style="left:180px;top:205px;opacity:1;">useEffect(</span>
+    <span class="ink-green sketch-token" data-id="effect" style="left:384px;top:205px;opacity:1;">effect</span>
+    <span class="ink-green sketch-token" data-id="effect-body" style="left:220px;top:200px;opacity:0;">console.log("Executado");</span>
+    <span class="ink-green sketch-token" data-id="effect-brace" style="left:180px;top:260px;opacity:0;">}</span>
+    <span class="ink-blue sketch-token" data-id="comma" style="left:528px;top:205px;opacity:1;">,</span>
+    <span class="ink-red sketch-token" data-id="deps" style="left:570px;top:205px;opacity:1;">deps</span>
+    <span class="ink-blue sketch-token" data-id="close" style="left:672px;top:205px;opacity:1;">)</span>
+    <span class="ink-green sketch-label" data-id="effect-label" style="left:350px;top:20px;opacity:1;">Efeito · função</span>
+    <span class="sketch-arrow ink-green" data-id="effect-arrow" style="left:448px;top:70px;opacity:1;height:125px;"></span>
+    <span class="ink-red sketch-label" data-id="deps-label" style="left:510px;top:378px;opacity:1;">Dependências</span>
+    <span class="sketch-arrow up ink-red" data-id="deps-arrow" style="left:609px;top:272px;opacity:1;height:94px;"></span>
+  </div>
+  <p class="callout" data-id="sketch-caption"><strong>deps representa uma lista.</strong> React compara seus valores para decidir se o efeito precisa executar novamente.</p>
+</section>
+
+<section class="effect-lesson sketch-slide" data-background-color="#fff" data-auto-animate data-auto-animate-id="effect-anatomy" data-auto-animate-duration="0.8" data-auto-animate-easing="ease-in-out">
+  <p class="kicker">02 · Anatomia visual · 4/5</p>
+  <h2 data-id="sketch-title">A função por dentro</h2>
+  <div class="effect-sketch" role="img" aria-label="Agora vemos a função: console.log está dentro dela. A lista ainda está representada pelo nome deps." data-id="sketch-board">
+    <span class="sketch-slot" data-id="effect-slot" style="left:384px;top:208px;opacity:0;width:144px;"></span>
+    <span class="sketch-slot" data-id="deps-slot" style="left:568px;top:208px;opacity:0;width:106px;"></span>
+    <span class="ink-blue sketch-token" data-id="hook" style="left:180px;top:140px;opacity:1;">useEffect(</span>
+    <span class="ink-green sketch-token" data-id="effect" style="left:384px;top:140px;opacity:1;">() =&gt; {</span>
+    <span class="ink-green sketch-token" data-id="effect-body" style="left:220px;top:200px;opacity:1;">console.log("Executado");</span>
+    <span class="ink-green sketch-token" data-id="effect-brace" style="left:180px;top:260px;opacity:1;">}</span>
+    <span class="ink-blue sketch-token" data-id="comma" style="left:201px;top:260px;opacity:1;">,</span>
+    <span class="ink-red sketch-token" data-id="deps" style="left:242px;top:260px;opacity:1;">deps</span>
+    <span class="ink-blue sketch-token" data-id="close" style="left:344px;top:260px;opacity:1;">)</span>
+    <span class="ink-green sketch-label" data-id="effect-label" style="left:350px;top:20px;opacity:1;">Efeito · função</span>
+    <span class="sketch-arrow ink-green" data-id="effect-arrow" style="left:448px;top:70px;opacity:1;height:60px;"></span>
+    <span class="ink-red sketch-label" data-id="deps-label" style="left:145px;top:378px;opacity:1;">Dependências</span>
+    <span class="sketch-arrow up ink-red" data-id="deps-arrow" style="left:262px;top:327px;opacity:1;height:39px;"></span>
+  </div>
+  <p class="callout" data-id="sketch-caption">Agora vemos a função: <strong>console.log</strong> está dentro dela. A lista ainda está representada pelo nome <strong>deps</strong>.</p>
+</section>
+
+<section class="effect-lesson sketch-slide" data-background-color="#fff" data-auto-animate data-auto-animate-id="effect-anatomy" data-auto-animate-duration="0.8" data-auto-animate-easing="ease-in-out">
+  <p class="kicker">02 · Anatomia visual · 5/5</p>
+  <h2 data-id="sketch-title">Da ilustração ao código</h2>
+  <div class="effect-sketch" role="img" aria-label="[] é uma lista vazia. O efeito executa na montagem e não repete por mudanças de props ou estado." data-id="sketch-board">
+    <span class="sketch-slot" data-id="effect-slot" style="left:384px;top:208px;opacity:0;width:144px;"></span>
+    <span class="sketch-slot" data-id="deps-slot" style="left:568px;top:208px;opacity:0;width:106px;"></span>
+    <span class="ink-blue sketch-token" data-id="hook" style="left:180px;top:140px;opacity:1;">useEffect(</span>
+    <span class="ink-green sketch-token" data-id="effect" style="left:384px;top:140px;opacity:1;">() =&gt; {</span>
+    <span class="ink-green sketch-token" data-id="effect-body" style="left:220px;top:200px;opacity:1;">console.log("Executado");</span>
+    <span class="ink-green sketch-token" data-id="effect-brace" style="left:180px;top:260px;opacity:1;">}</span>
+    <span class="ink-blue sketch-token" data-id="comma" style="left:201px;top:260px;opacity:1;">,</span>
+    <span class="ink-red sketch-token" data-id="deps" style="left:242px;top:260px;opacity:1;">[]</span>
+    <span class="ink-blue sketch-token" data-id="close" style="left:303px;top:260px;opacity:1;">);</span>
+    <span class="ink-green sketch-label" data-id="effect-label" style="left:350px;top:20px;opacity:1;">Efeito · função</span>
+    <span class="sketch-arrow ink-green" data-id="effect-arrow" style="left:448px;top:70px;opacity:1;height:60px;"></span>
+    <span class="ink-red sketch-label" data-id="deps-label" style="left:145px;top:378px;opacity:1;">Dependências · lista vazia</span>
+    <span class="sketch-arrow up ink-red" data-id="deps-arrow" style="left:262px;top:327px;opacity:1;height:39px;"></span>
+  </div>
+  <p class="callout" data-id="sketch-caption"><strong>[] é uma lista vazia.</strong> O efeito executa na montagem e não repete por mudanças de props ou estado.</p>
+</section>
+
+
+
+
+
+
+
+<section class="effect-lesson">
+          <p class="kicker">02 · Leitura guiada</p>
+          <h2>As partes do useEffect</h2>
+          <pre><code class="language-jsx" data-trim data-line-numbers>useEffect(() =&gt; {
+  console.log('Efeito:', contador);
 }, [contador]);</code></pre>
-          </div>
-
-          <div class="example-box fragment fade-right" style="flex: 1; min-width: 250px; margin: 10px;">
-            <h3 style="color: #61dafb;">🧹 Desmontagem</h3>
-            <pre><code class="language-jsx" data-trim>
-useEffect(() => {
-  const id = setInterval(tick, 1000);
-
-  // Roda quando o componente
-  // sai da tela
-  return () => clearInterval(id);
-}, []);</code></pre>
-          </div>
-        </div>
-      </section>
-
-      <!-- Casos de Uso Comuns em React Native -->
-      <section data-background-color="#34495e">
-        <section>
-          <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">useEffect no Mundo Real 🌍</h2>
-          <p style="color: #d1e8ff; font-size: 1.1em;">Alguns cenários comuns onde o useEffect é essencial em apps React Native:</p>
-          <ul style="color: white; font-size: 1.05em; text-align: left; max-width: 800px; margin: 20px auto;">
-            <li class="fragment fade-right">📱 Detectar quando o app volta do segundo plano</li>
-            <li class="fragment fade-right">🔄 Reagir a mudanças de orientação da tela</li>
-            <li class="fragment fade-right">📍 Buscar a localização do usuário assim que a tela abre</li>
+          <ul>
+            <li class="fragment">
+              <code>useEffect</code>: Hook importado de <code>react</code>.
+            </li>
+            <li class="fragment">
+              <code>() =&gt; { ... }</code>: função com o trabalho do efeito.
+            </li>
+            <li class="fragment">
+              <code>[contador]</code>: valores usados para decidir se ele
+              precisa executar novamente.
+            </li>
           </ul>
+          <p class="callout">
+            Chame Hooks no topo do componente, antes de retornos condicionais;
+            nunca dentro de <code>if</code>, loops ou eventos.
+          </p>
         </section>
 
-        <section data-auto-animate>
-          <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Detectando o Estado do App</h3>
-          <pre data-id="code-animation-9"><code class="language-jsx" data-trim data-line-numbers>
-import { AppState } from 'react-native';
+<section class="effect-lesson" data-auto-animate data-auto-animate-id="counter">
+  <p class="kicker">Exemplo progressivo</p><h2>Passo 1: contador com estado</h2>
+  <pre data-id="counter-code"><code class="language-jsx" data-trim data-line-numbers>import { useState } from 'react';
+import { Button, Text, View } from 'react-native';
 
-const [appState, setAppState] = useState(AppState.currentState);
-
-useEffect(() => {
-  const subscription = AppState.addEventListener('change', setAppState);
-
-  return () => subscription.remove();
-}, []);</code></pre>
-          <p class="fragment fade-up" style="color: #d1e8ff;">✅ O <code>return</code> remove o listener quando o componente desmonta, evitando vazamento de memória.</p>
-        </section>
-
-        <section data-auto-animate>
-          <h3 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Reagindo à Orientação da Tela</h3>
-          <pre data-id="code-animation-9"><code class="language-jsx" data-trim data-line-numbers>
-import { Dimensions } from 'react-native';
-
-const [isLandscape, setIsLandscape] = useState(false);
-
-useEffect(() => {
-  const subscription = Dimensions.addEventListener(
-    'change',
-    ({ window }) => setIsLandscape(window.width > window.height)
+export default function Contador() {
+  const [contador, setContador] = useState(0);
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;{contador}&lt;/Text&gt;
+      &lt;Button title="+1" onPress={() =&gt; setContador(c =&gt; c + 1)} /&gt;
+    &lt;/View&gt;
   );
+}</code></pre>
+  <p class="callout">O clique já atualiza a interface. Agora vamos observar cada valor no console.</p>
+</section>
 
-  return () => subscription.remove();
-}, []);</code></pre>
+<section class="effect-lesson" data-auto-animate data-auto-animate-id="counter">
+          <p class="kicker">02 · Primeira observação</p>
+          <h2>Passo 2: adicionando o efeito</h2>
+          <pre data-id="counter-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect, useState } from 'react';
+import { Button, Text, View } from 'react-native';
+
+export default function Contador() {
+  const [contador, setContador] = useState(0);
+  useEffect(() =&gt; {
+    console.log('Efeito:', contador);
+  }, [contador]);
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;{contador}&lt;/Text&gt;
+      &lt;Button title="+1" onPress={() =&gt; setContador(c =&gt; c + 1)} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          <p class="small">
+            O console é usado aqui para observar a execução, não para calcular a
+            interface.
+          </p>
         </section>
-      </section>
 
-      <!-- Dicas e Boas Práticas -->
-      <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
-        <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Boas Práticas com useEffect ✅</h2>
-        <div class="example-box fragment fade-up">
-          <ul style="color: white; font-size: 1.1em; text-align: left;">
-            <li class="fragment fade-right">🧹 Sempre limpe timers e subscrições na função de retorno</li>
-            <li class="fragment fade-right">🎯 Liste no array de dependências tudo que o efeito utiliza</li>
-            <li class="fragment fade-right">✂️ Separe efeitos por responsabilidade: um efeito, uma tarefa</li>
-            <li class="fragment fade-right">🔁 Cuidado com loops infinitos ao atualizar estado dentro do efeito</li>
-            <li class="fragment fade-right">🚫 Evite lógica pesada no efeito quando não for necessário</li>
-          </ul>
-        </div>
-      </section>
 
-      <!-- Conclusão -->
-      <section data-align="center" data-background-gradient="radial-gradient(#1e3c72, #2a5298)">
-        <h2 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.4);">Resumo da Aula 🔄</h2>
-        <div class="example-box fragment fade-up">
-          <ul style="color: white; font-size: 1.1em; text-align: left;">
-            <li class="fragment fade-right">useEffect executa efeitos colaterais fora do fluxo de renderização</li>
-            <li class="fragment fade-right">O array de dependências controla quando o efeito roda</li>
-            <li class="fragment fade-right">A função de limpeza evita vazamentos de memória</li>
-            <li class="fragment fade-right">É a base para integrar APIs nativas do dispositivo em React Native</li>
+</section>
+
+<section data-background-gradient="radial-gradient(#1e3c72, #2a5298)" data-effect-group="03">
+<section class="effect-lesson subsection-cover"><p class="kicker">Segunda parte · 03</p><h2>Quando o efeito executa?</h2><p>Compare as dependências e descubra quando não precisamos de um efeito.</p><p class="small">↓ Avance para acompanhar os passos desta subseção.</p></section>
+
+<section class="effect-lesson">
+          <p class="kicker">03 · Dependências</p>
+          <h2>Três formas de declarar</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Forma</th>
+                <th>Na montagem</th>
+                <th>Após outros commits</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>useEffect(fn)</code></td>
+                <td>Executa</td>
+                <td>Executa a cada commit</td>
+              </tr>
+              <tr>
+                <td><code>useEffect(fn, [])</code></td>
+                <td>Executa</td>
+                <td>Não repete por mudanças de props/estado</td>
+              </tr>
+              <tr>
+                <td><code>useEffect(fn, [valor])</code></td>
+                <td>Executa</td>
+                <td>Repete se <code>valor</code> mudou</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="callout">
+            React compara cada dependência com o valor anterior usando
+            <code>Object.is</code>. Uma nova montagem inicia um novo efeito.
+          </p>
+        </section>
+
+<section class="effect-lesson">
+          <p class="kicker">03 · Dependências</p>
+          <h2>A lista descreve o que o efeito usa</h2>
+          <pre><code class="language-jsx" data-trim data-line-numbers>// Trecho dentro de um componente que recebe a prop nome
+useEffect(() =&gt; {
+  console.log(nome, contador);
+}, [nome, contador]);</code></pre>
+
+        </section>
+
+<section class="effect-lesson">
+          <p class="kicker">03 · Quando dispensar o efeito</p>
+          <h2>Par ou ímpar é um cálculo</h2>
+          <pre><code class="language-jsx" data-trim data-line-numbers>// Trecho dentro do componente Contador
+const mensagem = contador % 2 === 0
+  ? 'Número par! 👍'
+  : 'Número ímpar! 👆';
+
+// Use no JSX: &lt;Text&gt;{mensagem}&lt;/Text&gt;</code></pre>
+          <p class="callout">
+            Se o valor pode ser calculado a partir de props ou estado, calcule
+            durante a renderização.
+          </p>
+          <p>
+            Não precisamos de outro estado nem de um efeito para manter essa
+            mensagem atualizada.
+          </p>
+        </section>
+</section>
+
+<section data-background-gradient="radial-gradient(#1e3c72, #2a5298)" data-effect-group="04">
+<section class="effect-lesson subsection-cover"><p class="kicker">Segunda parte · 04</p><h2>Atividades</h2><p>Do texto inicial ao timeout, entendendo a limpeza antes de implementar.</p><p class="small">↓ Avance para acompanhar os passos desta subseção.</p></section>
+
+<section class="effect-lesson">
+          <p class="kicker">04 · Atividade 1</p>
+          <h2>Construa a mensagem do dia</h2>
+          <ul>
+            <li class="fragment">Inicie o estado com “Carregando...”.</li>
+            <li class="fragment">
+              Ao montar, agende “Bom dia! ☀️” para depois de 2 segundos.
+            </li>
+            <li class="fragment">Cancele o timeout na função de limpeza.</li>
+            <li class="fragment">Exiba a mensagem em um <code>Text</code>.</li>
           </ul>
-        </div>
-      </section>
+          <p class="callout">
+            Antes de executar: a mudança da mensagem deve agendar outro timer?
+            Justifique usando as dependências.
+          </p>
+        </section>
+
+<section class="effect-lesson" data-auto-animate data-auto-animate-id="message">
+  <p class="kicker">Exemplo progressivo</p><h2>Passo 1: exibir a mensagem inicial</h2>
+  <pre data-id="message-code"><code class="language-jsx" data-trim data-line-numbers>import { useState } from 'react';
+import { Text } from 'react-native';
+
+export default function MensagemDoDia() {
+  const [mensagem, setMensagem] = useState('Carregando...');
+
+  return &lt;Text&gt;{mensagem}&lt;/Text&gt;;
+}</code></pre>
+  <p class="callout">Este componente já funciona: por enquanto, a mensagem permanece “Carregando...”.</p>
+</section>
+
+<section class="effect-lesson" data-auto-animate data-auto-animate-id="message">
+          <p class="kicker">04 · Solução 1</p>
+          <h2>Passo 2: agendar e limpar o timer</h2>
+          <pre data-id="message-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect, useState } from 'react';
+import { Text } from 'react-native';
+
+export default function MensagemDoDia() {
+  const [mensagem, setMensagem] = useState('Carregando...');
+  useEffect(() =&gt; {
+    const timer = setTimeout(() =&gt; {
+      setMensagem('Bom dia! ☀️');
+    }, 2000);
+    return () =&gt; clearTimeout(timer);
+  }, []);
+
+  return &lt;Text&gt;{mensagem}&lt;/Text&gt;;
+}</code></pre>
+          <p class="callout">
+            O efeito usa apenas um setter estável e valores constantes; por
+            isso, <code>[]</code> é adequado.
+          </p>
+        </section>
+
+
+<!-- ========================================================= -->
+<!-- ATIVIDADE 2 -->
+<!-- ========================================================= -->
+
+<section class="effect-lesson">
+  <p class="kicker">04 · Atividade 2</p>
+  <h2>Busque usuários de uma API</h2>
+
+  <p>
+    Ao abrir a tela, consulte os usuários disponíveis na API:
+  </p>
+
+  <p class="callout">
+    <code>https://jsonplaceholder.typicode.com/users</code>
+  </p>
+
+  <ul>
+    <li class="fragment">
+      Crie um estado <code>usuarios</code> iniciado com uma lista vazia.
+    </li>
+
+    <li class="fragment">
+      Ao montar o componente, faça uma requisição usando
+      <code>fetch</code>.
+    </li>
+
+    <li class="fragment">
+      Converta a resposta para JSON.
+    </li>
+
+    <li class="fragment">
+      Salve os dados recebidos no estado <code>usuarios</code>.
+    </li>
+
+    <li class="fragment">
+      Renderize o <strong>nome</strong> de cada usuário usando
+      <code>map</code>.
+    </li>
+  </ul>
+
+  <p class="callout">
+    Antes de executar: qual deve ser o vetor de dependências
+    desse efeito? A alteração de <code>usuarios</code>
+    deve realizar uma nova requisição?
+  </p>
+</section>
+
+
+<!-- ========================================================= -->
+<!-- PASSO 1 -->
+<!-- ========================================================= -->
+
+<section
+  class="effect-lesson"
+  data-auto-animate
+  data-auto-animate-id="usuarios"
+>
+  <p class="kicker">Exemplo progressivo</p>
+  <h2>Passo 1: preparar a lista</h2>
+
+  <pre data-id="usuarios-code"><code
+    class="language-jsx"
+    data-trim
+    data-line-numbers
+>import { useState } from 'react';
+import { Text, View } from 'react-native';
+
+export default function ListaUsuarios() {
+  const [usuarios, setUsuarios] = useState([]);
+
+  return (
+    &lt;View&gt;
+      {usuarios.map(usuario =&gt; (
+        &lt;Text key={usuario.id}&gt;
+          {usuario.name}
+        &lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}</code></pre>
+
+  <p class="callout">
+    A estrutura da tela está pronta, mas a lista começa vazia.
+    Ainda precisamos buscar os dados.
+  </p>
+</section>
+
+
+<!-- ========================================================= -->
+<!-- PASSO 2 -->
+<!-- ========================================================= -->
+
+<section
+  class="effect-lesson"
+  data-auto-animate
+  data-auto-animate-id="usuarios"
+>
+  <p class="kicker">04 · Solução 2</p>
+  <h2>Passo 2: buscar e salvar os usuários</h2>
+
+  <pre data-id="usuarios-code"><code
+    class="language-jsx"
+    data-trim
+    data-line-numbers
+>import { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+
+export default function ListaUsuarios() {
+  const [usuarios, setUsuarios] = useState([]);
+
+  useEffect(() =&gt; {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(resposta =&gt; resposta.json())
+      .then(dados =&gt; {
+        setUsuarios(dados);
+      });
+  }, []);
+
+  return (
+    &lt;View&gt;
+      {usuarios.map(usuario =&gt; (
+        &lt;Text key={usuario.id}&gt;
+          {usuario.name}
+        &lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}</code></pre>
+
+  <p class="callout">
+    <code>[]</code> faz a consulta acontecer na montagem.
+    Quando <code>setUsuarios</code> atualiza o estado,
+    a tela renderiza novamente com os dados recebidos.
+  </p>
+</section>
+
+
+
+</section>
 
     </div>
   </div>

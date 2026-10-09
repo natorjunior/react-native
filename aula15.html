@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aula 15 · useContext e Context API</title>
+<!-- Reveal.js -->
+<link href="./dist/reveal.css" rel="stylesheet"/>
+<link href="./dist/theme/white.css" id="theme" rel="stylesheet"/>
+<!-- Tema para código -->
+<link href="./plugin/highlight/atom-one-dark.css" rel="stylesheet"/>
+<!-- Menu plugin -->
+<link href="plugin/menu/menu.css" rel="stylesheet"/>
+<link href="aulas/css/aula15.css" rel="stylesheet"/></head>
+<body>
+<div class="reveal">
+<div class="slides">
+<!-- Slide 1: Título -->
+<section class="source-slide lesson-cover" data-background-color="#112632" data-menu-title="Aula 15 · useContext" id="abertura"><div class="cover-content"><h4>
+          Programação para Dispositivos Móveis
+        </h4><p>
+          Prof. Msc. Nator Junior Carvalho da Costa
+        </p><h1 class="cover-title">Aula 15 - useContext e Context em React Native</h1></div></section>
+<section class="source-slide text-slide" data-menu-title="Objetivos da Aula" id="aula15-02"><p class="kicker" data-id="lesson-kicker">Aula 15 / Objetivos</p><h2 data-id="lesson-heading">Objetivos da Aula</h2>
+<div>
+<div>
+<ul>
+<li class="fragment fade-in">
+
+                Entender o Context API
+              </li>
+<li class="fragment fade-in">
+
+                Resolver o problema do prop drilling
+              </li>
+<li class="fragment fade-in">
+
+                Implementar gerenciamento de estado global
+              </li>
+<li class="fragment fade-in">
+
+                Criar um projeto prático
+              </li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<!-- Frame: Entendendo o problema -->
+<section class="source-slide text-slide chapter-slide" data-background-color="#112632" data-menu-title="Entendendo o problema!" id="aula15-03"><p class="kicker" data-id="lesson-kicker">Aula 15 / Compartilhar dados</p><h2 data-id="lesson-heading">Entendendo o problema!</h2>
+<div>
+<div class="fragment fade-in">
+<p>
+                Como compartilhar dados entre componentes<br/>
+                sem passar props manualmente por vários níveis?
+              </p>
+</div>
+</div>
+</section>
+<!-- Frame: Relembrando Props -->
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="props-tarefas" data-menu-title="Relembrando Props" id="aula15-04"><p class="kicker" data-id="lesson-kicker">Aula 15 / Revisão de props</p><h2 data-id="lesson-heading">Relembrando Props</h2><div class="editor" data-id="editor-shell" style="--editor-height: 470px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="" data-trim="">// Componente Pai
+const ListaDeTarefas = () =&gt; {
+  const tarefas = []; //o começo
+...</code></pre></div></section>
+<!-- Frame: Relembrando Props -->
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="props-tarefas" data-menu-title="Relembrando Props" id="aula15-05"><p class="kicker" data-id="lesson-kicker">Aula 15 / Revisão de props</p><h2 data-id="lesson-heading">Relembrando Props</h2><div class="editor" data-id="editor-shell" style="--editor-height: 470px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="" data-trim="">// Componente Pai
+const ListaDeTarefas = () =&gt; {
+  const tarefas = [
+    { id: 1, texto: "Estudar React", concluida: false },
+    { id: 2, texto: "Fazer exercícios", concluida: true }
+  ]; // Incluindo valores na lista
+  ...</code></pre></div></section>
+<!-- Frame: Relembrando Props -->
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="props-tarefas" data-menu-title="Relembrando Props" id="aula15-06"><p class="kicker" data-id="lesson-kicker">Aula 15 / Revisão de props</p><h2 data-id="lesson-heading">Relembrando Props</h2><div class="editor" data-id="editor-shell" style="--editor-height: 470px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="" data-trim="">// Componente Pai
+const ListaDeTarefas = () =&gt; {
+  const tarefas = [
+    { id: 1, texto: "Estudar React", concluida: false },
+    { id: 2, texto: "Fazer exercícios", concluida: true }
+  ];
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.titulo}&gt;Minhas Tarefas&lt;/Text&gt;
+      &lt;ExibirTarefa tarefas={tarefas} /&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="props-tarefas" data-menu-title="Relembrando Props" id="aula15-07"><p class="kicker" data-id="lesson-kicker">Aula 15 / Revisão de props</p><h2 data-id="lesson-heading">Relembrando Props</h2><div class="editor" data-id="editor-shell" style="--editor-height: 470px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="1-15|16|17|20-24|16-28" data-trim="">// Componente Pai
+const ListaDeTarefas = () =&gt; {
+  const tarefas = [
+    { id: 1, texto: "Estudar React", concluida: false },
+    { id: 2, texto: "Fazer exercícios", concluida: true }
+  ];
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.titulo}&gt;Minhas Tarefas&lt;/Text&gt;
+      &lt;ExibirTarefa tarefas={tarefas} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+// Componente Filho
+const ExibirTarefa = (props) =&gt; {
+  return (
+    &lt;View&gt;
+      {props.tarefas.map(tarefa =&gt; (
+        &lt;Text key={tarefa.id}&gt;
+          {tarefa.concluida ? 'Concluída:' : 'Pendente:'} {tarefa.texto}
+        &lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};</code></pre></div><div class="code-caption" data-id="code-caption"><ul>
+<li class="fragment fade-in">Props são somente leitura</li>
+<li class="fragment fade-in">Passam dados de cima para baixo</li>
+<li class="fragment fade-in">São imutáveis no componente filho</li>
+</ul></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex1" id="aula15-08"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex1" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex1" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+<!-- Frame: Relembrando Props -->
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="props-neto" data-menu-title="Props" id="aula15-09"><p class="kicker" data-id="lesson-kicker">Aula 15 / Revisão de props</p><h2 data-id="lesson-heading">Props</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="1-12|13-24|25-34" data-trim="">// Componente Pai
+const ListaDeTarefas = () =&gt; {
+  const tarefas = [
+    { id: 1, texto: "Estudar React", concluida: false },
+    { id: 2, texto: "Fazer exercícios", concluida: true }
+  ];
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={styles.titulo}&gt;Minhas Tarefas&lt;/Text&gt;
+      &lt;ExibirTarefa tarefas={tarefas} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+// Componente Filho
+const ExibirTarefa = (props) =&gt; {
+  return (
+    &lt;View&gt;
+      {props.tarefas.map(tarefa =&gt; (
+        &lt;Tarefa key={tarefa.id} tarefa={tarefa} /&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};
+
+// Componente Neto
+const Tarefa = ({ tarefa }) =&gt; {
+  return (
+    &lt;Text&gt;
+      {tarefa.concluida ? 'Concluída:' : 'Pendente:'} {tarefa.texto}
+    &lt;/Text&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide text-slide chapter-slide" data-background-color="#112632" data-menu-title="Ampliando os Exemplos" id="aula15-10"><p class="kicker" data-id="lesson-kicker">Aula 15 / Prop drilling</p><h2 data-id="lesson-heading">Ampliando os Exemplos</h2>
+<div>
+<div>
+</div>
+</div>
+</section>
+<!-- Frame: Exemplo de Prop Drilling -->
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="preferencias-app" data-menu-title="Exemplo de Prop Drilling" id="aula15-11"><p class="kicker" data-id="lesson-kicker">Aula 15 / Prop drilling</p><h2 data-id="lesson-heading">Exemplo de Prop Drilling</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const userPreferences = {
+    fontSize: 16,
+    isDarkMode: true,
+    language: 'pt'
+  };</code></pre></div></section>
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="preferencias-app" data-menu-title="Exemplo de Prop Drilling" id="aula15-12"><p class="kicker" data-id="lesson-kicker">Aula 15 / Prop drilling</p><h2 data-id="lesson-heading">Exemplo de Prop Drilling</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="1|3-7|11|12|13|12" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const userPreferences = {
+    fontSize: 16,
+    isDarkMode: true,
+    language: 'pt'
+  };
+
+  return (
+    &lt;View&gt;
+      &lt;Header userPreferences={userPreferences} /&gt;
+      &lt;MainContent userPreferences={userPreferences} /&gt;
+      &lt;Footer userPreferences={userPreferences} /&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="preferencias-conteudo" data-menu-title="Exemplo de Prop Drilling" id="aula15-13"><p class="kicker" data-id="lesson-kicker">Aula 15 / Prop drilling</p><h2 data-id="lesson-heading">Exemplo de Prop Drilling</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="1|3-7|5|10|12-15|14" data-trim="">const MainContent = ({ userPreferences }) =&gt; {
+  return (
+    &lt;View&gt;
+      &lt;Sidebar userPreferences={userPreferences} /&gt;
+      &lt;Content userPreferences={userPreferences} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const Content = ({ userPreferences }) =&gt; {
+  return (
+    &lt;View&gt;
+      &lt;Article userPreferences={userPreferences} /&gt;
+      &lt;Comments userPreferences={userPreferences} /&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide" data-auto-animate="" data-auto-animate-id="preferencias-comentarios" data-menu-title="Exemplo de Prop Drilling" id="aula15-14"><p class="kicker" data-id="lesson-kicker">Aula 15 / Prop drilling</p><h2 data-id="lesson-heading">Exemplo de Prop Drilling</h2><div class="editor" data-id="editor-shell" style="--editor-height: 470px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-3"><code class="language-jsx" data-line-numbers="1|3-7|5|10|11|13-18" data-trim="">const Comments = ({ userPreferences }) =&gt; {
+  return (
+    &lt;View&gt;
+      &lt;CommentList userPreferences={userPreferences} /&gt;
+      &lt;CommentForm userPreferences={userPreferences} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const CommentForm = ({ userPreferences }) =&gt; {
+  const { fontSize, isDarkMode, language } = userPreferences;
+  return (
+    &lt;View style={{ 
+      backgroundColor: isDarkMode ? '#333' : '#fff'
+    }}&gt;
+      &lt;TextInput style={{ fontSize: fontSize }} /&gt;
+      &lt;Text&gt;{language === 'pt' ? 'Enviar' : 'Submit'}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div><div class="code-caption" data-id="code-caption"><ul>
+<li class="fragment fade-in">Observe como userPreferences é passado por vários níveis</li>
+<li class="fragment fade-in">Cada componente intermediário precisa receber e passar adiante</li>
+<li class="fragment fade-in">Isso é o prop drilling!</li>
+</ul></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex2" id="aula15-15"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex2" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex2" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+<!-- Slide 2: O que é Context API? -->
+<section class="source-slide text-slide" data-menu-title="O que é Context API?" id="aula15-16"><p class="kicker" data-id="lesson-kicker">Aula 15 / Context API</p><h2 data-id="lesson-heading">O que é Context API?</h2>
+<div class="content-card">
+<ul>
+<li class="fragment fade-in">Forma de compartilhar dados entre componentes</li>
+<li class="fragment fade-in">Evita "prop drilling" (passar props em vários níveis)</li>
+<li class="fragment fade-in">Ideal para dados globais: temas, usuário logado, idioma</li>
+</ul>
+</div>
+</section>
+<!-- Slide 3: Por que usar Context? - Sequência Animada -->
+<section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="tema-props" data-menu-title="Por que usar Context?" id="aula15-17"><p class="kicker" data-id="lesson-kicker">Aula 15 / Antes do Context</p><h2 data-id="lesson-heading">Por que usar Context?</h2><h3 class="step-caption" data-id="lesson-step">Antes do Context - Passo 1:</h3><div class="editor" data-id="editor-shell" style="--editor-height: 460px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="1-7" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;Header theme={theme} /&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="tema-props" data-menu-title="Por que usar Context?" id="aula15-18"><p class="kicker" data-id="lesson-kicker">Aula 15 / Antes do Context</p><h2 data-id="lesson-heading">Por que usar Context?</h2><h3 class="step-caption" data-id="lesson-step">Antes do Context - Passo 2:</h3><div class="editor" data-id="editor-shell" style="--editor-height: 460px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;Header theme={theme} /&gt;
+    &lt;Main theme={theme} /&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="tema-props" data-menu-title="Por que usar Context?" id="aula15-19"><p class="kicker" data-id="lesson-kicker">Aula 15 / Antes do Context</p><h2 data-id="lesson-heading">Por que usar Context?</h2><h3 class="step-caption" data-id="lesson-step">Antes do Context - Passo 3:</h3><div class="editor" data-id="editor-shell" style="--editor-height: 460px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="4-7" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;Header theme={theme} /&gt;
+    &lt;Main theme={theme} /&gt;
+    &lt;Footer theme={theme} /&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="tema-props" data-menu-title="Por que usar Context?" id="aula15-20"><p class="kicker" data-id="lesson-kicker">Aula 15 / Antes do Context</p><h2 data-id="lesson-heading">Por que usar Context?</h2><h3 class="step-caption" data-id="lesson-step">Antes do Context - Passo 4:</h3><div class="editor" data-id="editor-shell" style="--editor-height: 460px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="1-16" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;Header theme={theme} /&gt;
+    &lt;Main theme={theme} /&gt;
+    &lt;Footer theme={theme} /&gt;
+  );
+};
+
+// Componente Filho
+const Main = ({ theme }) =&gt; {
+  return (
+    &lt;Content theme={theme} /&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="tema-props" data-menu-title="Por que usar Context?" id="aula15-21"><p class="kicker" data-id="lesson-kicker">Aula 15 / Antes do Context</p><h2 data-id="lesson-heading">Por que usar Context?</h2><h3 class="step-caption" data-id="lesson-step">Antes do Context - Resultado Final:</h3><div class="editor" data-id="editor-shell" style="--editor-height: 460px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation-4"><code class="language-jsx" data-line-numbers="1-12|13-24|25-25" data-trim="">// Componente Pai
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;Header theme={theme} /&gt;
+    &lt;Main theme={theme} /&gt;
+    &lt;Footer theme={theme} /&gt;
+  );
+};
+
+// Componente Filho
+const Main = ({ theme }) =&gt; {
+  return (
+    &lt;Content theme={theme} /&gt;
+  );
+};
+
+// Componente Neto
+const Content = ({ theme }) =&gt; {
+  return (
+    &lt;Text style={{ color: theme === 'light' ? '#000' : '#fff' }}&gt;
+      Conteúdo
+    &lt;/Text&gt;
+  );
+};</code></pre></div><div class="code-caption" data-id="code-caption"><p class="fragment fade-in"> Observe o problema do "prop drilling" - passando props
+              através de vários níveis</p></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex3" id="aula15-22"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex3" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex3" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+<!-- Slide 4: Com Context -->
+<section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="context-criar" data-menu-title="Com Context" id="aula15-23"><p class="kicker" data-id="lesson-kicker">Aula 15 / Com Context</p><h2 data-id="lesson-heading">Com Context</h2><h3 class="step-caption" data-id="lesson-step">Passo 1: Criar o Context</h3><div class="editor" data-id="editor-shell" style="--editor-height: 420px"><div class="editor-bar" data-id="editor-bar"><span>ThemeContext.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation"><code class="language-jsx" data-line-numbers="" data-trim="">// ThemeContext.js
+import { createContext } from 'react';
+export const ThemeContext = createContext();</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="context-provider" data-menu-title="Com Context" id="aula15-24"><p class="kicker" data-id="lesson-kicker">Aula 15 / Com Context</p><h2 data-id="lesson-heading">Com Context</h2><h3 class="step-caption" data-id="lesson-step">Passo 2: Provider no App</h3><div class="editor" data-id="editor-shell" style="--editor-height: 420px"><div class="editor-bar" data-id="editor-bar"><span>App.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation"><code class="language-jsx" data-line-numbers="" data-trim="">// App.js
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
+      &lt;Header /&gt;
+      &lt;Main /&gt;
+      &lt;Footer /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="context-leitor" data-menu-title="Com Context" id="aula15-25"><p class="kicker" data-id="lesson-kicker">Aula 15 / Com Context</p><h2 data-id="lesson-heading">Com Context</h2><h3 class="step-caption" data-id="lesson-step">Passo 3: Usando em componentes</h3><div class="editor" data-id="editor-shell" style="--editor-height: 420px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation"><code class="language-jsx" data-line-numbers="" data-trim="">const Main = () =&gt; {
+  return (
+    &lt;Content /&gt; 
+  );
+};
+
+const Content = () =&gt; {
+  const { theme } = useContext(ThemeContext);
+  return (
+    &lt;View style={{ 
+      backgroundColor: theme === 'light' ? '#fff' : '#333' 
+    }}&gt;
+      &lt;Text style={{ color: theme === 'light' ? '#000' : '#fff' }}&gt;
+        Conteúdo
+      &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide code-slide has-step" data-auto-animate="" data-auto-animate-id="context-outros" data-menu-title="Com Context" id="aula15-26"><p class="kicker" data-id="lesson-kicker">Aula 15 / Com Context</p><h2 data-id="lesson-heading">Com Context</h2><h3 class="step-caption" data-id="lesson-step">Passo 4: Em qualquer componente</h3><div class="editor" data-id="editor-shell" style="--editor-height: 420px"><div class="editor-bar" data-id="editor-bar"><span>React Native / JSX</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-animation"><code class="language-jsx" data-line-numbers="1-12|13-24|25-26" data-trim="">const Header = () =&gt; {
+  const { theme, setTheme } = useContext(ThemeContext);
+  return (
+    &lt;View style={{
+      backgroundColor: theme === 'light' ? '#fff' : '#333'
+    }}&gt;
+      &lt;Button 
+        title="Mudar Tema"
+        onPress={() =&gt; setTheme(theme === 'light' ? 'dark' : 'light')}
+      /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const Footer = () =&gt; {
+  const { theme } = useContext(ThemeContext);
+  return (
+    &lt;View style={{
+      backgroundColor: theme === 'light' ? '#fff' : '#333'
+    }}&gt;
+      &lt;Text style={{ color: theme === 'light' ? '#000' : '#fff' }}&gt;
+        Rodapé
+      &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div><div class="code-caption" data-id="code-caption"><ul>
+<li class="fragment fade-in">Não é necessário passar props entre componentes</li>
+<li class="fragment fade-in">Acesso direto ao contexto em qualquer nível</li>
+<li class="fragment fade-in">Código mais limpo e organizado</li>
+</ul></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex4" id="aula15-27"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex4" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex4" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+<section>
+<!-- Slide: Atividade 1 - Sistema de Tema Simples -->
+<section class="source-slide text-slide activity-slide" data-menu-title="Atividade 1: Sistema de Tema Simples" id="aula15-28"><p class="kicker" data-id="lesson-kicker">Aula 15 / Atividades</p><h2 data-id="lesson-heading">Atividade 1: Sistema de Tema Simples</h2>
+<div class="content-card">
+<p>Crie um aplicativo com:</p>
+<ul>
+<li>Um ThemeContext para gerenciar tema claro/escuro</li>
+<li>Um botão para alternar entre temas</li>
+<li>Dois componentes que usam o tema atual</li>
+<li>Cores diferentes para cada tema</li>
+</ul>
+</div>
+</section>
+<section class="source-slide code-slide" data-menu-title="Solução: Sistema de Tema" id="aula15-29"><p class="kicker" data-id="lesson-kicker">Aula 15 / Atividades</p><h2 data-id="lesson-heading">Solução: Sistema de Tema</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>ThemeContext.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-28"><code class="language-jsx" data-line-numbers="1-12|13-24|25-36|37-46" data-trim="">// ThemeContext.js
+import { createContext } from 'react';
+export const ThemeContext = createContext();
+
+// App.js
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  return (
+    &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
+  &lt;Header /&gt;
+  &lt;Content /&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+};
+
+// Header.js
+const Header = () =&gt; {
+  const { theme, setTheme } = useContext(ThemeContext);
+  return (
+    &lt;View style={{
+  backgroundColor: theme === 'light' ? '#fff' : '#333',
+  padding: 20
+    }}&gt;
+  &lt;Button
+    title={theme === 'light' ? 'Tema escuro' : 'Tema claro'}
+    onPress={() =&gt; setTheme(theme === 'light' ? 'dark' : 'light')}
+  /&gt;
+    &lt;/View&gt;
+  );
+};
+
+// Content.js
+const Content = () =&gt; {
+  const { theme } = useContext(ThemeContext);
+  return (
+    &lt;View style={{
+  flex: 1,
+  backgroundColor: theme === 'light' ? '#f0f0f0' : '#222',
+  padding: 20
+    }}&gt;
+  &lt;Text style={{ color: theme === 'light' ? '#000' : '#fff' }}&gt;
+    Conteúdo do App
+  &lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex5" id="aula15-30"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex5" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex5" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+<section>
+<!-- Slide: Atividade 2 - Contador Global -->
+<section class="source-slide text-slide activity-slide" data-menu-title="Atividade 2: Contador Global" id="aula15-31"><p class="kicker" data-id="lesson-kicker">Aula 15 / Atividades</p><h2 data-id="lesson-heading">Atividade 2: Contador Global</h2>
+<div class="content-card">
+<p>Desenvolva:</p>
+<ul>
+<li>Um CounterContext para manter um contador global</li>
+<li>Botões para incrementar e decrementar em um componente</li>
+<li>Exibir o valor atual em outro componente</li>
+<li>Adicionar um botão de reset</li>
+</ul>
+</div>
+</section>
+<section class="source-slide code-slide" data-menu-title="Solução: Contador Global" id="aula15-32"><p class="kicker" data-id="lesson-kicker">Aula 15 / Atividades</p><h2 data-id="lesson-heading">Solução: Contador Global</h2><div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>CounterContext.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-31"><code class="language-jsx" data-line-numbers="1-12|13-24|25-36" data-trim="">// CounterContext.js
+import { createContext } from 'react';
+export const CounterContext = createContext();
+
+// App.js
+const App = () =&gt; {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;CounterContext.Provider value={{ count, setCount }}&gt;
+  &lt;Controls /&gt;
+  &lt;Display /&gt;
+    &lt;/CounterContext.Provider&gt;
+  );
+};
+
+// Controls.js
+const Controls = () =&gt; {
+  const { count, setCount } = useContext(CounterContext);
+  return (
+    &lt;View style={styles.controls}&gt;
+  &lt;Button title="-" onPress={() =&gt; setCount(count - 1)} /&gt;
+  &lt;Button title="Reset" onPress={() =&gt; setCount(0)} /&gt;
+  &lt;Button title="+" onPress={() =&gt; setCount(count + 1)} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+// Display.js
+const Display = () =&gt; {
+  const { count } = useContext(CounterContext);
+  return (
+    &lt;View style={styles.display}&gt;
+  &lt;Text style={styles.number}&gt;{count}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+};</code></pre></div></section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/aula07-ex6" id="aula15-33"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/aula07-ex6" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/aula07-ex6" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+<!-- Slide: Atividade 3 - Lista de Favoritos -->
+<section class="source-slide text-slide activity-slide" data-menu-title="Atividade 3: Lista de Favoritos" id="aula15-34"><p class="kicker" data-id="lesson-kicker">Aula 15 / Atividades</p><h2 data-id="lesson-heading">Atividade 3: Lista de Favoritos</h2>
+<div class="content-card">
+<p>Implemente:</p>
+<ul>
+<li>Um FavoritesContext para lista de itens favoritos</li>
+<li>Componente para adicionar novos favoritos</li>
+<li>Componente para listar favoritos</li>
+<li>Opção para remover favoritos</li>
+</ul>
+</div>
+</section>
+<section class="source-slide snack-slide" data-menu-title="@natorjunior/favoritos" id="aula15-35"><p class="kicker" data-id="lesson-kicker">Aula 15 / Exemplo prático</p><h2 data-id="lesson-heading">Exemplo em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/favoritos" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/favoritos" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+<!-- Slide 5: Projeto Prático - Todo List com Temas -->
+<section class="source-slide text-slide" data-menu-title="Projeto Prático: Todo List com Temas" id="aula15-36"><p class="kicker" data-id="lesson-kicker">Aula 15 / Projeto prático</p><h2 data-id="lesson-heading">Projeto Prático: Todo List com Temas</h2>
+<div class="content-card">
+<h3>O que vamos criar:</h3>
+<ul>
+<li class="fragment fade-in">Lista de tarefas com tema customizável</li>
+<li class="fragment fade-in">Adicionar e remover tarefas</li>
+<li class="fragment fade-in">Alternar entre tema claro e escuro</li>
+<li class="fragment fade-in">Usar Context para gerenciar estado global</li>
+</ul>
+</div>
+</section>
+<!-- Slide 6: Passo 1 - Criando os Contexts -->
+<section class="source-slide code-slide" data-menu-title="Passo 1: Criando os Contexts" id="aula15-37"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 1: Criando os Contexts</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>contexts/ThemeContext.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-36"><code class="language-jsx" data-line-numbers="" data-trim="">// contexts/ThemeContext.js
+import { createContext } from 'react';
+
+export const ThemeContext = createContext();
+
+// contexts/TodoContext.js
+import { createContext } from 'react';
+
+export const TodoContext = createContext();</code></pre></div></section>
+<!-- Slide 7: Passo 2 - Criando os Providers -->
+<section class="source-slide code-slide" data-menu-title="Passo 2: Criando os Providers" id="aula15-38"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 2: Criando os Providers</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-37"><code class="language-jsx" data-line-numbers="" data-trim="">// App.js
+import React, { useState } from 'react';
+import { ThemeContext, TodoContext } from './contexts';
+
+const App = () =&gt; {
+  const [theme, setTheme] = useState('light');
+  const [todos, setTodos] = useState([]);
+
+  return (
+    &lt;ThemeContext.Provider value={{ theme, setTheme }}&gt;
+      &lt;TodoContext.Provider value={{ todos, setTodos }}&gt;
+        &lt;MainApp /&gt;
+      &lt;/TodoContext.Provider&gt;
+    &lt;/ThemeContext.Provider&gt;
+  );
+};</code></pre></div></section>
+<!-- Slide 8: Passo 3 - Componente TodoInput -->
+<section class="source-slide code-slide" data-menu-title="Passo 3: Componente TodoInput" id="aula15-39"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 3: Componente TodoInput</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>components/TodoInput.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-38"><code class="language-jsx" data-line-numbers="1-12|13-24|25-36|37-48" data-trim="">// components/TodoInput.js
+import React, { useState, useContext } from 'react';
+import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { TodoContext, ThemeContext } from '../contexts';
+
+const TodoInput = () =&gt; {
+  const [text, setText] = useState('');
+  const { todos, setTodos } = useContext(TodoContext);
+  const { theme } = useContext(ThemeContext);
+
+  const addTodo = () =&gt; {
+    if (text.trim()) {
+      setTodos([...todos, { id: Date.now(), text, completed: false }]);
+      setText('');
+    }
+  };
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;TextInput
+        style={[
+          styles.input,
+          { backgroundColor: theme === 'light' ? '#fff' : '#333',
+            color: theme === 'light' ? '#000' : '#fff' }
+        ]}
+        value={text}
+        onChangeText={setText}
+        placeholder="Nova tarefa..."
+        placeholderTextColor={theme === 'light' ? '#666' : '#999'}
+      /&gt;
+      &lt;Button title="Adicionar" onPress={addTodo} /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    flexDirection: 'row',
+  },
+  input: {
+    flex: 1,
+    marginRight: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+});</code></pre></div></section>
+<!-- Slide 9: Passo 4 - Componente TodoList -->
+<section class="source-slide code-slide" data-menu-title="Passo 4: Componente TodoList" id="aula15-40"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 4: Componente TodoList</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>components/TodoList.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-39"><code class="language-jsx" data-line-numbers="1-12|13-24|25-36|37-48|49-60" data-trim="">// components/TodoList.js
+import React, { useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { TodoContext, ThemeContext } from '../contexts';
+
+const TodoList = () =&gt; {
+  const { todos, setTodos } = useContext(TodoContext);
+  const { theme } = useContext(ThemeContext);
+
+  const toggleTodo = (id) =&gt; {
+    setTodos(todos.map(todo =&gt;
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    ));
+  };
+
+  const deleteTodo = (id) =&gt; {
+    setTodos(todos.filter(todo =&gt; todo.id !== id));
+  };
+
+  return (
+    &lt;View style={styles.container}&gt;
+      {todos.map(todo =&gt; (
+        &lt;TouchableOpacity
+          key={todo.id}
+          style={[
+            styles.todoItem,
+            { backgroundColor: theme === 'light' ? '#f8f8f8' : '#333' }
+          ]}
+          onPress={() =&gt; toggleTodo(todo.id)}
+          onLongPress={() =&gt; deleteTodo(todo.id)}
+        &gt;
+          &lt;Text style={[
+            styles.todoText,
+            { 
+              color: theme === 'light' ? '#000' : '#fff',
+              textDecorationLine: todo.completed ? 'line-through' : 'none'
+            }
+          ]}&gt;
+            {todo.text}
+          &lt;/Text&gt;
+        &lt;/TouchableOpacity&gt;
+      ))}
+    &lt;/View&gt;
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  todoItem: {
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 5,
+    elevation: 2,
+  },
+  todoText: {
+    fontSize: 16,
+  },
+});</code></pre></div></section>
+<!-- Slide 10: Passo 5 - Componente ThemeToggle -->
+<section class="source-slide code-slide" data-menu-title="Passo 5: Componente ThemeToggle" id="aula15-41"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 5: Componente ThemeToggle</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>components/ThemeToggle.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-40"><code class="language-jsx" data-line-numbers="1-12|13-24|25-29" data-trim="">// components/ThemeToggle.js
+import React, { useContext } from 'react';
+import { View, Switch, Text, StyleSheet } from 'react-native';
+import { ThemeContext } from '../contexts';
+
+const ThemeToggle = () =&gt; {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  return (
+    &lt;View style={styles.container}&gt;
+      &lt;Text style={{ color: theme === 'light' ? '#000' : '#fff' }}&gt;
+        {theme === 'light' ? 'Tema claro' : 'Tema escuro'}
+      &lt;/Text&gt;
+      &lt;Switch
+        value={theme === 'dark'}
+        onValueChange={(value) =&gt; setTheme(value ? 'dark' : 'light')}
+      /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 20,
+  },
+});</code></pre></div></section>
+<!-- Slide 11: Passo 6 - Juntando Tudo -->
+<section class="source-slide code-slide" data-menu-title="Passo 6: Juntando Tudo" id="aula15-42"><p class="kicker" data-id="lesson-kicker">Aula 15 / Todo List com temas</p><h2 data-id="lesson-heading">Passo 6: Juntando Tudo</h2><div class="editor fragment fade-in" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>MainApp.js</span><span>Código</span></div><pre data-auto-animate-duration="0.48" data-id="code-41"><code class="language-jsx" data-line-numbers="1-12|13-24|25-26" data-trim="">// MainApp.js
+import React, { useContext } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { ThemeContext } from './contexts';
+import { TodoInput, TodoList, ThemeToggle } from './components';
+
+const MainApp = () =&gt; {
+  const { theme } = useContext(ThemeContext);
+
+  return (
+    &lt;View style={[
+      styles.container,
+      { backgroundColor: theme === 'light' ? '#fff' : '#121212' }
+    ]}&gt;
+      &lt;ThemeToggle /&gt;
+      &lt;TodoInput /&gt;
+      &lt;TodoList /&gt;
+    &lt;/View&gt;
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});</code></pre></div></section>
+<!-- Slide 12: Como Usar -->
+<section class="source-slide text-slide" data-menu-title="Como Usar o App" id="aula15-43"><p class="kicker" data-id="lesson-kicker">Aula 15 / Para finalizar</p><h2 data-id="lesson-heading">Como Usar o App</h2>
+<div class="content-card">
+<ul>
+<li class="fragment fade-in">1. Adicione tarefas digitando e clicando em "Adicionar"</li>
+<li class="fragment fade-in">2. Toque em uma tarefa para marcá-la como concluída</li>
+<li class="fragment fade-in">3. Pressione e segure uma tarefa para excluí-la</li>
+<li class="fragment fade-in">4. Use o switch para alternar entre temas claro/escuro</li>
+</ul>
+</div>
+</section>
+<!-- Slide 13: Benefícios do Context -->
+<section class="source-slide text-slide" data-menu-title="Benefícios do Context" id="aula15-44"><p class="kicker" data-id="lesson-kicker">Aula 15 / Para finalizar</p><h2 data-id="lesson-heading">Benefícios do Context</h2>
+<div class="content-card">
+<ul>
+<li class="fragment fade-in">Código mais limpo e organizado</li>
+<li class="fragment fade-in">Evita prop drilling</li>
+<li class="fragment fade-in">Estado global facilmente acessível</li>
+<li class="fragment fade-in">Separação clara de responsabilidades</li>
+<li class="fragment fade-in">Facilita manutenção e escalabilidade</li>
+</ul>
+</div>
+</section>
+<!-- Slide 14: Considerações Finais -->
+<section class="source-slide text-slide" data-menu-title="Considerações Finais" id="aula15-45"><p class="kicker" data-id="lesson-kicker">Aula 15 / Para finalizar</p><h2 data-id="lesson-heading">Considerações Finais</h2>
+<div class="content-card">
+<ul>
+<li class="fragment fade-in">Use Context para estado global</li>
+<li class="fragment fade-in">Evite criar muitos contextos</li>
+<li class="fragment fade-in">Combine com outros hooks quando necessário</li>
+<li class="fragment fade-in">Considere performance em apps grandes</li>
+</ul>
+</div>
+</section>
+</div>
+</div>
+<!-- Scripts Reveal.js -->
+<script src="dist/reveal.js"></script><script src="plugin/markdown/markdown.js"></script><script src="plugin/highlight/highlight.js"></script><script src="plugin/notes/notes.js"></script><script src="plugin/menu/menu.js"></script><script src="aulas/js/aula15.js"></script><footer class="deck-footer">UFC · Dispositivos móveis / Aula 15 · useContext</footer></body>
+</html>

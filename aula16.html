@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aula 16 · FlatList, useContext e atividades resolvidas</title>
+
+<link href="./dist/reveal.css" rel="stylesheet"/>
+<link href="./dist/theme/white.css" id="theme" rel="stylesheet"/>
+<link href="./plugin/highlight/atom-one-dark.css" rel="stylesheet"/>
+<link href="plugin/menu/menu.css" rel="stylesheet"/>
+<link href="aulas/css/aula15.css" rel="stylesheet"/>
+<link href="aulas/css/aula16.css" rel="stylesheet"/>
+<link href="aulas/css/aula16-feed.css" rel="stylesheet"/>
+<link href="aulas/css/aula16-solucoes.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<section class="source-slide lesson-cover" data-background-color="#112632" data-menu-title="Aula 16 · FlatList e useContext" id="abertura">
+<div class="cover-layout">
+<div class="cover-copy">
+<p class="kicker">Aula 16 / React Native</p>
+<h1 class="cover-title">Listas e<br/><span>estado.</span></h1>
+<p class="cover-description">Construir listas. Compartilhar estado.<br/>Praticar, uma etapa por vez.</p>
+<div class="cover-tags"><span>FlatList</span><span>useContext</span><span>Atividades resolvidas</span></div>
+<div class="cover-credit"><p>Programação para Dispositivos Móveis</p><p>Prof. Msc. Nator Junior Carvalho da Costa</p></div>
+</div>
+<svg aria-labelledby="cover-list-title cover-list-desc" class="cover-illustration" role="img" viewBox="0 0 480 590">
+<title id="cover-list-title">Do estado à lista de tarefas</title>
+<desc id="cover-list-desc">O estado fornece os dados para uma lista de tarefas. A FlatList exibe os registros, e os componentes compartilham as atualizações com useContext.</desc>
+<ellipse class="cover-orbit" cx="240" cy="310" rx="222" ry="242"></ellipse>
+<rect class="cover-backplate" height="376" rx="30" transform="rotate(7 240 319)" width="356" x="62" y="131"></rect>
+<rect class="provider-pill" height="48" rx="24" width="212" x="134" y="26"></rect>
+<text class="provider-pill-text" x="240" y="57">Estado / Context</text>
+<path class="cover-wire" d="M240 74 V111"></path>
+<rect class="context-board" height="263" rx="28" width="356" x="62" y="111"></rect>
+<text class="context-board-title" x="91" y="158">Minha lista</text>
+<text class="context-board-caption" x="91" y="187">FlatList · dados do estado</text>
+<g class="cover-list-row"><rect height="39" rx="10" width="304" x="88" y="210"></rect><text x="108" y="235">01</text><path d="M153 230 H340"></path></g>
+<g class="cover-list-row selected"><rect height="39" rx="10" width="304" x="88" y="261"></rect><text x="108" y="286">02</text><path d="M153 281 H340"></path></g>
+<g class="cover-list-row"><rect height="39" rx="10" width="304" x="88" y="312"></rect><text x="108" y="337">03</text><path d="M153 332 H340"></path></g>
+<path class="cover-wire" d="M240 374 V414 M233 406 L240 414 L247 406"></path>
+<rect class="context-value" height="82" rx="15" width="304" x="88" y="426"></rect>
+<text class="context-board-title" x="108" y="460">Tarefas na tela</text>
+<text class="context-board-caption" x="108" y="487">Dados → componentes</text>
+<text class="cover-scope-label" x="240" y="551">Dados, componentes e estado compartilhado</text>
+</svg>
+</div></section>
+<!-- <section class="source-slide text-slide objectives-slide" data-menu-title="Objetivos da aula" id="objetivos"><p class="kicker">Aula 16 / Objetivos</p><h2>Objetivos da aula</h2><ul class="objectives-grid"><li>Construir listas com array e map</li><li>Entender a janela de renderização da FlatList</li><li>Implementar listas com estado e filtros</li><li>Revisar o compartilhamento de estado com useContext</li><li>Resolver as atividades com FlatList e useContext</li></ul></section> -->
+
+<section data-menu-title="Listas: da construção à FlatList">
+<section class="source-slide chapter-slide" id="aula16-03" data-menu-title="Antes da FlatList: construir uma lista" data-background-color="#112632">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas / Ponto de partida</p><h2 data-id="lesson-heading">Antes de otimizar,<br/>vamos construir uma lista.</h2>
+<p>Uma lista de tarefas, uma mudança por vez.</p>
+<div class="list-roadmap"><span>Texto</span><span>Array + map</span><span>Rolagem</span><span>Estado e busca</span></div>
+<aside class="notes">Comece perguntando: como mostrar três tarefas usando apenas View e Text? A FlatList será apresentada depois que a lista manual estiver funcionando.</aside>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-01" data-menu-title="Uma tarefa na tela" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Uma tarefa na tela</h2>
+<p class="step-caption" data-id="step-caption">Começamos com View e Text. A tarefa ainda está escrita diretamente no JSX.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 1 de 9"><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">01 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>01 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text } from &#x27;react-native&#x27;;
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 48 }}&gt;
+      &lt;Text&gt;Minhas tarefas&lt;/Text&gt;
+      &lt;Text&gt;Estudar React&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div></div><p class="preview-note">Um componente. Uma tarefa.</p></aside></div><div class="list-code-footer"><p>View organiza a tela; Text mostra o conteúdo.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo01.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-02" data-menu-title="Mais tarefas, mais repetição" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Mais tarefas, mais repetição</h2>
+<p class="step-caption" data-id="step-caption">Duplicar Text funciona. Mas quem vai escrever a centésima tarefa?</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 2 de 9"><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">02 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>02 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text } from &#x27;react-native&#x27;;
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 48 }}&gt;
+      &lt;Text&gt;Minhas tarefas&lt;/Text&gt;
+      &lt;Text&gt;Estudar React&lt;/Text&gt;
+      &lt;Text&gt;Praticar props&lt;/Text&gt;
+      &lt;Text&gt;Revisar estado&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span>Revisar estado</span></div></div><p class="preview-note">Cada tarefa ainda é escrita à mão.</p></aside></div><div class="list-code-footer"><p>A interface cresce junto com a quantidade de código repetido.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo02.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-03" data-menu-title="O array vira interface" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">O array vira interface</h2>
+<p class="step-caption" data-id="step-caption">map transforma cada título em um elemento Text.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 3 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">03 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>03 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text } from &#x27;react-native&#x27;;
+
+const tarefas = [&#x27;Estudar React&#x27;, &#x27;Praticar props&#x27;, &#x27;Revisar estado&#x27;];
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 48 }}&gt;
+      &lt;Text&gt;Minhas tarefas&lt;/Text&gt;
+      {tarefas.map(titulo =&gt; (
+        &lt;Text key={titulo}&gt;{titulo}&lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span>Revisar estado</span></div></div><p class="preview-note">A lista já nasce de um array.</p></aside></div><div class="list-code-footer"><p>Aqui os títulos são únicos; por isso podem servir de key neste exemplo.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo03.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-04" data-menu-title="Cada tarefa ganha uma identidade" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Cada tarefa ganha uma identidade</h2>
+<p class="step-caption" data-id="step-caption">Objetos separam id, título e conclusão. O id permanece estável.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 4 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">04 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>04 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text } from &#x27;react-native&#x27;;
+
+const tarefas = [
+  { id: &#x27;1&#x27;, titulo: &#x27;Estudar React&#x27;, concluida: false },
+  { id: &#x27;2&#x27;, titulo: &#x27;Praticar props&#x27;, concluida: false },
+  { id: &#x27;3&#x27;, titulo: &#x27;Revisar estado&#x27;, concluida: false },
+];
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 48 }}&gt;
+      &lt;Text&gt;Minhas tarefas&lt;/Text&gt;
+      {tarefas.map(item =&gt; (
+        &lt;Text key={item.id}&gt;{item.titulo}&lt;/Text&gt;
+      ))}
+    &lt;/View&gt;
+  );
+}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span>Revisar estado</span></div></div><p class="preview-note">Um id identifica cada tarefa.</p></aside></div><div class="list-code-footer"><p>Títulos podem se repetir ou mudar. Use o id como key.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo04.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-05" data-menu-title="Quando a lista ultrapassa a tela" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Quando a lista ultrapassa a tela</h2>
+<p class="step-caption" data-id="step-caption">ScrollView adiciona rolagem. O map continua criando todos os elementos.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 5 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">05 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>05 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text, ScrollView } from &#x27;react-native&#x27;;
+
+const tarefas = [
+  { id: &#x27;1&#x27;, titulo: &#x27;Estudar React&#x27;, concluida: false },
+  { id: &#x27;2&#x27;, titulo: &#x27;Praticar props&#x27;, concluida: false },
+  { id: &#x27;3&#x27;, titulo: &#x27;Revisar estado&#x27;, concluida: false },
+];
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 48 }}&gt;
+      &lt;Text&gt;Minhas tarefas&lt;/Text&gt;
+      &lt;ScrollView style={{ flex: 1 }}&gt;
+        {tarefas.map(item =&gt; (
+          &lt;Text key={item.id}&gt;{item.titulo}&lt;/Text&gt;
+        ))}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span>Revisar estado</span></div></div><p class="preview-note">O conteúdo pode rolar dentro da tela.</p></aside></div><div class="list-code-footer"><p>O flex: 1 nos contêineres limita a área de rolagem.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo05.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-06" data-menu-title="Um componente para cada tarefa" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Um componente para cada tarefa</h2>
+<p class="step-caption" data-id="step-caption">Extraímos a apresentação para Tarefa. Os dados continuam em App.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 6 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">06 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · componente + trecho do return</span><span>06 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>function Tarefa({ item }) {
+  return (
+    &lt;View style={{ padding: 16 }}&gt;
+      &lt;Text&gt;{item.titulo}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+// No return de App, dentro da View:
+&lt;ScrollView style={{ flex: 1 }}&gt;
+  {tarefas.map(item =&gt; (
+    &lt;Tarefa key={item.id} item={item} /&gt;
+  ))}
+&lt;/ScrollView&gt;</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span>Revisar estado</span></div></div><p class="preview-note">A aparência do item fica em Tarefa.</p></aside></div><div class="list-code-footer"><p>Extração organiza o código; a lista continua sendo criada por map.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo06.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-07" data-menu-title="Uma ação ao tocar na tarefa" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Uma ação ao tocar na tarefa</h2>
+<p class="step-caption" data-id="step-caption">Pressable recebe onPress. A ação vem de App por uma prop.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 7 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class="stepper-count">07 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · componente + trecho do map</span><span>07 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { Pressable, Text } from &#x27;react-native&#x27;;
+
+function Tarefa({ item, onToggle }) {
+  return (
+    &lt;Pressable onPress={onToggle} style={{ padding: 16 }}&gt;
+      &lt;Text&gt;
+        {item.concluida ? &#x27;✓ &#x27; : &#x27;○ &#x27;}{item.titulo}
+      &lt;/Text&gt;
+    &lt;/Pressable&gt;
+  );
+}
+
+// No map de App, dentro de ScrollView:
+&lt;Tarefa key={item.id} item={item}
+  onToggle={() =&gt; alert(item.titulo)} /&gt;</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span class="task-mark">○</span><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span class="task-mark">○</span><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span class="task-mark">○</span><span>Revisar estado</span></div></div><p class="preview-note">O toque aciona uma função recebida por prop.</p></aside></div><div class="list-code-footer"><p>Por enquanto, o toque abre um alerta. No próximo passo, a ação vai atualizar o estado.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Interacao.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-08" data-menu-title="A lista responde ao toque" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">A lista responde ao toque</h2>
+<p class="step-caption" data-id="step-caption">useState guarda as tarefas. O toque cria um novo array com a tarefa atualizada.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 8 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class="stepper-count">08 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · estado + trecho do return</span><span>08 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>import { useState } from &#x27;react&#x27;;
+
+const [tarefas, setTarefas] = useState(iniciais);
+function alternar(id) {
+  setTarefas(atuais =&gt; atuais.map(item =&gt;
+    item.id === id
+      ? { ...item, concluida: !item.concluida }
+      : item
+  ));
+}
+
+// No return de App, dentro de ScrollView:
+{tarefas.map(item =&gt; (
+  &lt;Tarefa key={item.id} item={item}
+    onToggle={() =&gt; alternar(item.id)} /&gt;
+))}</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-preview-row" data-id="task-preview-1"><span class="task-mark">○</span><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span class="task-mark">○</span><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span class="task-mark">○</span><span>Revisar estado</span></div></div><p class="preview-note">O estado controla a conclusão.</p></aside></div><div class="list-code-footer"><p>Tarefa passa a usar Pressable: onPress={onToggle}. Veja o componente completo no link.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo07.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="lista-passo-09" data-menu-title="Busca e estado vazio" data-auto-animate data-auto-animate-id="lista-manual">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList</p><h2 data-id="lesson-heading">Busca e estado vazio</h2>
+<p class="step-caption" data-id="step-caption">A busca deriva uma nova lista. Os dados originais permanecem no estado.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 9 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class="stepper-count">09 / 09</span></div>
+<div class="list-code-layout"><div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · filtro + trecho do return</span><span>09 / 09</span></div><pre data-id="lista-manual-code"><code class="language-jsx" data-trim data-line-numbers>// Em App, após o estado das tarefas:
+const [busca, setBusca] = useState(&#x27;&#x27;);
+const visiveis = tarefas.filter(item =&gt;
+  item.titulo.toLowerCase().includes(busca.toLowerCase())
+);
+
+// No return de App, dentro da View:
+&lt;TextInput value={busca} onChangeText={setBusca}
+  placeholder=&quot;Buscar tarefa&quot; /&gt;
+&lt;ScrollView style={{ flex: 1 }}&gt;
+  {visiveis.length === 0 &amp;&amp; &lt;Text&gt;Nenhuma tarefa.&lt;/Text&gt;}
+  {visiveis.map(item =&gt; (
+    &lt;Tarefa key={item.id} item={item}
+      onToggle={() =&gt; alternar(item.id)} /&gt;
+  ))}
+&lt;/ScrollView&gt;</code></pre></div><aside class="task-preview" data-id="task-preview"><p class="preview-label">Resultado ilustrado</p><div class="task-phone"><div class="phone-notch"></div><h3>Minhas tarefas</h3><div class="task-search-preview">Buscar tarefa</div><div class="task-preview-row" data-id="task-preview-1"><span class="task-mark">○</span><span>Estudar React</span></div><div class="task-preview-row" data-id="task-preview-2"><span class="task-mark">○</span><span>Praticar props</span></div><div class="task-preview-row" data-id="task-preview-3"><span class="task-mark">○</span><span>Revisar estado</span></div></div><p class="preview-note">A busca filtra o que aparece.</p></aside></div><div class="list-code-footer"><p>Importe TextInput de react-native. A busca vazia mostra todas as tarefas.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/Passo08.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide list-demo-slide" id="lista-sem-flatlist-demo" data-menu-title="Experimente a lista sem FlatList">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Listas sem FlatList / Experimente</p><h2 data-id="lesson-heading">Nossa lista já funciona.</h2>
+<p class="step-caption">Busque uma tarefa e toque nela para alternar a conclusão.</p>
+<div class="manual-demo-layout">
+<div class="manual-demo" data-task-demo>
+<p class="preview-label">Prévia didática em HTML · lógica do exemplo React Native</p>
+<label for="task-demo-search">Buscar tarefa</label><input id="task-demo-search" type="search" placeholder="Ex.: React" autocomplete="off"/>
+<div class="task-demo-items" aria-label="Tarefas"></div><p class="task-demo-status" role="status" aria-live="polite"></p>
+<button class="task-demo-reset" type="button">Reiniciar exemplo</button>
+</div>
+<div class="demo-explanation"><h3>O que já construímos?</h3><ul><li>Dados em um array de objetos.</li><li>Itens com identidade estável.</li><li>Estado e atualização imutável.</li><li>Busca e mensagem de lista vazia.</li></ul><p>E se esse array tivesse 1.000 tarefas?</p><a class="lesson-source-link" href="aulas/exemplos/aula16/SemFlatList.jsx" target="_blank" rel="noopener">Abrir exemplo React Native completo ↗</a></div>
+</div></section>
+
+<section class="source-slide list-illustration-slide" id="lista-limite" data-menu-title="A rolagem não resolve tudo." data-auto-animate data-auto-animate-id="lista-janela">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Da lista manual à FlatList</p><h2 data-id="lesson-heading">A rolagem não resolve tudo.</h2><p class="step-caption" data-id="step-caption">ScrollView + map cria os componentes de todos os itens.</p>
+<div class="window-layout"><div class="window-diagram" data-id="window-diagram"><svg class="list-window-svg" role="img" aria-labelledby="window-title-0 window-desc-0" viewBox="0 0 720 448">
+<title id="window-title-0">ScrollView + map: dados e componentes</title><desc id="window-desc-0">À esquerda, todos os registros permanecem no array. À direita, todos os componentes são criados.</desc>
+<text class="diagram-heading" x="48" y="28">Array de dados</text><text class="diagram-heading" x="416" y="28">Componentes da lista</text>
+<text class="diagram-small" x="48" y="51">Os registros continuam aqui.</text><text class="diagram-small" x="416" y="51">ScrollView + map</text>
+<path class="diagram-arrow" d="M294 226 H384 M374 218 L384 226 L374 234"/><text class="diagram-small" x="305" y="205">map</text>
+<g class="window-row data" data-id="dados-row-0"><rect x="48" y="78" width="220" height="21" rx="5"/><text x="60" y="93">Tarefa 01</text></g><g class="window-row data" data-id="dados-row-1"><rect x="48" y="105" width="220" height="21" rx="5"/><text x="60" y="120">Tarefa 02</text></g><g class="window-row data" data-id="dados-row-2"><rect x="48" y="132" width="220" height="21" rx="5"/><text x="60" y="147">Tarefa 03</text></g><g class="window-row data" data-id="dados-row-3"><rect x="48" y="159" width="220" height="21" rx="5"/><text x="60" y="174">Tarefa 04</text></g><g class="window-row data" data-id="dados-row-4"><rect x="48" y="186" width="220" height="21" rx="5"/><text x="60" y="201">Tarefa 05</text></g><g class="window-row data" data-id="dados-row-5"><rect x="48" y="213" width="220" height="21" rx="5"/><text x="60" y="228">Tarefa 06</text></g><g class="window-row data" data-id="dados-row-6"><rect x="48" y="240" width="220" height="21" rx="5"/><text x="60" y="255">Tarefa 07</text></g><g class="window-row data" data-id="dados-row-7"><rect x="48" y="267" width="220" height="21" rx="5"/><text x="60" y="282">Tarefa 08</text></g><g class="window-row data" data-id="dados-row-8"><rect x="48" y="294" width="220" height="21" rx="5"/><text x="60" y="309">Tarefa 09</text></g><g class="window-row data" data-id="dados-row-9"><rect x="48" y="321" width="220" height="21" rx="5"/><text x="60" y="336">Tarefa 10</text></g><g class="window-row data" data-id="dados-row-10"><rect x="48" y="348" width="220" height="21" rx="5"/><text x="60" y="363">Tarefa 11</text></g><g class="window-row data" data-id="dados-row-11"><rect x="48" y="375" width="220" height="21" rx="5"/><text x="60" y="390">Tarefa 12</text></g><g class="window-row mounted" data-id="views-row-0"><rect x="416" y="78" width="220" height="21" rx="5"/><text x="428" y="93">Tarefa 01</text></g><g class="window-row mounted" data-id="views-row-1"><rect x="416" y="105" width="220" height="21" rx="5"/><text x="428" y="120">Tarefa 02</text></g><g class="window-row mounted" data-id="views-row-2"><rect x="416" y="132" width="220" height="21" rx="5"/><text x="428" y="147">Tarefa 03</text></g><g class="window-row mounted" data-id="views-row-3"><rect x="416" y="159" width="220" height="21" rx="5"/><text x="428" y="174">Tarefa 04</text></g><g class="window-row mounted" data-id="views-row-4"><rect x="416" y="186" width="220" height="21" rx="5"/><text x="428" y="201">Tarefa 05</text></g><g class="window-row mounted" data-id="views-row-5"><rect x="416" y="213" width="220" height="21" rx="5"/><text x="428" y="228">Tarefa 06</text></g><g class="window-row mounted" data-id="views-row-6"><rect x="416" y="240" width="220" height="21" rx="5"/><text x="428" y="255">Tarefa 07</text></g><g class="window-row mounted" data-id="views-row-7"><rect x="416" y="267" width="220" height="21" rx="5"/><text x="428" y="282">Tarefa 08</text></g><g class="window-row mounted" data-id="views-row-8"><rect x="416" y="294" width="220" height="21" rx="5"/><text x="428" y="309">Tarefa 09</text></g><g class="window-row mounted" data-id="views-row-9"><rect x="416" y="321" width="220" height="21" rx="5"/><text x="428" y="336">Tarefa 10</text></g><g class="window-row mounted" data-id="views-row-10"><rect x="416" y="348" width="220" height="21" rx="5"/><text x="428" y="363">Tarefa 11</text></g><g class="window-row mounted" data-id="views-row-11"><rect x="416" y="375" width="220" height="21" rx="5"/><text x="428" y="390">Tarefa 12</text></g>
+<rect class="viewport-outline" data-id="visible-window" data-list-motion x="408" y="101" width="236" height="89" rx="10"/>
+<text class="diagram-small" x="48" y="430">12 registros desenhados para simplificar uma lista longa.</text>
+</svg></div><div class="window-explanation"><span class="diagram-step">01 / 03</span><h3>Todos os filhos são criados</h3><p>Uma lista pequena pode usar essa abordagem. Com muitos itens, a criação de views e o consumo de memória crescem.</p><p class="diagram-key">O contorno indica apenas a área visível. As outras linhas também têm componentes.</p></div></div>
+<p class="diagram-footnote">Modelo didático de virtualização. <a href="https://reactnative.dev/docs/scrollview" target="_blank" rel="noopener">Documentação React Native ↗</a></p>
+</section>
+
+<section class="source-slide list-illustration-slide" id="flatlist-janela" data-menu-title="Agora entra a FlatList." data-auto-animate data-auto-animate-id="lista-janela">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Da lista manual à FlatList</p><h2 data-id="lesson-heading">Agora entra a FlatList.</h2><p class="step-caption" data-id="step-caption">Os dados continuam completos. A criação de componentes passa a ser gerenciada pela lista.</p>
+<div class="window-layout"><div class="window-diagram" data-id="window-diagram"><svg class="list-window-svg" role="img" aria-labelledby="window-title-1 window-desc-1" viewBox="0 0 720 448">
+<title id="window-title-1">FlatList: dados e componentes</title><desc id="window-desc-1">À esquerda, todos os registros permanecem no array. À direita, uma janela de componentes é mantida perto da área visível; o lote inicial pode permanecer montado.</desc>
+<text class="diagram-heading" x="48" y="28">Array de dados</text><text class="diagram-heading" x="416" y="28">Componentes da lista</text>
+<text class="diagram-small" x="48" y="51">Os registros continuam aqui.</text><text class="diagram-small" x="416" y="51">FlatList</text>
+<path class="diagram-arrow" d="M294 226 H384 M374 218 L384 226 L374 234"/><text class="diagram-small" x="305" y="205">renderItem</text>
+<g class="window-row data" data-id="dados-row-0"><rect x="48" y="78" width="220" height="21" rx="5"/><text x="60" y="93">Tarefa 01</text></g><g class="window-row data" data-id="dados-row-1"><rect x="48" y="105" width="220" height="21" rx="5"/><text x="60" y="120">Tarefa 02</text></g><g class="window-row data" data-id="dados-row-2"><rect x="48" y="132" width="220" height="21" rx="5"/><text x="60" y="147">Tarefa 03</text></g><g class="window-row data" data-id="dados-row-3"><rect x="48" y="159" width="220" height="21" rx="5"/><text x="60" y="174">Tarefa 04</text></g><g class="window-row data" data-id="dados-row-4"><rect x="48" y="186" width="220" height="21" rx="5"/><text x="60" y="201">Tarefa 05</text></g><g class="window-row data" data-id="dados-row-5"><rect x="48" y="213" width="220" height="21" rx="5"/><text x="60" y="228">Tarefa 06</text></g><g class="window-row data" data-id="dados-row-6"><rect x="48" y="240" width="220" height="21" rx="5"/><text x="60" y="255">Tarefa 07</text></g><g class="window-row data" data-id="dados-row-7"><rect x="48" y="267" width="220" height="21" rx="5"/><text x="60" y="282">Tarefa 08</text></g><g class="window-row data" data-id="dados-row-8"><rect x="48" y="294" width="220" height="21" rx="5"/><text x="60" y="309">Tarefa 09</text></g><g class="window-row data" data-id="dados-row-9"><rect x="48" y="321" width="220" height="21" rx="5"/><text x="60" y="336">Tarefa 10</text></g><g class="window-row data" data-id="dados-row-10"><rect x="48" y="348" width="220" height="21" rx="5"/><text x="60" y="363">Tarefa 11</text></g><g class="window-row data" data-id="dados-row-11"><rect x="48" y="375" width="220" height="21" rx="5"/><text x="60" y="390">Tarefa 12</text></g><g class="window-row mounted" data-id="views-row-0"><rect x="416" y="78" width="220" height="21" rx="5"/><text x="428" y="93">Tarefa 01</text></g><g class="window-row visible" data-id="views-row-1"><rect x="416" y="105" width="220" height="21" rx="5"/><text x="428" y="120">Tarefa 02</text></g><g class="window-row visible" data-id="views-row-2"><rect x="416" y="132" width="220" height="21" rx="5"/><text x="428" y="147">Tarefa 03</text></g><g class="window-row visible" data-id="views-row-3"><rect x="416" y="159" width="220" height="21" rx="5"/><text x="428" y="174">Tarefa 04</text></g><g class="window-row mounted" data-id="views-row-4"><rect x="416" y="186" width="220" height="21" rx="5"/><text x="428" y="201">Tarefa 05</text></g><g class="window-row mounted" data-id="views-row-5"><rect x="416" y="213" width="220" height="21" rx="5"/><text x="428" y="228">Tarefa 06</text></g><g class="window-row unmounted" data-id="views-row-6"><rect x="416" y="240" width="220" height="21" rx="5"/><text x="428" y="255">Tarefa 07</text></g><g class="window-row unmounted" data-id="views-row-7"><rect x="416" y="267" width="220" height="21" rx="5"/><text x="428" y="282">Tarefa 08</text></g><g class="window-row unmounted" data-id="views-row-8"><rect x="416" y="294" width="220" height="21" rx="5"/><text x="428" y="309">Tarefa 09</text></g><g class="window-row unmounted" data-id="views-row-9"><rect x="416" y="321" width="220" height="21" rx="5"/><text x="428" y="336">Tarefa 10</text></g><g class="window-row unmounted" data-id="views-row-10"><rect x="416" y="348" width="220" height="21" rx="5"/><text x="428" y="363">Tarefa 11</text></g><g class="window-row unmounted" data-id="views-row-11"><rect x="416" y="375" width="220" height="21" rx="5"/><text x="428" y="390">Tarefa 12</text></g>
+<rect class="viewport-outline" data-id="visible-window" data-list-motion x="408" y="101" width="236" height="89" rx="10"/>
+<text class="diagram-small" x="48" y="430">12 registros desenhados para simplificar uma lista longa.</text>
+</svg></div><div class="window-explanation"><span class="diagram-step">02 / 03</span><h3>Uma janela de renderização</h3><p>FlatList recebe data e chama renderItem para montar os itens de uma janela, incluindo conteúdo fora da área visível.</p><p class="diagram-key">Verde: visível. Claro: montado como margem. Tracejado: fora da janela ilustrada.</p></div></div>
+<p class="diagram-footnote">Modelo didático de virtualização. <a href="https://reactnative.dev/docs/flatlist" target="_blank" rel="noopener">Documentação React Native ↗</a></p>
+</section>
+
+<section class="source-slide list-illustration-slide" id="flatlist-rolagem" data-menu-title="A janela acompanha a rolagem." data-auto-animate data-auto-animate-id="lista-janela">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Da lista manual à FlatList</p><h2 data-id="lesson-heading">A janela acompanha a rolagem.</h2><p class="step-caption" data-id="step-caption">Novos itens entram na região de renderização conforme a lista avança.</p>
+<div class="window-layout"><div class="window-diagram" data-id="window-diagram"><svg class="list-window-svg" role="img" aria-labelledby="window-title-2 window-desc-2" viewBox="0 0 720 448">
+<title id="window-title-2">FlatList: dados e componentes</title><desc id="window-desc-2">À esquerda, todos os registros permanecem no array. À direita, uma janela de componentes é mantida perto da área visível; o lote inicial pode permanecer montado.</desc>
+<text class="diagram-heading" x="48" y="28">Array de dados</text><text class="diagram-heading" x="416" y="28">Componentes da lista</text>
+<text class="diagram-small" x="48" y="51">Os registros continuam aqui.</text><text class="diagram-small" x="416" y="51">FlatList</text>
+<path class="diagram-arrow" d="M294 226 H384 M374 218 L384 226 L374 234"/><text class="diagram-small" x="305" y="205">renderItem</text>
+<g class="window-row data" data-id="dados-row-0"><rect x="48" y="78" width="220" height="21" rx="5"/><text x="60" y="93">Tarefa 01</text></g><g class="window-row data" data-id="dados-row-1"><rect x="48" y="105" width="220" height="21" rx="5"/><text x="60" y="120">Tarefa 02</text></g><g class="window-row data" data-id="dados-row-2"><rect x="48" y="132" width="220" height="21" rx="5"/><text x="60" y="147">Tarefa 03</text></g><g class="window-row data" data-id="dados-row-3"><rect x="48" y="159" width="220" height="21" rx="5"/><text x="60" y="174">Tarefa 04</text></g><g class="window-row data" data-id="dados-row-4"><rect x="48" y="186" width="220" height="21" rx="5"/><text x="60" y="201">Tarefa 05</text></g><g class="window-row data" data-id="dados-row-5"><rect x="48" y="213" width="220" height="21" rx="5"/><text x="60" y="228">Tarefa 06</text></g><g class="window-row data" data-id="dados-row-6"><rect x="48" y="240" width="220" height="21" rx="5"/><text x="60" y="255">Tarefa 07</text></g><g class="window-row data" data-id="dados-row-7"><rect x="48" y="267" width="220" height="21" rx="5"/><text x="60" y="282">Tarefa 08</text></g><g class="window-row data" data-id="dados-row-8"><rect x="48" y="294" width="220" height="21" rx="5"/><text x="60" y="309">Tarefa 09</text></g><g class="window-row data" data-id="dados-row-9"><rect x="48" y="321" width="220" height="21" rx="5"/><text x="60" y="336">Tarefa 10</text></g><g class="window-row data" data-id="dados-row-10"><rect x="48" y="348" width="220" height="21" rx="5"/><text x="60" y="363">Tarefa 11</text></g><g class="window-row data" data-id="dados-row-11"><rect x="48" y="375" width="220" height="21" rx="5"/><text x="60" y="390">Tarefa 12</text></g><g class="window-row mounted" data-id="views-row-0"><rect x="416" y="78" width="220" height="21" rx="5"/><text x="428" y="93">Tarefa 01</text></g><g class="window-row mounted" data-id="views-row-1"><rect x="416" y="105" width="220" height="21" rx="5"/><text x="428" y="120">Tarefa 02</text></g><g class="window-row unmounted" data-id="views-row-2"><rect x="416" y="132" width="220" height="21" rx="5"/><text x="428" y="147">Tarefa 03</text></g><g class="window-row unmounted" data-id="views-row-3"><rect x="416" y="159" width="220" height="21" rx="5"/><text x="428" y="174">Tarefa 04</text></g><g class="window-row mounted" data-id="views-row-4"><rect x="416" y="186" width="220" height="21" rx="5"/><text x="428" y="201">Tarefa 05</text></g><g class="window-row visible" data-id="views-row-5"><rect x="416" y="213" width="220" height="21" rx="5"/><text x="428" y="228">Tarefa 06</text></g><g class="window-row visible" data-id="views-row-6"><rect x="416" y="240" width="220" height="21" rx="5"/><text x="428" y="255">Tarefa 07</text></g><g class="window-row visible" data-id="views-row-7"><rect x="416" y="267" width="220" height="21" rx="5"/><text x="428" y="282">Tarefa 08</text></g><g class="window-row mounted" data-id="views-row-8"><rect x="416" y="294" width="220" height="21" rx="5"/><text x="428" y="309">Tarefa 09</text></g><g class="window-row mounted" data-id="views-row-9"><rect x="416" y="321" width="220" height="21" rx="5"/><text x="428" y="336">Tarefa 10</text></g><g class="window-row unmounted" data-id="views-row-10"><rect x="416" y="348" width="220" height="21" rx="5"/><text x="428" y="363">Tarefa 11</text></g><g class="window-row unmounted" data-id="views-row-11"><rect x="416" y="375" width="220" height="21" rx="5"/><text x="428" y="390">Tarefa 12</text></g>
+<rect class="viewport-outline" data-id="visible-window" data-list-motion x="408" y="209" width="236" height="89" rx="10"/>
+<text class="diagram-small" x="48" y="430">12 registros desenhados para simplificar uma lista longa.</text>
+</svg></div><div class="window-explanation"><span class="diagram-step">03 / 03</span><h3>A lista prepara os próximos itens</h3><p>Itens distantes podem ser desmontados; dados e estado das tarefas ficam fora deles. Neste modelo, os itens 1 e 2 são o lote inicial e permanecem montados.</p><p class="diagram-key">Modelo com <code>initialNumToRender={2}</code>; o padrão é 10. A janela foi simplificada para ilustrar a rolagem.</p>
+<button class="feed-open-button" type="button" data-open-feed aria-haspopup="dialog" aria-controls="feed-lifecycle-modal"><span aria-hidden="true">▤</span> Explorar um feed de posts ↗</button></div></div>
+<p class="diagram-footnote">Modelo didático de virtualização. <a href="https://reactnative.dev/docs/flatlist" target="_blank" rel="noopener">Documentação React Native ↗</a></p>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-01" data-menu-title="FlatList: dados e aparência" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">FlatList: dados e aparência</h2>
+<p class="step-caption" data-id="step-caption">data recebe o array; renderItem recebe um objeto que contém item.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 1 de 6"><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">01 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>01 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text, FlatList } from &#x27;react-native&#x27;;
+
+const iniciais = [
+  { id: &#x27;1&#x27;, titulo: &#x27;Estudar React&#x27;, concluida: false },
+  { id: &#x27;2&#x27;, titulo: &#x27;Praticar props&#x27;, concluida: false },
+  { id: &#x27;3&#x27;, titulo: &#x27;Revisar estado&#x27;, concluida: false },
+];
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, paddingTop: 48 }}&gt;
+      &lt;FlatList
+        data={iniciais}
+        renderItem={({ item }) =&gt; &lt;Text&gt;{item.titulo}&lt;/Text&gt;}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div><div class="list-code-footer"><p>renderItem recebe { item }, e não o registro diretamente.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/FlatList01.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-02" data-menu-title="Identificar cada item" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">Identificar cada item</h2>
+<p class="step-caption" data-id="step-caption">keyExtractor devolve a chave estável que antes ficava no elemento do map.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 2 de 6"><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">02 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · completo</span><span>02 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>import { View, Text, FlatList } from &#x27;react-native&#x27;;
+
+const iniciais = [
+  { id: &#x27;1&#x27;, titulo: &#x27;Estudar React&#x27;, concluida: false },
+  { id: &#x27;2&#x27;, titulo: &#x27;Praticar props&#x27;, concluida: false },
+  { id: &#x27;3&#x27;, titulo: &#x27;Revisar estado&#x27;, concluida: false },
+];
+
+export default function App() {
+  return (
+    &lt;View style={{ flex: 1, paddingTop: 48 }}&gt;
+      &lt;FlatList
+        data={iniciais}
+        keyExtractor={item =&gt; item.id}
+        renderItem={({ item }) =&gt; &lt;Text&gt;{item.titulo}&lt;/Text&gt;}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div><div class="list-code-footer"><p>O id já é string neste exemplo. Evite o índice como identidade de itens mutáveis.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/FlatList02.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-03" data-menu-title="Reaproveitar o componente Tarefa" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">Reaproveitar o componente Tarefa</h2>
+<p class="step-caption" data-id="step-caption">A lista gerencia a renderização; nosso componente continua definindo a aparência.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 3 de 6"><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">03 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · componente + trecho do return</span><span>03 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>function Tarefa({ item }) {
+  return (
+    &lt;View style={{ padding: 16 }}&gt;
+      &lt;Text&gt;{item.titulo}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}
+
+// No return de App, dentro da View:
+&lt;FlatList
+  data={iniciais}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; &lt;Tarefa item={item} /&gt;}
+/&gt;</code></pre></div><div class="list-code-footer"><p>Não envolva a FlatList em um ScrollView vertical para fazer a lista rolar.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/FlatList03.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-04" data-menu-title="Trazer o estado e a interação" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">Trazer o estado e a interação</h2>
+<p class="step-caption" data-id="step-caption">Reutilizamos useState, alternar e a versão de Tarefa com Pressable.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 4 de 6"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class="stepper-count">04 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · estado + trecho do return</span><span>04 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>const [tarefas, setTarefas] = useState(iniciais);
+function alternar(id) {
+  setTarefas(atuais =&gt; atuais.map(item =&gt;
+    item.id === id
+      ? { ...item, concluida: !item.concluida }
+      : item
+  ));
+}
+
+// No return de App, dentro da View:
+&lt;FlatList
+  data={tarefas}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;Tarefa item={item}
+      onToggle={() =&gt; alternar(item.id)} /&gt;
+  )}
+/&gt;</code></pre></div><div class="list-code-footer"><p>A atualização cria um novo array em data. A conclusão permanece no estado de App.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/FlatList04.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-05" data-menu-title="Manter a busca e a lista vazia" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">Manter a busca e a lista vazia</h2>
+<p class="step-caption" data-id="step-caption">O filtro é o mesmo. A mensagem vazia passa para ListEmptyComponent.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 5 de 6"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class="stepper-count">05 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · filtro + trecho do return</span><span>05 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>// Em App, após o estado das tarefas:
+const [busca, setBusca] = useState(&#x27;&#x27;);
+const visiveis = tarefas.filter(item =&gt;
+  item.titulo.toLowerCase().includes(busca.toLowerCase())
+);
+
+// No return de App, dentro da View:
+&lt;TextInput value={busca} onChangeText={setBusca}
+  placeholder=&quot;Buscar tarefa&quot; /&gt;
+&lt;FlatList
+  data={visiveis}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;Tarefa item={item}
+      onToggle={() =&gt; alternar(item.id)} /&gt;
+  )}
+  ListEmptyComponent={&lt;Text&gt;Nenhuma tarefa.&lt;/Text&gt;}
+/&gt;</code></pre></div><div class="list-code-footer"><p>A condição de lista vazia agora faz parte da API da FlatList.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/FlatList05.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide" id="flatlist-codigo-06" data-menu-title="Adicionar separadores" data-auto-animate data-auto-animate-id="flatlist-codigo">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Código</p><h2 data-id="lesson-heading">Adicionar separadores</h2>
+<p class="step-caption" data-id="step-caption">ItemSeparatorComponent descreve o espaço entre dois itens.</p>
+<div class="lesson-stepper" data-id="list-stepper" aria-label="Etapa 6 de 6"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class="stepper-count">06 / 06</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 480px"><div class="editor-bar" data-id="editor-bar"><span>App.js · trecho do return</span><span>06 / 06</span></div><pre data-id="flatlist-codigo-code"><code class="language-jsx" data-trim data-line-numbers>// No return de App, após TextInput:
+&lt;FlatList
+  style={{ flex: 1 }}
+  data={visiveis}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;Tarefa item={item}
+      onToggle={() =&gt; alternar(item.id)} /&gt;
+  )}
+  ListEmptyComponent={&lt;Text&gt;Nenhuma tarefa.&lt;/Text&gt;}
+  ItemSeparatorComponent={() =&gt; (
+    &lt;View style={{ height: 1, backgroundColor: &#x27;#dbe4e8&#x27; }} /&gt;
+  )}
+/&gt;</code></pre></div><div class="list-code-footer"><p>A mesma aplicação agora usa a lista virtualizada, com busca, toque e estado vazio.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/ComFlatList.jsx" target="_blank" rel="noopener">Abrir App.js completo ↗</a></div>
+</section>
+
+<section class="source-slide list-summary-slide" id="flatlist-resumo" data-menu-title="O que mudou com a FlatList?">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList / Recapitulando</p><h2 data-id="lesson-heading">Mesmos dados. Outra forma de renderizar.</h2>
+<table class="list-migration-table"><thead><tr><th>Lista manual</th><th>FlatList</th></tr></thead><tbody>
+<tr><td>array.map(...)</td><td>data + renderItem</td></tr><tr><td>key no componente</td><td>keyExtractor</td></tr><tr><td>Condição para array vazio</td><td>ListEmptyComponent</td></tr><tr><td>Separador criado manualmente</td><td>ItemSeparatorComponent</td></tr><tr><td>ScrollView cria todos os filhos</td><td>Janela de renderização gerenciada</td></tr></tbody></table>
+<p class="list-state-note">Guarde a conclusão das tarefas no array de App: um item pode sair da janela e ser montado novamente. Se a renderização depender de estado fora de data, considere extraData.</p>
+<a class="lesson-source-link" href="https://reactnative.dev/docs/flatlist" target="_blank" rel="noopener">Referência: FlatList / React Native ↗</a>
+</section>
+
+<section class="source-slide snack-slide" data-menu-title="FlatList em execução" id="aula16-07"><p class="kicker" data-id="lesson-kicker">Aula 16 / FlatList</p><h2 data-id="lesson-heading">FlatList em execução</h2><div class="snack-frame"><div data-snack-id="@natorjunior/flatlist01" data-snack-platform="web" data-snack-preview="true" data-snack-theme="light" style="height: 520px; width: 100%; overflow: hidden; background: #fff;">
+</div></div><a class="snack-link" href="https://snack.expo.dev/@natorjunior/flatlist01" rel="noopener noreferrer" target="_blank">Abrir este exemplo no Expo Snack ↗</a></section>
+</section>
+
+<section data-menu-title="Atividades e resoluções: FlatList e useContext">
+<section class="source-slide text-slide activity-slide practice-slide" id="atividade-flatlist-01" data-menu-title="Atividade 1 · FlatList: catálogo de produtos">
+<p class="kicker">Aula 16 / Atividades / 01 de 03 · FlatList</p>
+<h2>Atividade 1 · Catálogo de produtos</h2>
+<p class="practice-goal">Crie um catálogo com dados locais para praticar as propriedades básicas da FlatList.</p>
+<div class="content-card"><ul>
+<li>Monte um array com pelo menos 10 produtos, cada um com <code>id</code>, <code>nome</code> e <code>preco</code>.</li>
+<li>Exiba nome e preço com <code>data</code> e <code>renderItem</code>; use o <code>id</code> em <code>keyExtractor</code>.</li>
+<li>Crie um componente <code>ProdutoItem</code> e adicione divisórias com <code>ItemSeparatorComponent</code>.</li>
+<li>Use <code>ListEmptyComponent</code> para exibir “Nenhum produto cadastrado” quando o array estiver vazio.</li>
+</ul></div>
+<p class="practice-check"><strong>Confira:</strong> role a lista e, depois, teste com um array vazio. A mensagem deve aparecer.</p>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-01-01" data-menu-title="Solução 1 · Começar pelos dados" data-auto-animate data-auto-animate-id="solucao-atividade-1">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 1 / FlatList</p>
+<h2 data-id="lesson-heading">Começar pelos dados</h2><p class="step-caption" data-id="step-caption">Um array local com dez produtos e identificadores estáveis.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 1 de 4"><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">01 / 04</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · dados</span><span>Atividade 1 / 01 de 04</span></div><pre data-id="solution-code-1"><code class="language-jsx" data-trim data-line-numbers>const produtos = [
+  { id: &#x27;1&#x27;, nome: &#x27;Caderno&#x27;, preco: 18.90 },
+  { id: &#x27;2&#x27;, nome: &#x27;Caneta&#x27;, preco: 3.50 },
+  { id: &#x27;3&#x27;, nome: &#x27;Lápis&#x27;, preco: 2.00 },
+  { id: &#x27;4&#x27;, nome: &#x27;Borracha&#x27;, preco: 1.50 },
+  { id: &#x27;5&#x27;, nome: &#x27;Mochila&#x27;, preco: 129.90 },
+  { id: &#x27;6&#x27;, nome: &#x27;Estojo&#x27;, preco: 24.90 },
+  { id: &#x27;7&#x27;, nome: &#x27;Agenda&#x27;, preco: 32.00 },
+  { id: &#x27;8&#x27;, nome: &#x27;Régua&#x27;, preco: 4.00 },
+  { id: &#x27;9&#x27;, nome: &#x27;Marcador&#x27;, preco: 6.50 },
+  { id: &#x27;10&#x27;, nome: &#x27;Garrafa&#x27;, preco: 39.90 },
+];</code></pre></div>
+<div class="list-code-footer"><p>Cada preço é um número; cada id identifica um produto.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade01/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-01-02" data-menu-title="Solução 1 · Desenhar um produto" data-auto-animate data-auto-animate-id="solucao-atividade-1">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 1 / FlatList</p>
+<h2 data-id="lesson-heading">Desenhar um produto</h2><p class="step-caption" data-id="step-caption">ProdutoItem cuida apenas da apresentação de um registro.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 2 de 4"><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class="stepper-count">02 / 04</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · ProdutoItem</span><span>Atividade 1 / 02 de 04</span></div><pre data-id="solution-code-1"><code class="language-jsx" data-trim data-line-numbers>function ProdutoItem({ item }) {
+  return (
+    &lt;View style={{ padding: 16 }}&gt;
+      &lt;Text&gt;{item.nome}&lt;/Text&gt;
+      &lt;Text&gt;R$ {item.preco.toFixed(2)}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>O componente recebe item por props. toFixed(2) mostra duas casas decimais.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade01/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-01-03" data-menu-title="Solução 1 · Conectar os dados à FlatList" data-auto-animate data-auto-animate-id="solucao-atividade-1">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 1 / FlatList</p>
+<h2 data-id="lesson-heading">Conectar os dados à FlatList</h2><p class="step-caption" data-id="step-caption">data fornece os registros; renderItem descreve o componente.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 3 de 4"><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class="stepper-count">03 / 04</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · App</span><span>Atividade 1 / 03 de 04</span></div><pre data-id="solution-code-1"><code class="language-jsx" data-trim data-line-numbers>export default function App() {
+  return (
+    &lt;FlatList
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 24, paddingTop: 48 }}
+      data={produtos}
+      keyExtractor={item =&gt; item.id}
+      renderItem={({ item }) =&gt; &lt;ProdutoItem item={item} /&gt;}
+    /&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>A FlatList usa o id como chave e gerencia a rolagem.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade01/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-01-04" data-menu-title="Solução 1 · Tratar divisórias e lista vazia" data-auto-animate data-auto-animate-id="solucao-atividade-1">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 1 / FlatList</p>
+<h2 data-id="lesson-heading">Tratar divisórias e lista vazia</h2><p class="step-caption" data-id="step-caption">Acrescentamos duas propriedades ao mesmo componente.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 4 de 4"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class="stepper-count">04 / 04</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · App</span><span>Atividade 1 / 04 de 04</span></div><pre data-id="solution-code-1"><code class="language-jsx" data-trim data-line-numbers>export default function App() {
+  return (
+    &lt;FlatList
+      style={{ flex: 1 }}
+      contentContainerStyle={{ padding: 24, paddingTop: 48 }}
+      data={produtos}
+      keyExtractor={item =&gt; item.id}
+      renderItem={({ item }) =&gt; &lt;ProdutoItem item={item} /&gt;}
+      ListEmptyComponent={&lt;Text&gt;Nenhum produto cadastrado&lt;/Text&gt;}
+      ItemSeparatorComponent={() =&gt; (
+        &lt;View style={{ height: 1, backgroundColor: &#x27;#ddd&#x27; }} /&gt;
+      )}
+    /&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>Para conferir a mensagem vazia, troque data={produtos} por data={[]}.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade01/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide text-slide activity-slide practice-slide" id="atividade-flatlist-02" data-menu-title="Atividade 2 · FlatList: gerenciador de tarefas">
+<p class="kicker">Aula 16 / Atividades / 02 de 03 · FlatList</p>
+<h2>Atividade 2 · Gerenciador de tarefas</h2>
+<p class="practice-goal">Amplie a lista de tarefas construída na aula. Mantenha os dados no estado de App.</p>
+<div class="content-card"><ul>
+<li>Adicione tarefas usando <code>TextInput</code> e um botão. Gere IDs únicos e estáveis; rejeite texto vazio.</li>
+<li>Use <code>FlatList</code> e permita concluir ou reabrir uma tarefa ao tocar no item.</li>
+<li>Inclua um botão para remover cada tarefa. Atualize os arrays sem alterar o estado diretamente.</li>
+<li>Crie os filtros “Todas”, “Pendentes” e “Concluídas”, com uma mensagem quando o resultado estiver vazio.</li>
+</ul></div>
+<p class="practice-check"><strong>Confira:</strong> conclua uma tarefa, alterne os filtros e remova-a. Os demais itens devem manter seu estado.</p>
+<a class="lesson-source-link" href="aulas/exemplos/aula16/ComFlatList.jsx" target="_blank" rel="noopener">Ponto de partida: exemplo da aula ↗</a>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-01" data-menu-title="Solução 2 · Guardar tarefas, texto e filtro" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Guardar tarefas, texto e filtro</h2><p class="step-caption" data-id="step-caption">As tarefas ficam no estado; useRef mantém o próximo identificador.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 1 de 7"><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">01 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · dados e estado</span><span>Atividade 2 / 01 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>import { useState, useRef } from &#x27;react&#x27;;
+
+const iniciais = [
+  { id: &#x27;1&#x27;, titulo: &#x27;Estudar React&#x27;, concluida: false },
+  { id: &#x27;2&#x27;, titulo: &#x27;Praticar props&#x27;, concluida: false },
+  { id: &#x27;3&#x27;, titulo: &#x27;Revisar estado&#x27;, concluida: false },
+];
+
+// Dentro de App:
+const [tarefas, setTarefas] = useState(iniciais);
+const [texto, setTexto] = useState(&#x27;&#x27;);
+const [filtro, setFiltro] = useState(&#x27;Todas&#x27;);
+const proximoId = useRef(4);</code></pre></div>
+<div class="list-code-footer"><p>Os IDs iniciais são 1, 2 e 3. Por isso, o próximo começa em 4.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-02" data-menu-title="Solução 2 · Adicionar sem aceitar texto vazio" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Adicionar sem aceitar texto vazio</h2><p class="step-caption" data-id="step-caption">Cada inclusão recebe um novo id e cria um novo array.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 2 de 7"><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">02 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · dentro de App</span><span>Atividade 2 / 02 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>function adicionar() {
+  const titulo = texto.trim();
+  if (!titulo) return;
+  const nova = {
+    id: String(proximoId.current),
+    titulo,
+    concluida: false,
+  };
+  proximoId.current += 1;
+  setTarefas(atuais =&gt; [...atuais, nova]);
+  setTexto(&#x27;&#x27;);
+}</code></pre></div>
+<div class="list-code-footer"><p>trim remove espaços nas pontas. O contador de IDs não volta ao remover tarefas.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-03" data-menu-title="Solução 2 · Concluir, reabrir e remover" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Concluir, reabrir e remover</h2><p class="step-caption" data-id="step-caption">map atualiza a tarefa; filter exclui pelo identificador.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 3 de 7"><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">03 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · dentro de App</span><span>Atividade 2 / 03 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>function alternar(id) {
+  setTarefas(atuais =&gt; atuais.map(tarefa =&gt;
+    tarefa.id === id
+      ? { ...tarefa, concluida: !tarefa.concluida }
+      : tarefa
+  ));
+}
+function remover(id) {
+  setTarefas(atuais =&gt; atuais.filter(tarefa =&gt; tarefa.id !== id));
+}</code></pre></div>
+<div class="list-code-footer"><p>As atualizações usam o estado anterior sem modificar os objetos existentes.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-04" data-menu-title="Solução 2 · Escolher o que aparece" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Escolher o que aparece</h2><p class="step-caption" data-id="step-caption">O filtro gera visiveis; as tarefas completas continuam no estado.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 4 de 7"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">04 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · filtro e controles</span><span>Atividade 2 / 04 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>const visiveis = tarefas.filter(tarefa =&gt; {
+  if (filtro === &#x27;Pendentes&#x27;) return !tarefa.concluida;
+  if (filtro === &#x27;Concluídas&#x27;) return tarefa.concluida;
+  return true;
+});
+
+// No return, antes da FlatList:
+&lt;View style={{ flexDirection: &#x27;row&#x27; }}&gt;
+  &lt;Button title=&quot;Todas&quot; onPress={() =&gt; setFiltro(&#x27;Todas&#x27;)} /&gt;
+  &lt;Button title=&quot;Pendentes&quot; onPress={() =&gt; setFiltro(&#x27;Pendentes&#x27;)} /&gt;
+  &lt;Button title=&quot;Concluídas&quot; onPress={() =&gt; setFiltro(&#x27;Concluídas&#x27;)} /&gt;
+&lt;/View&gt;</code></pre></div>
+<div class="list-code-footer"><p>Todas, Pendentes e Concluídas mudam apenas a lista exibida.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-05" data-menu-title="Solução 2 · Ligar o campo à inclusão" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Ligar o campo à inclusão</h2><p class="step-caption" data-id="step-caption">O texto digitado alimenta o estado. O botão chama adicionar.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 5 de 7"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class="stepper-count">05 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · dentro da View do return</span><span>Atividade 2 / 05 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>&lt;TextInput
+  value={texto}
+  onChangeText={setTexto}
+  placeholder=&quot;Nova tarefa&quot;
+  style={{ borderWidth: 1, borderColor: &#x27;#ccc&#x27;, padding: 12 }}
+/&gt;
+&lt;Button title=&quot;Adicionar&quot; onPress={adicionar} /&gt;</code></pre></div>
+<div class="list-code-footer"><p>TextInput usa value e onChangeText; adicionar limpa o campo após salvar.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-06" data-menu-title="Solução 2 · Dar ações a cada item" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Dar ações a cada item</h2><p class="step-caption" data-id="step-caption">Cada item recebe uma função para alternar e outra para remover.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 6 de 7"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class="stepper-count">06 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · TarefaItem, fora de App</span><span>Atividade 2 / 06 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>function TarefaItem({ item, onAlternar, onRemover }) {
+  return (
+    &lt;View style={{ flexDirection: &#x27;row&#x27;, padding: 12 }}&gt;
+      &lt;Pressable style={{ flex: 1 }} onPress={onAlternar}&gt;
+        &lt;Text&gt;{item.concluida ? &#x27;✓ &#x27; : &#x27;○ &#x27;}{item.titulo}&lt;/Text&gt;
+      &lt;/Pressable&gt;
+      &lt;Button title=&quot;Remover&quot; onPress={onRemover} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>O botão Remover fica ao lado da área de toque que alterna a conclusão.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-02-07" data-menu-title="Solução 2 · Montar a lista completa" data-auto-animate data-auto-animate-id="solucao-atividade-2">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 2 / FlatList</p>
+<h2 data-id="lesson-heading">Montar a lista completa</h2><p class="step-caption" data-id="step-caption">Reunimos filtro, identidade, ações e mensagem de resultado vazio.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 7 de 7"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class="stepper-count">07 / 07</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · após os controles</span><span>Atividade 2 / 07 de 07</span></div><pre data-id="solution-code-2"><code class="language-jsx" data-trim data-line-numbers>&lt;FlatList
+  style={{ flex: 1 }}
+  data={visiveis}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;TarefaItem
+      item={item}
+      onAlternar={() =&gt; alternar(item.id)}
+      onRemover={() =&gt; remover(item.id)}
+    /&gt;
+  )}
+  ListEmptyComponent={&lt;Text&gt;Nenhuma tarefa neste filtro.&lt;/Text&gt;}
+/&gt;</code></pre></div>
+<div class="list-code-footer"><p>Adicione, conclua, filtre e remova. Cada tarefa deve manter sua própria identidade.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade02/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide text-slide activity-slide practice-slide" id="atividade-usecontext-03" data-menu-title="Atividade 3 · useContext: tarefas compartilhadas">
+<p class="kicker">Aula 16 / Atividades / 03 de 03 · useContext</p>
+<h2>Atividade 3 · Tarefas compartilhadas</h2>
+<p class="practice-goal">Refatore a atividade 2 para compartilhar as tarefas entre a lista e um resumo usando Context API.</p>
+<div class="content-card"><ul>
+<li>Crie <code>TarefasContext</code> e um <code>TarefasProvider</code> com o estado e as funções de adicionar, alternar e remover.</li>
+<li>Coloque os componentes <code>ResumoTarefas</code> e <code>ListaTarefas</code> dentro da árvore do mesmo Provider.</li>
+<li>Em <code>ResumoTarefas</code>, use <code>useContext</code> para mostrar o total de tarefas e quantas estão concluídas.</li>
+<li>Em <code>ListaTarefas</code>, leia os dados e as ações com <code>useContext</code>. Preserve a FlatList e os filtros.</li>
+</ul></div>
+<p class="practice-check"><strong>Confira:</strong> adicione, conclua e remova tarefas. O resumo deve atualizar sem receber os dados por props.</p>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-01" data-menu-title="Solução 3 · Criar o contexto e o Provider" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Criar o contexto e o Provider</h2><p class="step-caption" data-id="step-caption">O estado das tarefas sai de App e passa a viver no Provider.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 1 de 9"><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">01 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>TarefasContext.jsx · estrutura inicial</span><span>Atividade 3 / 01 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>import { createContext, useState } from &#x27;react&#x27;;
+export const TarefasContext = createContext(null);
+
+export function TarefasProvider({ children }) {
+  const [tarefas, setTarefas] = useState(iniciais);
+  return (
+    &lt;TarefasContext.Provider value={{ tarefas }}&gt;
+      {children}
+    &lt;/TarefasContext.Provider&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>Reutilize o array iniciais da atividade 2, acima do Provider.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefasContext.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-02" data-menu-title="Solução 3 · Mover a inclusão para o Provider" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Mover a inclusão para o Provider</h2><p class="step-caption" data-id="step-caption">A função agora recebe o texto digitado como argumento.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 2 de 9"><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">02 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>TarefasContext.jsx · dentro do Provider</span><span>Atividade 3 / 02 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>// Inclua useRef no import de React. Dentro do Provider:
+const proximoId = useRef(4);
+
+function adicionar(texto) {
+  const titulo = texto.trim();
+  if (!titulo) return;
+  const nova = {
+    id: String(proximoId.current),
+    titulo,
+    concluida: false,
+  };
+  proximoId.current += 1;
+  setTarefas(atuais =&gt; [...atuais, nova]);
+}</code></pre></div>
+<div class="list-code-footer"><p>O Provider administra as tarefas; o campo de texto continua no componente da lista.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefasContext.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-03" data-menu-title="Solução 3 · Reaproveitar as outras ações" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Reaproveitar as outras ações</h2><p class="step-caption" data-id="step-caption">As funções de concluir e remover são as mesmas da atividade 2.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 3 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">03 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>TarefasContext.jsx · dentro do Provider</span><span>Atividade 3 / 03 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>function alternar(id) {
+  setTarefas(atuais =&gt; atuais.map(tarefa =&gt;
+    tarefa.id === id
+      ? { ...tarefa, concluida: !tarefa.concluida }
+      : tarefa
+  ));
+}
+function remover(id) {
+  setTarefas(atuais =&gt; atuais.filter(tarefa =&gt; tarefa.id !== id));
+}</code></pre></div>
+<div class="list-code-footer"><p>Mova as duas funções para o Provider: não é necessário reescrever a lógica.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefasContext.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-04" data-menu-title="Solução 3 · Compartilhar dados e funções" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Compartilhar dados e funções</h2><p class="step-caption" data-id="step-caption">O value oferece a mesma fonte de dados aos consumidores.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 4 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">04 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>TarefasContext.jsx · return do Provider</span><span>Atividade 3 / 04 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>return (
+  &lt;TarefasContext.Provider
+    value={{ tarefas, adicionar, alternar, remover }}
+  &gt;
+    {children}
+  &lt;/TarefasContext.Provider&gt;
+);</code></pre></div>
+<div class="list-code-footer"><p>Este return substitui o value inicial, que compartilhava apenas tarefas.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefasContext.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-05" data-menu-title="Solução 3 · Envolver lista e resumo" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Envolver lista e resumo</h2><p class="step-caption" data-id="step-caption">Os dois componentes ficam abaixo do mesmo TarefasProvider.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 5 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">05 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · App</span><span>Atividade 3 / 05 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>import { TarefasProvider } from &#x27;./TarefasContext&#x27;;
+
+export default function App() {
+  return (
+    &lt;TarefasProvider&gt;
+      &lt;View style={{ flex: 1, paddingTop: 48 }}&gt;
+        &lt;ResumoTarefas /&gt;
+        &lt;ListaTarefas /&gt;
+      &lt;/View&gt;
+    &lt;/TarefasProvider&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>ResumoTarefas e ListaTarefas não recebem tarefas por props.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-06" data-menu-title="Solução 3 · Ler o contexto no resumo" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Ler o contexto no resumo</h2><p class="step-caption" data-id="step-caption">O total de concluídas é calculado a partir das tarefas atuais.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 6 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class=""></span><span class="stepper-count">06 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · ResumoTarefas</span><span>Atividade 3 / 06 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>import { useContext } from &#x27;react&#x27;;
+import { TarefasContext } from &#x27;./TarefasContext&#x27;;
+
+function ResumoTarefas() {
+  const { tarefas } = useContext(TarefasContext);
+  const concluidas = tarefas.filter(tarefa =&gt; tarefa.concluida).length;
+  return (
+    &lt;Text style={{ padding: 12 }}&gt;
+      Concluídas: {concluidas} de {tarefas.length}
+    &lt;/Text&gt;
+  );
+}</code></pre></div>
+<div class="list-code-footer"><p>Não criamos outro contador no estado: o resumo deriva os valores do array.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-07" data-menu-title="Solução 3 · Ler o contexto na lista" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Ler o contexto na lista</h2><p class="step-caption" data-id="step-caption">A lista lê tarefas e ações; texto e filtro continuam locais.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 7 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class=""></span><span class="stepper-count">07 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · ListaTarefas</span><span>Atividade 3 / 07 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>// Dentro de ListaTarefas:
+const { tarefas, adicionar, alternar, remover } = useContext(TarefasContext);
+const [texto, setTexto] = useState(&#x27;&#x27;);
+const [filtro, setFiltro] = useState(&#x27;Todas&#x27;);
+
+const visiveis = tarefas.filter(tarefa =&gt; {
+  if (filtro === &#x27;Pendentes&#x27;) return !tarefa.concluida;
+  if (filtro === &#x27;Concluídas&#x27;) return tarefa.concluida;
+  return true;
+});</code></pre></div>
+<div class="list-code-footer"><p>Importe useState e useContext de React e TarefasContext do arquivo do contexto.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-08" data-menu-title="Solução 3 · Enviar o texto para o Provider" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Enviar o texto para o Provider</h2><p class="step-caption" data-id="step-caption">O botão chama adicionar(texto) e limpa o campo local.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 8 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class=""></span><span class="stepper-count">08 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · return de ListaTarefas</span><span>Atividade 3 / 08 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>&lt;TextInput
+  value={texto}
+  onChangeText={setTexto}
+  placeholder=&quot;Nova tarefa&quot;
+  style={{ borderWidth: 1, borderColor: &#x27;#ccc&#x27;, padding: 12 }}
+/&gt;
+&lt;Button title=&quot;Adicionar&quot; onPress={() =&gt; {
+  adicionar(texto);
+  setTexto(&#x27;&#x27;);
+}} /&gt;
+
+// Mantenha os três botões de filtro da atividade 2.</code></pre></div>
+<div class="list-code-footer"><p>Os botões Todas, Pendentes e Concluídas continuam chamando setFiltro.</p><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a></div>
+</section>
+
+<section class="source-slide code-slide list-code-slide solution-slide" id="solucao-03-09" data-menu-title="Solução 3 · Conectar a FlatList ao contexto" data-auto-animate data-auto-animate-id="solucao-atividade-3">
+<p class="kicker" data-id="lesson-kicker">Aula 16 / Resolução da atividade 3 / useContext</p>
+<h2 data-id="lesson-heading">Conectar a FlatList ao contexto</h2><p class="step-caption" data-id="step-caption">O mesmo TarefaItem recebe as ações lidas com useContext.</p>
+<div class="lesson-stepper" data-id="solution-stepper" aria-label="Etapa 9 de 9"><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-done"></span><span class="is-current"></span><span class="stepper-count">09 / 09</span></div>
+<div class="editor" data-id="editor-shell" style="--editor-height: 500px"><div class="editor-bar" data-id="editor-bar"><span>App.jsx · após os controles de filtro</span><span>Atividade 3 / 09 de 09</span></div><pre data-id="solution-code-3"><code class="language-jsx" data-trim data-line-numbers>&lt;FlatList
+  style={{ flex: 1 }}
+  data={visiveis}
+  keyExtractor={item =&gt; item.id}
+  renderItem={({ item }) =&gt; (
+    &lt;TarefaItem
+      item={item}
+      onAlternar={() =&gt; alternar(item.id)}
+      onRemover={() =&gt; remover(item.id)}
+    /&gt;
+  )}
+  ListEmptyComponent={&lt;Text&gt;Nenhuma tarefa neste filtro.&lt;/Text&gt;}
+/&gt;</code></pre></div>
+<div class="list-code-footer"><p>Use o mesmo TarefaItem da atividade 2 em TarefaItem.jsx. O resumo acompanha as mudanças.</p><div class="solution-files"><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/App.jsx" target="_blank" rel="noopener">Ver arquivo completo ↗</a><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefasContext.jsx" target="_blank" rel="noopener">Contexto ↗</a><a class="lesson-source-link" href="aulas/exemplos/aula16/atividade03/TarefaItem.jsx" target="_blank" rel="noopener">TarefaItem ↗</a></div></div>
+</section>
+</section>
+
+</div>
+</div>
+
+<dialog class="feed-dialog" id="feed-lifecycle-modal" aria-labelledby="feed-modal-title" aria-describedby="feed-modal-description">
+  <header class="feed-modal-header">
+    <div><p class="feed-eyebrow">FlatList / Laboratório visual</p><h2 id="feed-modal-title">Um feed, várias montagens.</h2><p id="feed-modal-description">Avance pelas etapas ou role o feed. Observe os componentes; os dados continuam no array.</p></div>
+    <button class="feed-close" type="button" data-feed-close aria-label="Fechar ilustração">×</button>
+  </header>
+  <nav class="feed-steps" aria-label="Etapas da construção do feed"></nav>
+  <div class="feed-lab-grid">
+    <aside class="feed-data-panel" aria-labelledby="feed-data-title">
+      <div class="feed-panel-heading"><h3 id="feed-data-title">Array de posts</h3><span>12 registros</span></div>
+      <p class="feed-panel-description">A fonte dos dados fica fora dos componentes dos posts.</p>
+      <ol class="feed-data-list"></ol>
+      <div class="feed-data-note"><span class="feed-note-icon">{ }</span><p>Desmontar o componente<br/><strong>preserva o registro.</strong></p></div>
+    </aside>
+    <div class="feed-phone-column">
+      <div class="social-phone">
+        <div class="social-feed-header"><span class="social-brand"><i aria-hidden="true"></i>elo</span><span>Seu feed</span><span class="social-online" aria-label="Exemplo local">●</span></div>
+        <div class="social-feed-viewport" tabindex="0" role="region" aria-label="Feed de posts: role para acompanhar as montagens">
+          <div class="social-feed-track"></div>
+          <div class="feed-before-mount"><span aria-hidden="true">{ posts }</span><h3>Os dados chegaram.</h3><p>Vamos construir os primeiros posts?</p><button type="button" data-feed-first>Montar o feed →</button></div>
+        </div>
+        <div class="feed-scroll-controls"><button type="button" data-feed-up aria-label="Subir um post">↑ Subir</button><span class="feed-visible-label">Aguardando montagem</span><button type="button" data-feed-down aria-label="Descer um post">Descer ↓</button></div>
+      </div>
+      <p class="feed-phone-hint">Role aqui ou use os botões. Toque em um coração para curtir.</p>
+    </div>
+    <aside class="feed-explanation" aria-labelledby="feed-scene-title">
+      <div class="feed-scene-copy" role="status" aria-live="polite" aria-atomic="true"><p class="feed-scene-index"></p><h3 id="feed-scene-title"></h3><p class="feed-scene-description"></p></div>
+      <dl class="feed-metrics"><div><dt>Dados</dt><dd data-feed-count="data">12</dd></div><div><dt>Montados</dt><dd data-feed-count="mounted">0</dd></div><div><dt>Remontagens</dt><dd data-feed-count="rebuilt">0</dd></div></dl>
+      <div class="feed-legend"><span><i class="is-visible"></i>Na tela</span><span><i class="is-buffer"></i>Margem</span><span><i class="is-retained"></i>Lote inicial</span><span><i class="is-unmounted"></i>Sem componente</span></div>
+      <div class="feed-event-panel"><h4>O que acabou de acontecer?</h4><ol class="feed-event-log"></ol></div>
+    </aside>
+  </div>
+  <footer class="feed-modal-footer">
+    <p>Modelo didático em HTML: tela de 2 posts, margem de 1 e <code>initialNumToRender={2}</code>.<br/>Na FlatList, o padrão do lote inicial é 10. <a href="https://reactnative.dev/docs/flatlist#initialnumtorender" target="_blank" rel="noopener">Entenda a configuração ↗</a></p>
+    <div class="feed-navigation"><button type="button" data-feed-reset aria-label="Reiniciar ilustração">↺ Reiniciar</button><button type="button" data-feed-previous>← Anterior</button><button type="button" class="feed-primary" data-feed-next>Próxima etapa →</button></div>
+  </footer>
+</dialog>
+
+<script src="dist/reveal.js"></script>
+<script src="plugin/markdown/markdown.js"></script>
+<script src="plugin/highlight/highlight.js"></script>
+<script src="plugin/notes/notes.js"></script>
+<script src="plugin/menu/menu.js"></script>
+<script src="aulas/js/aula16.js"></script>
+<script src="aulas/js/aula16-feed.js"></script>
+<footer class="deck-footer">UFC · Dispositivos móveis / Aula 16 · FlatList e useContext</footer>
+</body>
+</html>

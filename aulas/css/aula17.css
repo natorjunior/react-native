@@ -1,0 +1,34 @@
+/* Aula 17: o mesmo tema da aula 16, com ilustrações de rotas e navegadores. */
+.reveal .lesson-cover .cover-title { font-size: 73px; }
+.route-cover-screen { fill: #eff7f2; }
+.route-cover-label { fill: #58796d; font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; }
+.route-cover-title { fill: #172a39; font-size: 29px; font-weight: 650; letter-spacing: -.03em; }
+.route-cover-button { fill: #dceddf; }
+.route-cover-action { fill: #285d47; font-size: 16px; font-weight: 600; }
+.route-cover-code { fill: #285d47; font: 16px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.route-cover-method { fill: #a9d3c1; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.reveal .navigation-intro { color: var(--muted); font-size: 23px; margin: 0 0 30px; }
+.reveal .objectives-slide .objectives-grid li { min-height: 145px; font-size: 25px; }
+.reveal .navigation-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+.reveal .navigation-cards article { border: 1px solid var(--line); border-radius: 15px; background: #fff; padding: 24px; }
+.reveal .navigation-card-number { display: block; color: var(--green); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .05em; }
+.reveal .navigation-cards h3 { font-size: 26px; line-height: 1.2; margin: 20px 0 14px; }
+.reveal .navigation-cards p { font-size: 22px; line-height: 1.5; color: var(--muted); min-height: 100px; }
+.reveal .navigation-card-example { display: block; padding-top: 18px; border-top: 1px solid var(--line); font-size: 15px; color: var(--green); }
+.reveal .nav-mini { position: relative; width: 170px; height: 150px; margin: 32px auto 0; font-size: 16px; font-style: normal; color: #285d47; }
+.nav-mini-stack i { position: absolute; display: flex; align-items: center; justify-content: center; width: 138px; height: 94px; border: 1px solid #b7d0c2; border-radius: 12px; background: #f2f7f4; font-style: normal; }
+.nav-mini-stack i:nth-child(1) { top: 0; left: 28px; }
+.nav-mini-stack i:nth-child(2) { top: 23px; left: 14px; background: #e6f0e9; }
+.nav-mini-stack i:nth-child(3) { top: 46px; left: 0; background: #d4eadb; }
+.nav-mini-tabs { border: 1px solid #b7d0c2; border-radius: 12px; background: #f2f7f4; overflow: hidden; }
+.nav-mini-tabs > div { padding: 30px 0; text-align: center; }
+.nav-mini-tabs > span { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-evenly; padding: 15px 0; background: #e6f0e9; border-top: 1px solid #b7d0c2; }
+.nav-mini-tabs i { width: 17px; height: 17px; border-radius: 6px; background: #bfd6c9; }
+.nav-mini-tabs i.is-active { background: #087e72; }
+.nav-mini-drawer { display: flex; align-items: center; border: 1px solid #b7d0c2; border-radius: 12px; background: #f2f7f4; overflow: hidden; }
+.nav-mini-drawer > div { display: flex; flex-direction: column; justify-content: center; gap: 17px; width: 68px; height: 100%; padding: 13px; background: #d4eadb; border-right: 1px solid #b7d0c2; }
+.nav-mini-drawer i { height: 5px; border-radius: 5px; background: #83b398; }
+.nav-mini-drawer > span { margin: auto; }
+.reveal .navigation-summary .content-card { margin-top: 28px; }
+.reveal .navigation-summary li { font-size: 23px; padding: 15px 22px; }
+.reveal .navigation-summary code { color: var(--green); font-size: .9em; }

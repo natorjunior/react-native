@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aula 17 - Navegação e APIs REST com Axios</title>
+
+  <!-- Reveal.js -->
+  <link rel="stylesheet" href="./dist/reveal.css">
+  <link rel="stylesheet" href="./dist/theme/white.css" id="theme">
+
+  <!-- Tema para código -->
+  <link rel="stylesheet" href="./plugin/highlight/atom-one-dark.css">
+  <link rel="stylesheet" href="aula05-materials/style.css">
+
+  <!-- Menu plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/reveal.js-menu@2.1.0/menu.css" rel="stylesheet">
+  <!-- <link rel="stylesheet" href="./plugin/highlight/atom-one-dark.css"> -->
+  <link rel="stylesheet" href="aula04-materials/style.css">
+  <link rel="stylesheet" href="css/workshop.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
+  <style>
+    .reveal h1,
+    .reveal h2 {
+      color: #0056b3;
+    }
+
+    .reveal pre code {
+      font-size: 1em;
+      background: #222;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .reveal p {
+      font-size: 1.1em;
+    }
+
+    .step-box {
+      background: rgba(0, 123, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px;
+      border: 2px solid #0056b3;
+    }
+
+    .concept-box {
+      background: rgba(40, 167, 69, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px;
+      border: 2px solid #28a745;
+    }
+
+    .example-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+  </style>
+<link href="aulas/css/aula15.css" rel="stylesheet"/>
+<!-- <link href="aulas/css/aula16.css" rel="stylesheet"/> -->
+<link href="aulas/css/aula17.css" rel="stylesheet"/>
+<link href="aulas/css/aula17-didatica.css" rel="stylesheet"/>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section class="source-slide lesson-cover" data-background-color="#112632"
+        data-menu-title="Aula 17 · Navegação em React Native" id="abertura">
+        <div class="cover-layout">
+          <div class="cover-copy">
+            <p class="kicker">Aula 17 / React Navigation</p>
+            <h1 class="cover-title">Uma tela.<br />Novos <span>caminhos.</span></h1>
+            <p class="cover-description">Navegar entre telas.<br />Levar dados para o próximo destino.</p>
+            <div class="cover-tags"><span>Stack</span><span>Tabs</span><span>Drawer</span></div>
+            <div class="cover-credit">
+              <p>Programação para Dispositivos Móveis</p>
+              <p>Prof. Msc. Nator Junior Carvalho da Costa</p>
+            </div>
+          </div>
+          <svg aria-labelledby="cover-routes-title cover-routes-desc" class="cover-illustration" role="img"
+            viewBox="0 0 480 590">
+            <title id="cover-routes-title">Uma rota conecta a tela inicial aos detalhes</title>
+            <desc id="cover-routes-desc">Feed e Detalhes são telas registradas no navegador. navigate leva aos detalhes
+              com um identificador e goBack retorna à tela anterior.</desc>
+            <ellipse class="cover-orbit" cx="240" cy="310" rx="222" ry="242"></ellipse>
+            <rect class="cover-backplate" height="378" rx="30" transform="rotate(7 240 315)" width="352" x="64" y="126">
+            </rect>
+            <rect class="provider-pill" height="48" rx="24" width="268" x="106" y="26"></rect><text
+              class="provider-pill-text" x="240" y="57">NavigationContainer</text>
+            <path class="cover-wire" d="M240 74 V110"></path>
+            <rect class="route-cover-screen" height="152" rx="24" width="360" x="60" y="110"></rect>
+            <text class="route-cover-label" x="88" y="142">ROTA / FEED</text><text class="route-cover-title" x="88"
+              y="181">Feed do campus</text>
+            <rect class="route-cover-button" height="34" rx="9" width="242" x="88" y="203"></rect><text
+              class="route-cover-action" x="104" y="226">Abrir detalhes →</text>
+            <path class="cover-wire" d="M240 262 V332 M233 324 L240 332 L247 324"></path>
+            <text class="route-cover-method" x="261" y="300">navigate</text>
+            <rect class="route-cover-screen" height="152" rx="24" width="360" x="60" y="346"></rect>
+            <text class="route-cover-label" x="88" y="379">ROTA / DETALHES</text><text class="route-cover-title" x="88"
+              y="419">Detalhes</text>
+            <rect class="route-cover-button" height="32" rx="9" width="242" x="88" y="442"></rect><text
+              class="route-cover-code" x="104" y="464">{ postId: '2' }</text>
+            <path class="cover-wire" d="M60 425 H31 V185 H60 M52 178 L60 185 L52 192"></path>
+            <text class="cover-scope-label" x="240" y="543">navigate → parâmetros → goBack</text>
+          </svg>
+        </div>
+      </section>
+
+
+      <!-- Apresentação da aula
+      <section class="lesson-title-slide" id="apresentacao"
+        data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+        data-menu-title="Aula 17 · Navegação e APIs REST com Axios">
+        <div class="lesson-title-content">
+          <p class="lesson-title-course">Programação para Dispositivos Móveis</p>
+          <h1 class="lesson-title-heading"><span>Aula 17</span>Navegação e APIs REST<br>com Axios</h1>
+          <p class="lesson-title-author">Prof. Msc. Nator Junior Carvalho da Costa</p>
+          <div class="lesson-title-icon" aria-hidden="true">📱</div>
+        </div>
+      </section> -->
+
+      <section data-background-gradient="radial-gradient(#1e3c72, #2a5298)">
+        <div style="text-align: center;">
+          <div style="
+          background: rgba(255, 255, 255, 0.1);
+          padding: 40px;
+          border-radius: 20px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+          backdrop-filter: blur(10px);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          margin: 20px;
+        ">
+            <h1 style="
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+          ">Objetivos da Aula 🎯</h1>
+
+            <ul style="
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            color: white;
+            font-size: 1.2em;
+          ">
+              <li class="fragment fade-up" style="margin: 15px 0; padding-left: 25px; position: relative;">
+                <span>🧭</span>
+                Configurar React Navigation
+              </li>
+              <li class="fragment fade-up" style="margin: 15px 0; padding-left: 25px; position: relative;">
+                <span>📚</span>
+                Implementar Stack Navigation
+              </li>
+              <li class="fragment fade-up" style="margin: 15px 0; padding-left: 25px; position: relative;">
+                <span>📱</span>
+                Implementar Tab Navigation
+              </li>
+              <li class="fragment fade-up" style="margin: 15px 0; padding-left: 25px; position: relative;">
+                <span>🗄️</span>
+                Implementar Drawer Navigation
+              </li>
+              <li class="fragment fade-up" style="margin: 15px 0; padding-left: 25px; position: relative;">
+                <span>🌐</span>
+                Trabalhar com APIs REST
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção Navigation -->
+      <section>
+        <section class="navigation-setup-slide" id="configuracao-navigation"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">React Navigation 🧭</h2>
+          <div class="concept-box">
+            <h6 style="color: white;">Configuração Inicial</h6>
+            <pre><code class="language-bash" data-trim>
+# Instalação
+npm install @react-navigation/native
+npm install @react-navigation/stack
+npm install react-native-screens react-native-safe-area-context</code></pre>
+          </div>
+
+          <div class="concept-box">
+            <h6 style="color: white;">Usando o Snack</h6>
+            <pre><code class="language-json" data-trim>
+              {
+                "dependencies": {
+                  "react-native-paper": "4.9.2",
+                  "@expo/vector-icons": "^14.0.2",
+                  "@react-navigation/native": "^6.1.18",
+                  "@react-navigation/stack": "^6.4.1",
+                  "react-native-screens": "~4.4.0",
+                  "react-native-safe-area-context": "4.12.0",
+                  "react-native-gesture-handler": "~2.20.2"
+                }
+              }</code></pre>
+          </div>
+        </section>
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
+          <h2 style="color: white;">Stack Navigator</h2>
+          <pre data-id="code-animation-3"><code class="language-jsx" data-trim data-line-numbers >
+// App.js
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+</code></pre>
+        </section>
+
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
+          <h2 style="color: white;">Stack Navigator</h2>
+          <pre data-id="code-animation-3" style="height: 70vh;"><code class="language-jsx" data-trim data-line-numbers>
+// App.js
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './HomeScreen';
+import DetailsScreen from './DetailsScreen';
+
+const Stack = createStackNavigator();
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Stack.Navigator&gt;
+        &lt;Stack.Screen 
+          name="Home" 
+          component={HomeScreen}
+          options={{ title: 'Página Inicial' }}
+        /&gt;
+        &lt;Stack.Screen 
+          name="Details" 
+          component={DetailsScreen}
+          options={{ title: 'Detalhes' }}
+        /&gt;
+      &lt;/Stack.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+        </section>
+
+
+
+
+
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
+          <h2 style="color: white;">Navegação entre Telas</h2>
+          <pre data-id="code-animation-3"><code class="language-jsx" data-trim data-line-numbers>
+// HomeScreen.js
+import { View, Button } from 'react-native';
+
+export default function HomeScreen({ navigation }) {
+  return (
+    &lt;View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}&gt;
+      &lt;Button
+        title="Ir para Detalhes"
+        onPress={() => navigation.navigate('Details', {
+          itemId: 86,
+          otherParam: 'qualquer coisa',
+        })}
+      /&gt;
+    &lt;/View&gt;
+  );
+}
+</code></pre>
+        </section>
+
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
+          <h2 style="color: white;">Navegação entre Telas</h2>
+          <pre data-id="code-animation-3"><code class="language-jsx" data-trim data-line-numbers>
+
+// DetailsScreen.js
+import { View, Text, Button } from 'react-native';
+
+export default function DetailsScreen({ route, navigation }) {
+  const { itemId, otherParam } = route.params;
+
+  return (
+    &lt;View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}&gt;
+      &lt;Text&gt;Detalhes do Item: {itemId}&lt;/Text&gt;
+      &lt;Text&gt;Outro Parâmetro: {otherParam}&lt;/Text&gt;
+      &lt;Button
+        title="Voltar"
+        onPress={() => navigation.goBack()}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+        </section>
+
+
+
+        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          style="padding: 20px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+            <!-- Coluna 2: Embed do Expo Snack -->
+            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+              <div data-snack-id="@natorjunior/flatlist02" data-snack-platform="web" data-snack-preview="true"
+                data-snack-theme="light"
+                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+              </div>
+              <script async src="https://snack.expo.dev/embed.js"></script>
+            </div>
+          </div>
+        </section>
+
+        <section class="navigation-practice-slide" id="atividade-stack"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          data-menu-title="Fixação · Stack: cardápio da cantina">
+          <p class="practice-label">Atividade de fixação · Stack</p>
+          <h2>Cardápio da cantina</h2>
+          <p class="practice-intro">Crie um app com duas telas e use dados fixos no próprio código.</p>
+          <div class="concept-box">
+            <h3>O que fazer</h3>
+            <ol>
+              <li>Registre as telas <strong>Cardápio</strong> e <strong>Detalhes</strong> em um Stack Navigator.</li>
+              <li>No Cardápio, mostre dois lanches, cada um com um botão para ver os detalhes.</li>
+              <li>Ao tocar no botão, use <code>navigation.navigate</code> para enviar o nome e o preço do lanche.</li>
+              <li>Em Detalhes, leia <code>route.params</code>, exiba os dados e inclua um botão com <code>navigation.goBack()</code>.</li>
+            </ol>
+          </div>
+          <p class="practice-check"><strong>Teste:</strong> abra os detalhes de cada lanche e volte ao cardápio. O nome e o preço devem corresponder ao item escolhido.</p>
+        </section>
+
+        <section class="navigation-solution-slide" id="solucao-stack-01"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 01 · Criar o app e os arquivos">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 01 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Criar o app e os arquivos</h2>
+          <p class="solution-caption">Abra um novo Snack e crie estes arquivos na mesma pasta.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>Estrutura do app</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-estrutura-do-app-pre"><code class="language-text" data-trim data-line-numbers="">App.js
+CardapioScreen.js
+DetalhesScreen.js
+
+Dependências do exemplo da aula:
+@react-navigation/native (6.x)
+@react-navigation/stack (6.x)
+react-native-screens
+react-native-safe-area-context
+react-native-gesture-handler</code></pre>
+          </div>
+          <p class="solution-note">Use as versões compatíveis com o SDK do exemplo. Vamos preencher um arquivo por vez.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-02"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 02 · Importar as bibliotecas">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 02 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Importar as bibliotecas</h2>
+          <p class="solution-caption">Comece pelo App.js. Ainda não vamos montar a interface.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">NavigationContainer gerencia a navegação; a função create prepara o tipo escolhido.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-03"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 03 · Criar o navegador">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 03 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Criar o navegador</h2>
+          <p class="solution-caption">Acrescente uma constante abaixo dos imports.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="6">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+const Stack = createStackNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Stack oferece os componentes Navigator e Screen. Ainda precisamos criar as telas.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-04"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 04 · Importar os componentes do cardápio">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 04 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Importar os componentes do cardápio</h2>
+          <p class="solution-caption">Agora abra CardapioScreen.js. O App.js permanece como estava.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>CardapioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-cardapioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">View organiza a tela, Text mostra textos e Button recebe o toque.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-05"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 05 · Criar a tela do cardápio">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 05 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Criar a tela do cardápio</h2>
+          <p class="solution-caption">Exporte a função e prepare o espaço dos lanches.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>CardapioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-cardapioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-9">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function CardapioScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">flex ocupa a tela; padding e gap deixam espaço entre os elementos.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-06"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 06 · Mostrar o primeiro lanche">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 06 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Mostrar o primeiro lanche</h2>
+          <p class="solution-caption">Acrescente o texto e um botão dentro da View.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>CardapioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-cardapioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="7-8">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function CardapioScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Escolha um lanche:&lt;/Text&gt;
+      &lt;Button title=&quot;Ver cuscuz&quot; /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O botão ainda não navega. Vamos ligar seu onPress no próximo passo.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-07"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 07 · Navegar e enviar os dados">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 07 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Navegar e enviar os dados</h2>
+          <p class="solution-caption">Receba navigation e conecte o botão à rota Detalhes.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>CardapioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-cardapioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="4,8-13">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function CardapioScreen({ navigation }) {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Escolha um lanche:&lt;/Text&gt;
+      &lt;Button
+        title=&quot;Ver cuscuz&quot;
+        onPress={() =&gt; navigation.navigate(&#x27;Detalhes&#x27;, {
+          nome: &#x27;Cuscuz&#x27;, preco: 5,
+        })}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O primeiro argumento escolhe a rota; o segundo envia nome e preço para a próxima tela.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-08"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 08 · Adicionar o segundo lanche">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 08 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Adicionar o segundo lanche</h2>
+          <p class="solution-caption">Repita o botão, trocando somente o nome e o preço.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>CardapioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-cardapioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="14-19">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function CardapioScreen({ navigation }) {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Escolha um lanche:&lt;/Text&gt;
+      &lt;Button
+        title=&quot;Ver cuscuz&quot;
+        onPress={() =&gt; navigation.navigate(&#x27;Detalhes&#x27;, {
+          nome: &#x27;Cuscuz&#x27;, preco: 5,
+        })}
+      /&gt;
+      &lt;Button
+        title=&quot;Ver tapioca&quot;
+        onPress={() =&gt; navigation.navigate(&#x27;Detalhes&#x27;, {
+          nome: &#x27;Tapioca&#x27;, preco: 7,
+        })}
+      /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Os dois botões abrem a mesma tela. Os parâmetros dizem qual lanche foi escolhido.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-09"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 09 · Importar os componentes dos detalhes">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 09 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Importar os componentes dos detalhes</h2>
+          <p class="solution-caption">Abra DetalhesScreen.js para construir a segunda tela.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>DetalhesScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-detalhesscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">Vamos receber os dados da rota e oferecer um botão para voltar.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-10"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 10 · Ler os parâmetros da rota">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 10 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Ler os parâmetros da rota</h2>
+          <p class="solution-caption">Receba route e extraia nome e preco de route.params.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>DetalhesScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-detalhesscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-10">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function DetalhesScreen({ route }) {
+  const { nome, preco } = route.params;
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Os nomes precisam corresponder às propriedades enviadas pelo botão do cardápio.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-11"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 11 · Exibir o lanche escolhido">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 11 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Exibir o lanche escolhido</h2>
+          <p class="solution-caption">Mostre as duas informações dentro da View.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>DetalhesScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-detalhesscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="8-9">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function DetalhesScreen({ route }) {
+  const { nome, preco } = route.params;
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;{nome}&lt;/Text&gt;
+      &lt;Text&gt;Preço: R$ {preco.toFixed(2)}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">toFixed(2) formata o número com duas casas decimais. Não é necessário buscar uma API.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-12"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 12 · Voltar ao cardápio">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 12 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Voltar ao cardápio</h2>
+          <p class="solution-caption">Receba também navigation e acrescente o botão Voltar.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>DetalhesScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-detalhesscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="4,10">import React from &#x27;react&#x27;;
+import { View, Text, Button } from &#x27;react-native&#x27;;
+
+export default function DetalhesScreen({ route, navigation }) {
+  const { nome, preco } = route.params;
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;{nome}&lt;/Text&gt;
+      &lt;Text&gt;Preço: R$ {preco.toFixed(2)}&lt;/Text&gt;
+      &lt;Button title=&quot;Voltar&quot; onPress={() =&gt; navigation.goBack()} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">goBack retira Detalhes do topo da pilha e revela o Cardápio novamente.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-13"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 13 · Importar as duas telas no App">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 13 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Importar as duas telas no App</h2>
+          <p class="solution-caption">Volte a App.js e importe os arquivos que acabamos de criar.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="6-7">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Cada import usa o export default do arquivo correspondente.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-14"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 14 · Criar a raiz do aplicativo">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 14 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Criar a raiz do aplicativo</h2>
+          <p class="solution-caption">Exporte App e prepare a raiz que recebe os gestos.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="9-14">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">GestureHandlerRootView ocupa a tela inteira com flex: 1.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-15"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 15 · Adicionar o NavigationContainer">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 15 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Adicionar o NavigationContainer</h2>
+          <p class="solution-caption">Coloque o contêiner de navegação dentro da raiz.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="12-13">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Este app terá um único NavigationContainer envolvendo seu navegador.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-16"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 16 · Registrar a tela inicial">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 16 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Registrar a tela inicial</h2>
+          <p class="solution-caption">Acrescente Stack.Navigator e registre apenas o Cardápio.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="13-15">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator&gt;
+          &lt;Stack.Screen name=&quot;Cardápio&quot; component={CardapioScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">A primeira Screen é a rota inicial. Agora falta registrar o destino dos botões.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-17"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 17 · Registrar a tela de detalhes">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 17 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Registrar a tela de detalhes</h2>
+          <p class="solution-caption">Adicione a segunda Screen dentro do mesmo Stack.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="15">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator&gt;
+          &lt;Stack.Screen name=&quot;Cardápio&quot; component={CardapioScreen} /&gt;
+          &lt;Stack.Screen name=&quot;Detalhes&quot; component={DetalhesScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O nome Detalhes é exatamente o mesmo usado em navigation.navigate(&#x27;Detalhes&#x27;, ...).</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-stack-18"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-stack" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Stack · 18 · Solução completa: testar o percurso">
+          <p class="solution-progress">Solução · Stack · Cardápio da cantina <span>Passo 18 de 18</span></p>
+          <h2 data-id="solucao-stack-titulo">Solução completa: testar o percurso</h2>
+          <p class="solution-caption">Os três arquivos estão prontos. Execute o app no Snack.</p>
+          <div class="solution-editor" data-id="solucao-stack-editor">
+            <div class="solution-editor-bar" data-id="solucao-stack-barra"><span>App.js</span><span>Código completo</span></div>
+            <pre data-id="solucao-stack-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createStackNavigator } from &#x27;@react-navigation/stack&#x27;;
+import CardapioScreen from &#x27;./CardapioScreen&#x27;;
+import DetalhesScreen from &#x27;./DetalhesScreen&#x27;;
+const Stack = createStackNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Stack.Navigator&gt;
+          &lt;Stack.Screen name=&quot;Cardápio&quot; component={CardapioScreen} /&gt;
+          &lt;Stack.Screen name=&quot;Detalhes&quot; component={DetalhesScreen} /&gt;
+        &lt;/Stack.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Abra Cuscuz e Tapioca. Confira nome e preço. Use Voltar após cada escolha.</p>
+          <div class="solution-downloads"><a href="aulas/exemplos/aula17/solucoes/solucao-stack.zip" download>Baixar todos os arquivos (.zip)</a><a href="aulas/exemplos/aula17/solucoes/stack/App.js" download>App.js</a><a href="aulas/exemplos/aula17/solucoes/stack/CardapioScreen.js" download>CardapioScreen.js</a><a href="aulas/exemplos/aula17/solucoes/stack/DetalhesScreen.js" download>DetalhesScreen.js</a><a href="https://reactnavigation.org/docs/6.x/stack-navigator/" target="_blank" rel="noopener">Referência: React Navigation 6</a></div>
+        </section>
+
+
+        <!-- Seção Tab Navigator -->
+        <section class="navigation-setup-slide" id="configuracao-tabs"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Tab Navigator 🗂️</h2>
+          <div class="concept-box">
+            <h6 style="color: white;">Instalação</h6>
+            <pre><code class="language-bash">npm install @react-navigation/bottom-tabs
+npm install react-native-gesture-handler react-native-reanimated</code></pre>
+          </div>
+          <div class="concept-box">
+            <h6 style="color: white;">Usando o Snack</h6>
+            <pre><code class="language-json" data-trim>
+              {
+                "dependencies": {
+                  "@expo/vector-icons": "^14.1.0",
+                  "react-native-paper": "4.9.2",
+                  "react-native-screens": "~4.10.0",
+                  "@react-navigation/stack": "^6.4.1",
+                  "react-native-reanimated": "~3.17.4",
+                  "@react-navigation/native": "^6.1.18",
+                  "@react-navigation/bottom-tabs": "^6.5.12",
+                  "react-native-safe-area-context": "5.4.0",
+                  "react-native-gesture-handler": "~2.24.0"
+                }
+              }</code></pre>
+          </div>
+        </section>
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)" data-auto-animate>
+          <h2 style="color: white;">Exemplo de Tab Navigator</h2>
+          <pre><code class="language-jsx">import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator&gt;
+        &lt;Tab.Screen name="Home" component={HomeScreen} /&gt;
+        &lt;Tab.Screen name="Settings" component={SettingsScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          style="padding: 20px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+            <!-- Coluna 2: Embed do Expo Snack -->
+            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+              <div data-snack-id="@natorjunior/tab01" data-snack-platform="web" data-snack-preview="true"
+                data-snack-theme="light"
+                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+              </div>
+              <script async src="https://snack.expo.dev/embed.js"></script>
+            </div>
+          </div>
+        </section>
+
+
+        <section class="navigation-practice-slide" id="atividade-tabs"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          data-menu-title="Fixação · Tabs: meu campus">
+          <p class="practice-label">Atividade de fixação · Tabs</p>
+          <h2>Meu campus</h2>
+          <p class="practice-intro">Crie um app com três abas inferiores e conteúdos fixos.</p>
+          <div class="concept-box">
+            <h3>O que fazer</h3>
+            <ol>
+              <li>Crie um Bottom Tab Navigator com as abas <strong>Início</strong>, <strong>Avisos</strong> e <strong>Perfil</strong>.</li>
+              <li>Em Início, exiba uma mensagem de boas-vindas ao campus.</li>
+              <li>Em Avisos, mostre dois avisos; em Perfil, exiba seu nome e seu curso.</li>
+              <li>Defina um título para cada aba e uma cor para destacar a aba selecionada.</li>
+            </ol>
+          </div>
+          <p class="practice-check"><strong>Teste:</strong> toque nas três abas. Cada uma deve mostrar seu conteúdo e ficar destacada quando estiver selecionada.</p>
+        </section>
+
+        <section class="navigation-solution-slide" id="solucao-tabs-01"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 01 · Criar o app e os arquivos">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 01 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Criar o app e os arquivos</h2>
+          <p class="solution-caption">Abra um novo Snack e crie estes arquivos na mesma pasta.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>Estrutura do app</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-estrutura-do-app-pre"><code class="language-text" data-trim data-line-numbers="">App.js
+InicioScreen.js
+AvisosScreen.js
+PerfilScreen.js
+
+Dependências do exemplo da aula:
+@react-navigation/native (6.x)
+@react-navigation/bottom-tabs (6.x)
+react-native-screens
+react-native-safe-area-context</code></pre>
+          </div>
+          <p class="solution-note">Use as versões compatíveis com o SDK do exemplo. Vamos preencher um arquivo por vez.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-02"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 02 · Importar as bibliotecas">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 02 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Importar as bibliotecas</h2>
+          <p class="solution-caption">Comece pelo App.js. Ainda não vamos montar a interface.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">NavigationContainer gerencia a navegação; a função create prepara o tipo escolhido.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-03"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 03 · Criar o navegador">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 03 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Criar o navegador</h2>
+          <p class="solution-caption">Acrescente uma constante abaixo dos imports.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="4">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+const Tab = createBottomTabNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Tab oferece os componentes Navigator e Screen. Ainda precisamos criar as telas.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-04"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 04 · Importar os componentes de Início">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 04 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Importar os componentes de Início</h2>
+          <p class="solution-caption">Abra InicioScreen.js e comece pelos imports.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>InicioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-inicioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">Cada aba usa um componente próprio. Não é necessário criar um botão para trocar de aba.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-05"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 05 · Construir a tela Início">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 05 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Construir a tela Início</h2>
+          <p class="solution-caption">Exporte a função e escreva o conteúdo fixo dessa aba.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>InicioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-inicioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-10">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function InicioScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Bem-vindo ao campus!&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Por enquanto, estamos preparando a tela. Vamos registrá-la no App.js depois.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-06"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 06 · Importar os componentes de Avisos">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 06 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Importar os componentes de Avisos</h2>
+          <p class="solution-caption">Abra AvisosScreen.js e comece pelos imports.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>AvisosScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-avisosscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">Cada aba usa um componente próprio. Não é necessário criar um botão para trocar de aba.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-07"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 07 · Construir a tela Avisos">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 07 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Construir a tela Avisos</h2>
+          <p class="solution-caption">Exporte a função e escreva o conteúdo fixo dessa aba.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>AvisosScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-avisosscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-12">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function AvisosScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Avisos do campus&lt;/Text&gt;
+      &lt;Text&gt;Biblioteca aberta até as 18h.&lt;/Text&gt;
+      &lt;Text&gt;Monitoria de programação às 14h.&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Por enquanto, estamos preparando a tela. Vamos registrá-la no App.js depois.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-08"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 08 · Importar os componentes de Perfil">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 08 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Importar os componentes de Perfil</h2>
+          <p class="solution-caption">Abra PerfilScreen.js e comece pelos imports.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>PerfilScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-perfilscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">Cada aba usa um componente próprio. Não é necessário criar um botão para trocar de aba.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-09"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 09 · Construir a tela Perfil">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 09 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Construir a tela Perfil</h2>
+          <p class="solution-caption">Exporte a função e escreva o conteúdo fixo dessa aba.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>PerfilScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-perfilscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-11">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function PerfilScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Nome: Ana Silva&lt;/Text&gt;
+      &lt;Text&gt;Curso: Sistemas de Informação&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Por enquanto, estamos preparando a tela. Vamos registrá-la no App.js depois.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-10"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 10 · Importar as três telas no App">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 10 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Importar as três telas no App</h2>
+          <p class="solution-caption">Volte ao App.js e acrescente os imports das telas.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="4-6">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Os nomes dos componentes precisam corresponder aos exports dos arquivos.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-11"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 11 · Montar o NavigationContainer">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 11 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Montar o NavigationContainer</h2>
+          <p class="solution-caption">Exporte App e devolva o contêiner que receberá as abas.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="8-13">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Vamos manter apenas um NavigationContainer na raiz do aplicativo.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-12"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 12 · Criar as abas e registrar Início">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 12 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Criar as abas e registrar Início</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Tab.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="11-13">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator&gt;
+        &lt;Tab.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">name define a rota e seu título padrão; component indica qual tela será exibida.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-13"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 13 · Registrar a aba Avisos">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 13 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Registrar a aba Avisos</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Tab.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="13">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator&gt;
+        &lt;Tab.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Avisos&quot; component={AvisosScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">name define a rota e seu título padrão; component indica qual tela será exibida.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-14"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 14 · Registrar a aba Perfil">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 14 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Registrar a aba Perfil</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Tab.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="14">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator&gt;
+        &lt;Tab.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Avisos&quot; component={AvisosScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Perfil&quot; component={PerfilScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">name define a rota e seu título padrão; component indica qual tela será exibida.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-15"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 15 · Destacar a aba selecionada">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 15 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Destacar a aba selecionada</h2>
+          <p class="solution-caption">Configure tabBarActiveTintColor em screenOptions.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="11">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator screenOptions={{ tabBarActiveTintColor: &#x27;#087e72&#x27; }}&gt;
+        &lt;Tab.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Avisos&quot; component={AvisosScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Perfil&quot; component={PerfilScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">A cor será aplicada ao título e ao ícone da aba ativa. As outras continuam com a cor padrão.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-tabs-16"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-tabs" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Tabs · 16 · Solução completa: testar as abas">
+          <p class="solution-progress">Solução · Tabs · Meu campus <span>Passo 16 de 16</span></p>
+          <h2 data-id="solucao-tabs-titulo">Solução completa: testar as abas</h2>
+          <p class="solution-caption">Os quatro arquivos estão prontos. Execute o app no Snack.</p>
+          <div class="solution-editor" data-id="solucao-tabs-editor">
+            <div class="solution-editor-bar" data-id="solucao-tabs-barra"><span>App.js</span><span>Código completo</span></div>
+            <pre data-id="solucao-tabs-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createBottomTabNavigator } from &#x27;@react-navigation/bottom-tabs&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import AvisosScreen from &#x27;./AvisosScreen&#x27;;
+import PerfilScreen from &#x27;./PerfilScreen&#x27;;
+const Tab = createBottomTabNavigator();
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Tab.Navigator screenOptions={{ tabBarActiveTintColor: &#x27;#087e72&#x27; }}&gt;
+        &lt;Tab.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Avisos&quot; component={AvisosScreen} /&gt;
+        &lt;Tab.Screen name=&quot;Perfil&quot; component={PerfilScreen} /&gt;
+      &lt;/Tab.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Toque em Início, Avisos e Perfil. Confira o conteúdo e a cor da aba ativa.</p>
+          <div class="solution-downloads"><a href="aulas/exemplos/aula17/solucoes/solucao-tabs.zip" download>Baixar todos os arquivos (.zip)</a><a href="aulas/exemplos/aula17/solucoes/tabs/App.js" download>App.js</a><a href="aulas/exemplos/aula17/solucoes/tabs/InicioScreen.js" download>InicioScreen.js</a><a href="aulas/exemplos/aula17/solucoes/tabs/AvisosScreen.js" download>AvisosScreen.js</a><a href="aulas/exemplos/aula17/solucoes/tabs/PerfilScreen.js" download>PerfilScreen.js</a><a href="https://reactnavigation.org/docs/6.x/bottom-tab-navigator/" target="_blank" rel="noopener">Referência: React Navigation 6</a></div>
+        </section>
+
+
+        <!-- Seção Drawer Navigator -->
+        <section class="navigation-setup-slide" id="configuracao-drawer"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">
+            Drawer Navigator 🗄️</h2>
+          <div class="concept-box">
+            <h6 style="color: white;">Instalação</h6>
+            <pre><code class="language-bash">npm install @react-navigation/drawer
+npm install react-native-gesture-handler react-native-reanimated</code></pre>
+          </div>
+          <h6 style="color: white;">Exemplo de Drawer Navigator</h6>
+          <pre><code class="language-jsx">import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+
+const Drawer = createDrawerNavigator();
+
+export default function App() {
+  return (
+    &lt;NavigationContainer&gt;
+      &lt;Drawer.Navigator&gt;
+        &lt;Drawer.Screen name="Home" component={HomeScreen} /&gt;
+        &lt;Drawer.Screen name="Profile" component={ProfileScreen} /&gt;
+      &lt;/Drawer.Navigator&gt;
+    &lt;/NavigationContainer&gt;
+  );
+}</code></pre>
+        </section>
+
+        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          style="padding: 20px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+
+            <!-- Coluna 2: Embed do Expo Snack -->
+            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+              <div data-snack-id="@natorjunior/drawer01" data-snack-platform="web" data-snack-preview="true"
+                data-snack-theme="light"
+                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+              </div>
+              <script async src="https://snack.expo.dev/embed.js"></script>
+            </div>
+          </div>
+        </section>
+
+        <section class="navigation-practice-slide" id="atividade-drawer"
+          data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          data-menu-title="Fixação · Drawer: guia do campus">
+          <p class="practice-label">Atividade de fixação · Drawer</p>
+          <h2>Guia do campus</h2>
+          <p class="practice-intro">Crie um app com menu lateral e informações fixas sobre o campus.</p>
+          <div class="concept-box">
+            <h3>O que fazer</h3>
+            <ol>
+              <li>Crie um Drawer Navigator com as telas <strong>Início</strong>, <strong>Biblioteca</strong> e <strong>Contato</strong>.</li>
+              <li>Em Início, apresente o guia; em Biblioteca, informe um horário de funcionamento fictício.</li>
+              <li>Em Contato, mostre um e-mail e um telefone fictícios.</li>
+              <li>Mantenha o cabeçalho visível para abrir o menu pelo ícone e escolher uma tela.</li>
+            </ol>
+          </div>
+          <p class="practice-check"><strong>Teste:</strong> abra o menu pelo ícone e visite as três telas. Confira se o título e o conteúdo correspondem à opção escolhida.</p>
+        </section>
+
+        <section class="navigation-solution-slide" id="solucao-drawer-01"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 01 · Criar o app e os arquivos">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 01 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Criar o app e os arquivos</h2>
+          <p class="solution-caption">Abra um novo Snack e crie estes arquivos na mesma pasta.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>Estrutura do app</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-estrutura-do-app-pre"><code class="language-text" data-trim data-line-numbers="">App.js
+InicioScreen.js
+BibliotecaScreen.js
+ContatoScreen.js
+
+Dependências do exemplo da aula:
+@react-navigation/native (6.x)
+@react-navigation/drawer (6.x)
+react-native-screens
+react-native-safe-area-context
+react-native-gesture-handler
+react-native-reanimated (3.x, como no exemplo)</code></pre>
+          </div>
+          <p class="solution-note">Use as versões compatíveis com o SDK do exemplo. Vamos preencher um arquivo por vez.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-02"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 02 · Importar as bibliotecas">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 02 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Importar as bibliotecas</h2>
+          <p class="solution-caption">Comece pelo App.js. Ainda não vamos montar a interface.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">NavigationContainer gerencia a navegação; a função create prepara o tipo escolhido.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-03"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 03 · Criar o navegador">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 03 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Criar o navegador</h2>
+          <p class="solution-caption">Acrescente uma constante abaixo dos imports.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="6">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+const Drawer = createDrawerNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Drawer oferece os componentes Navigator e Screen. Ainda precisamos criar as telas.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-04"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 04 · Importar os componentes de Início">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 04 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Importar os componentes de Início</h2>
+          <p class="solution-caption">Abra InicioScreen.js e importe React, View e Text.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>InicioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-inicioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">As telas exibem dados fixos. O Drawer será responsável pela troca de destinos.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-05"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 05 · Construir a tela Início">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 05 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Construir a tela Início</h2>
+          <p class="solution-caption">Crie a função da tela e adicione seus textos.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>InicioScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-inicioscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-11">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function InicioScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Guia do campus&lt;/Text&gt;
+      &lt;Text&gt;Use o menu para conhecer os serviços.&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Mantenha o export default: ele permite importar a tela no App.js.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-06"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 06 · Importar os componentes de Biblioteca">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 06 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Importar os componentes de Biblioteca</h2>
+          <p class="solution-caption">Abra BibliotecaScreen.js e importe React, View e Text.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>BibliotecaScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-bibliotecascreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">As telas exibem dados fixos. O Drawer será responsável pela troca de destinos.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-07"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 07 · Construir a tela Biblioteca">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 07 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Construir a tela Biblioteca</h2>
+          <p class="solution-caption">Crie a função da tela e adicione seus textos.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>BibliotecaScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-bibliotecascreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-11">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function BibliotecaScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Biblioteca&lt;/Text&gt;
+      &lt;Text&gt;Horário fictício: segunda a sexta, das 8h às 18h.&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Mantenha o export default: ele permite importar a tela no App.js.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-08"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 08 · Importar os componentes de Contato">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 08 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Importar os componentes de Contato</h2>
+          <p class="solution-caption">Abra ContatoScreen.js e importe React, View e Text.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>ContatoScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-contatoscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;</code></pre>
+          </div>
+          <p class="solution-note">As telas exibem dados fixos. O Drawer será responsável pela troca de destinos.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-09"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 09 · Construir a tela Contato">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 09 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Construir a tela Contato</h2>
+          <p class="solution-caption">Crie a função da tela e adicione seus textos.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>ContatoScreen.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-contatoscreen-js-pre"><code class="language-jsx" data-trim data-line-numbers="3-12">import React from &#x27;react&#x27;;
+import { View, Text } from &#x27;react-native&#x27;;
+
+export default function ContatoScreen() {
+  return (
+    &lt;View style={{ flex: 1, padding: 24, gap: 16 }}&gt;
+      &lt;Text&gt;Contato fictício&lt;/Text&gt;
+      &lt;Text&gt;E-mail: campus@example.com&lt;/Text&gt;
+      &lt;Text&gt;Telefone: (00) 0000-0000&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Mantenha o export default: ele permite importar a tela no App.js.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-10"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 10 · Importar as telas no App">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 10 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Importar as telas no App</h2>
+          <p class="solution-caption">Retorne ao App.js e importe as três telas prontas.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="6-8">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();</code></pre>
+          </div>
+          <p class="solution-note">Cada opção do menu apontará para um destes componentes.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-11"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 11 · Preparar a raiz para os gestos">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 11 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Preparar a raiz para os gestos</h2>
+          <p class="solution-caption">Exporte App e retorne GestureHandlerRootView com flex: 1.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="10-15">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Mantenha também a importação de react-native-gesture-handler no início do arquivo.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-12"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 12 · Adicionar o NavigationContainer">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 12 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Adicionar o NavigationContainer</h2>
+          <p class="solution-caption">Insira o contêiner dentro de GestureHandlerRootView.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="13-14">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">A raiz cuida dos gestos; o NavigationContainer gerencia a navegação.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-13"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 13 · Criar o Drawer e registrar Início">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 13 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Criar o Drawer e registrar Início</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Drawer.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="14-16">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Drawer.Navigator&gt;
+          &lt;Drawer.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+        &lt;/Drawer.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O Drawer cria uma opção no menu para cada Screen registrada.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-14"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 14 · Adicionar Biblioteca ao menu">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 14 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Adicionar Biblioteca ao menu</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Drawer.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="16">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Drawer.Navigator&gt;
+          &lt;Drawer.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Biblioteca&quot; component={BibliotecaScreen} /&gt;
+        &lt;/Drawer.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O Drawer cria uma opção no menu para cada Screen registrada.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-15"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 15 · Adicionar Contato ao menu">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 15 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Adicionar Contato ao menu</h2>
+          <p class="solution-caption">Acrescente uma Screen por vez dentro de Drawer.Navigator.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="17">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Drawer.Navigator&gt;
+          &lt;Drawer.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Biblioteca&quot; component={BibliotecaScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Contato&quot; component={ContatoScreen} /&gt;
+        &lt;/Drawer.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O Drawer cria uma opção no menu para cada Screen registrada.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-16"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 16 · Manter o cabeçalho visível">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 16 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Manter o cabeçalho visível</h2>
+          <p class="solution-caption">Explicite headerShown: true em screenOptions.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Construção passo a passo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="14">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Drawer.Navigator screenOptions={{ headerShown: true }}&gt;
+          &lt;Drawer.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Biblioteca&quot; component={BibliotecaScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Contato&quot; component={ContatoScreen} /&gt;
+        &lt;/Drawer.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">O cabeçalho padrão já inclui o ícone que abre o menu. Não precisamos criar outro botão.</p>
+        </section>
+
+
+        <section class="navigation-solution-slide" id="solucao-drawer-17"
+          data-background-color="#f4f6f8" data-auto-animate
+          data-auto-animate-id="solucao-drawer" data-auto-animate-duration="0.6" data-auto-animate-easing="ease-in-out"
+          data-auto-animate-unmatched="false" data-transition="none" data-background-transition="none"
+          data-menu-title="Solução Drawer · 17 · Solução completa: testar o menu">
+          <p class="solution-progress">Solução · Drawer · Guia do campus <span>Passo 17 de 17</span></p>
+          <h2 data-id="solucao-drawer-titulo">Solução completa: testar o menu</h2>
+          <p class="solution-caption">Os quatro arquivos estão prontos. Execute o app no Snack.</p>
+          <div class="solution-editor" data-id="solucao-drawer-editor">
+            <div class="solution-editor-bar" data-id="solucao-drawer-barra"><span>App.js</span><span>Código completo</span></div>
+            <pre data-id="solucao-drawer-app-js-pre"><code class="language-jsx" data-trim data-line-numbers="">import &#x27;react-native-gesture-handler&#x27;;
+import React from &#x27;react&#x27;;
+import { GestureHandlerRootView } from &#x27;react-native-gesture-handler&#x27;;
+import { NavigationContainer } from &#x27;@react-navigation/native&#x27;;
+import { createDrawerNavigator } from &#x27;@react-navigation/drawer&#x27;;
+import InicioScreen from &#x27;./InicioScreen&#x27;;
+import BibliotecaScreen from &#x27;./BibliotecaScreen&#x27;;
+import ContatoScreen from &#x27;./ContatoScreen&#x27;;
+const Drawer = createDrawerNavigator();
+export default function App() {
+  return (
+    &lt;GestureHandlerRootView style={{ flex: 1 }}&gt;
+      &lt;NavigationContainer&gt;
+        &lt;Drawer.Navigator screenOptions={{ headerShown: true }}&gt;
+          &lt;Drawer.Screen name=&quot;Início&quot; component={InicioScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Biblioteca&quot; component={BibliotecaScreen} /&gt;
+          &lt;Drawer.Screen name=&quot;Contato&quot; component={ContatoScreen} /&gt;
+        &lt;/Drawer.Navigator&gt;
+      &lt;/NavigationContainer&gt;
+    &lt;/GestureHandlerRootView&gt;
+  );
+}</code></pre>
+          </div>
+          <p class="solution-note">Abra o menu pelo ícone do cabeçalho e visite Início, Biblioteca e Contato.</p>
+          <div class="solution-downloads"><a href="aulas/exemplos/aula17/solucoes/solucao-drawer.zip" download>Baixar todos os arquivos (.zip)</a><a href="aulas/exemplos/aula17/solucoes/drawer/App.js" download>App.js</a><a href="aulas/exemplos/aula17/solucoes/drawer/InicioScreen.js" download>InicioScreen.js</a><a href="aulas/exemplos/aula17/solucoes/drawer/BibliotecaScreen.js" download>BibliotecaScreen.js</a><a href="aulas/exemplos/aula17/solucoes/drawer/ContatoScreen.js" download>ContatoScreen.js</a><a href="https://reactnavigation.org/docs/6.x/drawer-navigator/" target="_blank" rel="noopener">Referência: React Navigation 6</a></div>
+        </section>
+
+      </section>
+
+      <!-- Seção APIs REST -->
+      <section>
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">APIs REST em React Native 🌐</h2>
+          <div class="concept-box">
+            <h3 style="color: white;">O que é uma API REST?</h3>
+            <ul style="color: white;">
+              <li class="fragment fade-right">Interface para comunicação entre sistemas</li>
+              <li class="fragment fade-right">Baseada em requisições HTTP</li>
+              <li class="fragment fade-right">Geralmente retorna dados em formato JSON</li>
+              <li class="fragment fade-right">Métodos HTTP: GET, POST, PUT, PATCH, DELETE</li>
+            </ul>
+          </div>
+        </section>
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Usando Fetch API</h2>
+          <pre><code class="language-jsx" data-trim data-line-numbers>
+// Importe useState e useEffect de 'react'.
+// O trecho abaixo deve ficar dentro de um componente.
+const [dados, setDados] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchDados = async () => {
+    try {
+      const response = await fetch('https://api.exemplo.com/dados');
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      const json = await response.json();
+      setDados(json);
+    } catch (error) {
+      console.error('Erro:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDados();
+}, []);</code></pre>
+        </section>
+
+        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          style="padding: 20px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+              <div data-snack-id="@natorjunior/fetch01" data-snack-platform="web" data-snack-preview="true"
+                data-snack-theme="light"
+                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+              </div>
+              <script async src="https://snack.expo.dev/embed.js"></script>
+            </div>
+          </div>
+        </section>
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Usando Axios</h2>
+          <div class="concept-box">
+            <h6 style="color: white;">Instalação</h6>
+            <pre><code class="language-bash">npm install axios</code></pre>
+          </div>
+          <pre><code class="language-jsx" data-trim data-line-numbers>
+import axios from 'axios';
+
+// Importe useState e useEffect de 'react'.
+// O trecho abaixo deve ficar dentro de um componente.
+const [dados, setDados] = useState([]);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchDados = async () => {
+    try {
+      const response = await axios.get('https://api.exemplo.com/dados');
+      setDados(response.data);
+    } catch (error) {
+      console.error('Erro:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDados();
+}, []);</code></pre>
+        </section>
+
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Exemplo Prático</h2>
+          <pre><code class="language-jsx" data-trim data-line-numbers>
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import axios from 'axios';
+
+export default function App() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+      .then(response => {
+        setPosts(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return (
+      &lt;View style={{ flex: 1, justifyContent: 'center' }}&gt;
+        &lt;ActivityIndicator size="large" /&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  return (
+    &lt;FlatList
+      data={posts}
+      keyExtractor={item => item.id.toString()}
+      renderItem={({ item }) => (
+        &lt;View style={{ padding: 10, borderBottomWidth: 1 }}&gt;
+          &lt;Text style={{ fontSize: 18, fontWeight: 'bold' }}&gt;
+            {item.title}
+          &lt;/Text&gt;
+          &lt;Text&gt;{item.body}&lt;/Text&gt;
+        &lt;/View&gt;
+      )}
+    /&gt;
+  );
+}</code></pre>
+        </section>
+
+
+        <section data-align="center" data-background-gradient="radial-gradient(#283b95, #17b2c3)"
+          style="padding: 20px;">
+          <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start;">
+            <div style="flex: 1 1 50%; padding: 20px; box-sizing: border-box;">
+              <div data-snack-id="@natorjunior/fetch02" data-snack-platform="web" data-snack-preview="true"
+                data-snack-theme="light"
+                style="overflow:hidden;background:#fbfcfd;border:1px solid var(--color-border);border-radius:4px;height:505px;width:100%">
+              </div>
+              <script async src="https://snack.expo.dev/embed.js"></script>
+            </div>
+          </div>
+        </section>
+      </section>
+
+
+      <!-- Seção de Atividades Práticas -->
+      <section>
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Atividades Práticas 💻</h2>
+
+          <div class="concept-box">
+            <h3 style="color: white;">Atividade 1: Lista de Usuários com Fetch</h3>
+            <p style="color: white;">Crie um aplicativo que:</p>
+            <ul style="color: white;">
+              <li>Busque usuários da API: https://jsonplaceholder.typicode.com/users</li>
+              <li>Exiba nome, e-mail e empresa em uma FlatList</li>
+              <li>Implemente um indicador de carregamento</li>
+              <li>Adicione tratamento de erros</li>
+            </ul>
+          </div>
+        </section>
+
+
+        <!-- Seção de Atividades Práticas -->
+        <section data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+          <h2 style="color: white;">Atividades Práticas 💻</h2>
+          <div class="concept-box">
+            <h3 style="color: white;">Atividade 2: Produtos com Axios</h3>
+            <p style="color: white;">Desenvolva um aplicativo que:</p>
+            <ul style="color: white;">
+              <li>Use Axios para buscar produtos de: https://dummyjson.com/products</li>
+              <li>Implemente filtro por categoria de produto</li>
+              <li>Adicione busca por nome do produto</li>
+              <li>Exiba imagens e detalhes dos produtos em cards</li>
+              <li>Mostre indicador de carregamento durante as requisições</li>
+            </ul>
+          </div>
+        </section>
+
+      </section>
+    </div>
+  </div>
+
+
+
+  <!-- Scripts Reveal.js -->
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script src="./aula04-materials/script.js"></script>
+
+  <script>
+    Reveal.initialize({
+      center: false,
+      controls: true,
+      progress: true,
+      slideNumber: true,
+      history: true,
+      transition: 'convex',
+      plugins: [RevealMarkdown, RevealHighlight, RevealMenu],
+      markdown: {
+        smartypants: true
+      },
+      width: 1200,
+      height: 800,
+      hash: true,
+      respondToHashChanges: true,
+      menu: {
+        side: 'left',
+        width: 300,
+        numbers: true,
+        titleSelector: 'h1, h2, h3, h4, h5, h6'
+      }
+    });
+  </script>
+</body>
+
+</html>

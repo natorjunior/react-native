@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "MQTT básico · Aula 18b",
+    "slug": "mqtt-basico-aula18b",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": { "supportsTablet": true },
+    "android": { "softwareKeyboardLayoutMode": "resize" },
+    "web": { "bundler": "metro" }
+  }
+}

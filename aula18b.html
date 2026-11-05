@@ -1,0 +1,1847 @@
+<!doctype html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta
+      content="MQTT em React Native: publique por um botão, mostre o status e receba mensagens no App.js."
+      name="description"
+    />
+    <title>Aula 18b · MQTT passo a passo</title>
+    <link href="dist/reset.css" rel="stylesheet" />
+    <link href="dist/reveal.css" rel="stylesheet" />
+    <link href="dist/theme/white.css" rel="stylesheet" />
+    <link href="plugin/highlight/atom-one-dark.css" rel="stylesheet" />
+    <link href="plugin/menu/menu.css" rel="stylesheet" />
+    <link href="aulas/css/aula18b.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section
+          aria-label="Entender a ideia"
+          class="lesson-group"
+          id="secao-entender"
+        >
+          <section
+            class="slide cover"
+            data-background-color="#0d212b"
+            data-location="01.01 · Entender a ideia"
+            data-menu-title="01 · Entender a ideia"
+            id="abertura"
+          >
+            <div class="cover-shell">
+              <header class="cover-header">
+                <p class="eyebrow"><span class="cover-signal" aria-hidden="true"></span>Programação para Dispositivos Móveis</p>
+                <span class="cover-number">AULA <b>18b</b></span>
+              </header>
+              <div class="cover-layout">
+                <div class="cover-copy">
+                  <p class="cover-topic">MQTT <span>+ React Native</span></p>
+                  <h1>Protocolo<br />MQTT<br /><em>Básico</em></h1>
+                  <p class="cover-goal">
+                    Conecte dois apps e veja uma mensagem<br />viajar de uma tela para a outra.
+                  </p>
+                  <div class="cover-steps" aria-label="Etapas da aula">
+                    <span><b>01</b> Publicar</span>
+                    <span><b>02</b> Mostrar status</span>
+                    <span><b>03</b> Receber</span>
+                  </div>
+                </div>
+                <div class="cover-network" role="img" aria-label="Celular A publica Olá, MQTT!; o broker encaminha e o celular B recebe a mensagem.">
+                  <svg class="cover-route" viewBox="0 0 480 500" aria-hidden="true">
+                    <path class="cover-route-track" d="M184 200H240V300H296" />
+                    <path class="cover-route-line" d="M184 200H240V300H296" />
+                    <circle cx="205" cy="200" r="5" />
+                    <path class="cover-route-arrow" d="m285 294 7 6-7 6" />
+                  </svg>
+                  <div class="cover-device cover-device-sender" aria-hidden="true">
+                    <p class="cover-device-label"><span>A</span> PUBLICA</p>
+                    <div class="phone">
+                      <div class="notch"></div>
+                      <p class="phone-label">CELULAR A</p>
+                      <h3>MQTT básico</h3>
+                      <p class="phone-status">● Conectado</p>
+                      <small>Última mensagem</small>
+                      <div class="phone-message">Olá, MQTT!</div>
+                      <span class="phone-button">Enviar Olá <span>↗</span></span>
+                    </div>
+                  </div>
+                  <div class="cover-broker" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M11 6.5h6M7 17.5h.01M11 17.5h6"/></svg>
+                    <span>broker</span>
+                  </div>
+                  <div class="cover-device cover-device-receiver" aria-hidden="true">
+                    <p class="cover-device-label"><span>B</span> RECEBE</p>
+                    <div class="phone">
+                      <div class="notch"></div>
+                      <p class="phone-label">CELULAR B</p>
+                      <h3>MQTT básico</h3>
+                      <p class="phone-status">● Conectado</p>
+                      <small>Última mensagem</small>
+                      <div class="phone-message">Olá, MQTT!</div>
+                      <p class="cover-delivered"><span>✓</span> Mensagem recebida</p>
+                    </div>
+                  </div>
+                  <span class="cover-packet" aria-hidden="true">✉ Olá, MQTT!</span>
+                  <p class="cover-network-caption" aria-hidden="true">Dois apps. O mesmo tópico.</p>
+                </div>
+              </div>
+              <footer class="cover-footer">
+                <div class="credit">
+                  <strong>Prof. Msc. Nator Junior Carvalho da Costa</strong>
+                  <span>UFC · Campus de Quixadá</span>
+                </div>
+                <span class="cover-footer-note">DA CONEXÃO À PRIMEIRA MENSAGEM</span>
+              </footer>
+            </div>
+            <aside class="notes">
+              A meta da aula é simples: tocar no botão de um app React Native e ver o
+              texto chegar a outra instância. Vamos usar o mesmo texto e o mesmo
+              tópico durante toda a aula. Começamos publicando pelo botão, depois
+              mostramos o status e acrescentamos recebimento no mesmo App.js.
+            </aside>
+          </section>
+          <section
+            class="slide postal-slide"
+            id="o-que-e-mqtt"
+            data-location="01.02 · Entender a ideia"
+            data-menu-title="01.02 · O que é MQTT?"
+            data-auto-animate
+            data-auto-animate-id="mqtt-postal"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>O que é MQTT?</h2>
+            <p class="postal-lead">
+              Um <strong>protocolo leve</strong> para trocar mensagens entre apps e
+              dispositivos.
+            </p>
+            <div class="postal-scene" data-id="postal-scene">
+              <article class="postal-role" data-id="postal-sender">
+                <div
+                  class="mqtt-sticker sticker-sender"
+                  data-id="sticker-sender"
+                  role="img"
+                  aria-label="Publica a mensagem"
+                ></div>
+                <h3 data-id="postal-name-sender">Publicador</h3>
+                <p>Publica a mensagem</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-clerk">
+                <div
+                  class="mqtt-sticker sticker-clerk"
+                  data-id="sticker-clerk"
+                  role="img"
+                  aria-label="Distribui por tópico"
+                ></div>
+                <h3 data-id="postal-name-clerk">Broker</h3>
+                <p>Distribui por tópico</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-reader">
+                <div
+                  class="mqtt-sticker sticker-reader"
+                  data-id="sticker-reader"
+                  role="img"
+                  aria-label="Escolhe o que receber"
+                ></div>
+                <h3 data-id="postal-name-reader">Assinante</h3>
+                <p>Escolhe o que receber</p>
+              </article>
+            </div>
+            <div class="postal-explanation">
+              <span class="postal-metaphor">UMA ANALOGIA</span>
+              <p>Imagine uma central de correspondências <strong>por assunto.</strong></p>
+            </div>
+            <aside class="notes">
+              Protocolo é um conjunto de regras de comunicação. MQTT usa publicação e
+              assinatura. Apresente os três personagens sem detalhar todos de uma vez. A
+              analogia é uma central de boletins por assunto: uma publicação pode ser
+              distribuída a várias pessoas inscritas. Diferentemente de uma carta comum, a
+              mensagem não leva o endereço de um único destinatário. Os bonecos são uma
+              analogia; no sistema real, publicadores e assinantes são clientes de
+              software. Fonte:
+              <a href="https://mqtt.org/" target="_blank" rel="noopener"
+                >MQTT.org — protocolo de mensagens</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide postal-slide"
+            id="broker"
+            data-location="01.03 · Entender a ideia"
+            data-menu-title="01.03 · Broker: a central de mensagens."
+            data-auto-animate
+            data-auto-animate-id="mqtt-postal"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Broker: a central de mensagens.</h2>
+            <p class="postal-lead">
+              Um <strong>servidor</strong> que recebe as publicações e entrega a quem
+              assinou o tópico.
+            </p>
+            <div class="postal-scene has-focus" data-id="postal-scene">
+              <article class="postal-role" data-id="postal-sender">
+                <div
+                  class="mqtt-sticker sticker-sender"
+                  data-id="sticker-sender"
+                  role="img"
+                  aria-label="Publica a mensagem"
+                ></div>
+                <h3 data-id="postal-name-sender">Publicador</h3>
+                <p>Publica a mensagem</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role is-focus" data-id="postal-clerk">
+                <div
+                  class="mqtt-sticker sticker-clerk"
+                  data-id="sticker-clerk"
+                  role="img"
+                  aria-label="Distribui por tópico"
+                ></div>
+                <h3 data-id="postal-name-clerk">Broker</h3>
+                <p>Distribui por tópico</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-reader">
+                <div
+                  class="mqtt-sticker sticker-reader"
+                  data-id="sticker-reader"
+                  role="img"
+                  aria-label="Escolhe o que receber"
+                ></div>
+                <h3 data-id="postal-name-reader">Assinante</h3>
+                <p>Escolhe o que receber</p>
+              </article>
+            </div>
+            <div class="postal-jobs">
+              <span class="fragment fade-up" data-fragment-index="0"
+                ><b>1</b> Recebe mensagens</span
+              ><span class="fragment fade-up" data-fragment-index="1"
+                ><b>2</b> Consulta assinaturas</span
+              ><span class="fragment fade-up" data-fragment-index="2"
+                ><b>3</b> Encaminha aos clientes</span
+              >
+            </div>
+            <aside class="notes">
+              O broker é o servidor intermediário, não o protocolo MQTT. Cada cliente
+              mantém sua própria conexão com ele. O broker recebe publicações, verifica
+              quais assinaturas correspondem ao tópico e encaminha as mensagens aos
+              clientes interessados. Não é necessário programar o celular A para abrir uma
+              conexão direta com cada celular B, C ou D. A questão das redes será
+              ilustrada adiante. Avance para revelar uma responsabilidade por vez. Fonte:
+              <a
+                href="https://mosquitto.org/man/mqtt-7.html"
+                target="_blank"
+                rel="noopener"
+                >Eclipse Mosquitto — publicação e assinatura</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide postal-slide"
+            id="publicadores"
+            data-location="01.04 · Entender a ideia"
+            data-menu-title="01.04 · Publicador: quem envia a mensagem."
+            data-auto-animate
+            data-auto-animate-id="mqtt-postal"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Publicador: quem envia a mensagem.</h2>
+            <p class="postal-lead">
+              Publicar é enviar <strong>um tópico + um conteúdo</strong> ao broker.
+            </p>
+            <div class="postal-scene has-focus" data-id="postal-scene">
+              <article class="postal-role is-focus" data-id="postal-sender">
+                <div
+                  class="mqtt-sticker sticker-sender"
+                  data-id="sticker-sender"
+                  role="img"
+                  aria-label="Publica a mensagem"
+                ></div>
+                <h3 data-id="postal-name-sender">Publicador</h3>
+                <p>Publica a mensagem</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-clerk">
+                <div
+                  class="mqtt-sticker sticker-clerk"
+                  data-id="sticker-clerk"
+                  role="img"
+                  aria-label="Distribui por tópico"
+                ></div>
+                <h3 data-id="postal-name-clerk">Broker</h3>
+                <p>Distribui por tópico</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-reader">
+                <div
+                  class="mqtt-sticker sticker-reader"
+                  data-id="sticker-reader"
+                  role="img"
+                  aria-label="Escolhe o que receber"
+                ></div>
+                <h3 data-id="postal-name-reader">Assinante</h3>
+                <p>Escolhe o que receber</p>
+              </article>
+            </div>
+            <div class="postal-envelope">
+              <span><small>TÓPICO / ASSUNTO</small><code>turma/avisos</code></span
+              ><span class="fragment fade-up" data-fragment-index="0"
+                ><small>MENSAGEM / CONTEÚDO</small><strong>Aula às 18h!</strong></span
+              >
+              <p class="fragment fade-up" data-fragment-index="1">
+                A pessoa envia o aviso. <b>O broker encontra os assinantes.</b>
+              </p>
+            </div>
+            <aside class="notes">
+              Publicador (publisher) é o papel do cliente que publica uma mensagem em um
+              tópico. Mostre primeiro o assunto turma/avisos, depois o conteúdo Aula às
+              18h. No MQTT o tópico não é o endereço de rede do destinatário. O publicador
+              conhece o broker e o tópico, sem precisar conhecer IPs ou a quantidade de
+              assinantes. Um app, um sensor ou um serviço pode ser publicador. Fonte:
+              <a
+                href="https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/"
+                target="_blank"
+                rel="noopener"
+                >HiveMQ — publicação e assinatura</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide postal-slide"
+            id="assinantes"
+            data-location="01.05 · Entender a ideia"
+            data-menu-title="01.05 · Assinante: quem escolhe o que receber."
+            data-auto-animate
+            data-auto-animate-id="mqtt-postal"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Assinante: quem escolhe o que receber.</h2>
+            <p class="postal-lead">
+              Assinar é dizer ao broker: <strong>“Quero mensagens deste tópico”.</strong>
+            </p>
+            <div class="postal-scene has-focus" data-id="postal-scene">
+              <article class="postal-role" data-id="postal-sender">
+                <div
+                  class="mqtt-sticker sticker-sender"
+                  data-id="sticker-sender"
+                  role="img"
+                  aria-label="Publica a mensagem"
+                ></div>
+                <h3 data-id="postal-name-sender">Publicador</h3>
+                <p>Publica a mensagem</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role" data-id="postal-clerk">
+                <div
+                  class="mqtt-sticker sticker-clerk"
+                  data-id="sticker-clerk"
+                  role="img"
+                  aria-label="Distribui por tópico"
+                ></div>
+                <h3 data-id="postal-name-clerk">Broker</h3>
+                <p>Distribui por tópico</p>
+              </article>
+              <span class="postal-arrow" aria-hidden="true">→</span>
+              <article class="postal-role is-focus" data-id="postal-reader">
+                <div
+                  class="mqtt-sticker sticker-reader"
+                  data-id="sticker-reader"
+                  role="img"
+                  aria-label="Escolhe o que receber"
+                ></div>
+                <h3 data-id="postal-name-reader">Assinante</h3>
+                <p>Escolhe o que receber</p>
+              </article>
+            </div>
+            <div class="postal-explanation">
+              <code>turma/avisos</code>
+              <p class="fragment fade-up" data-fragment-index="0">
+                O broker envia os novos avisos pela conexão do assinante.
+              </p>
+              <p class="fragment fade-up" data-fragment-index="1">
+                <strong>O app reage:</strong> mostra na tela, atualiza um painel ou
+                dispara uma ação.
+              </p>
+            </div>
+            <aside class="notes">
+              Assinante (subscriber) é o cliente que registra uma assinatura em um tópico
+              ou filtro de tópicos. Aqui usamos apenas um tópico exato, sem curingas.
+              Assinar seleciona o assunto; receber é o que acontece quando uma publicação
+              correspondente chega. A assinatura não publica uma mensagem e não implica
+              que haverá histórico. O cliente não precisa consultar repetidamente o
+              publicador. O broker encaminha pela conexão que o assinante mantém com ele.
+              Um mesmo cliente pode publicar e assinar. Fonte:
+              <a
+                href="https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/"
+                target="_blank"
+                rel="noopener"
+                >HiveMQ — publicação e assinatura</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide fanout-slide"
+            id="uma-publicacao-varios-assinantes"
+            data-location="01.06 · Entender a ideia"
+            data-menu-title="01.06 · Uma publicação. Vários assinantes."
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Uma publicação. Vários assinantes.</h2>
+            <p class="postal-lead">
+              O broker distribui pelo <strong>tópico</strong>, não pelo nome da pessoa.
+            </p>
+            <div class="fanout-scene">
+              <article class="fanout-origin">
+                <div
+                  class="mqtt-sticker sticker-sender"
+                  role="img"
+                  aria-label="Pessoa publicando um aviso"
+                ></div>
+                <h3>Publicador</h3>
+                <code>turma/avisos</code><strong>“Aula às 18h!”</strong>
+              </article>
+              <span class="fanout-arrow" aria-hidden="true">→</span>
+              <article class="fanout-broker">
+                <div
+                  class="mqtt-sticker sticker-clerk"
+                  role="img"
+                  aria-label="Central distribuindo por assunto"
+                ></div>
+                <h3>Broker</h3>
+                <p>Verifica quem assinou</p>
+              </article>
+              <div class="fanout-recipients">
+                <article class="fanout-recipient">
+                  <div class="mqtt-sticker sticker-reader" aria-hidden="true"></div>
+                  <div>
+                    <h3>Ana <code>turma/avisos</code></h3>
+                    <p class="fragment fade-up" data-fragment-index="0">
+                      <span class="fanout-envelope" aria-hidden="true">✉</span> Aula às
+                      18h!
+                    </p>
+                  </div>
+                </article>
+                <article class="fanout-recipient">
+                  <div class="mqtt-sticker sticker-reader" aria-hidden="true"></div>
+                  <div>
+                    <h3>Bia <code>turma/avisos</code></h3>
+                    <p class="fragment fade-up" data-fragment-index="1">
+                      <span class="fanout-envelope" aria-hidden="true">✉</span> Aula às
+                      18h!
+                    </p>
+                  </div>
+                </article>
+                <article class="fanout-recipient fanout-other">
+                  <div class="mqtt-sticker sticker-reader" aria-hidden="true"></div>
+                  <div>
+                    <h3>Caio <code>turma/notas</code></h3>
+                    <p class="fragment fade-up" data-fragment-index="2">
+                      Outro tópico → não recebe este aviso.
+                    </p>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <p class="concept-takeaway fragment fade-up" data-fragment-index="3">
+              Assinou <code>turma/avisos</code>? <strong>Recebe este aviso.</strong>
+            </p>
+            <aside class="notes">
+              Os três clientes estão conectados. Ana e Bia assinaram turma/avisos. Caio
+              assinou apenas turma/notas. Uma única publicação em turma/avisos é
+              encaminhada a Ana e Bia, não a Caio. Revelar cada destinatário dá tempo para
+              perguntar quem deveria receber. A central de correspondências representa uma
+              distribuição de boletins por assunto, e não uma carta com destinatário
+              individual. As inscrições são assinaturas normais; não introduzimos shared
+              subscriptions ou recursos de persistência. Fonte:
+              <a
+                href="https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/"
+                target="_blank"
+                rel="noopener"
+                >HiveMQ — publicação e assinatura</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide network-slide"
+            id="rede-sem-broker"
+            data-location="01.07 · Entender a ideia"
+            data-menu-title="01.07 · E se cada app falasse direto com o outro?"
+            data-auto-animate
+            data-auto-animate-id="mqtt-rede"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>E se cada app falasse direto com o outro?</h2>
+            <p class="postal-lead">
+              Celulares podem estar em <strong>redes diferentes</strong>, com IPs
+              privados.
+            </p>
+            <div class="network-scene" data-id="network-scene">
+              <article class="network-client" data-id="network-client-A">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="16" y="5" width="32" height="54" rx="7" />
+                  <path d="M27 12h10m-10 39h10" />
+                </svg>
+                <h3>Celular A</h3>
+                <span class="network-badge">Wi-Fi de casa</span><code>192.168.1.10</code>
+              </article>
+              <div class="network-wire network-blocked" data-id="network-wire-a">
+                <span>IP de B? Porta?</span><b>⇢</b>
+              </div>
+              <article class="network-center network-question" data-id="network-center">
+                <span aria-hidden="true">?</span>
+                <h3>Como A alcança B?</h3>
+                <p>IP privado · NAT · firewall</p>
+              </article>
+              <div class="network-wire network-blocked" data-id="network-wire-b">
+                <span>Conexão de entrada?</span><b>⇢</b>
+              </div>
+              <article class="network-client" data-id="network-client-B">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="16" y="5" width="32" height="54" rx="7" />
+                  <path d="M27 12h10m-10 39h10" />
+                </svg>
+                <h3>Celular B</h3>
+                <span class="network-badge">4G / outra rede</span><code>10.0.0.8</code>
+              </article>
+            </div>
+            <div class="network-explanation">
+              <p class="fragment fade-up" data-fragment-index="0">
+                Seria preciso <strong>descobrir e alcançar cada destino.</strong>
+              </p>
+              <p class="fragment fade-up" data-fragment-index="1">
+                NAT e firewall podem bloquear conexões que vêm de fora.
+              </p>
+            </div>
+            <aside class="notes">
+              Este slide apresenta uma tentativa de arquitetura direta como comparação,
+              não o funcionamento do MQTT. IPs privados são ilustrativos e só fazem
+              sentido dentro de suas respectivas redes. NAT traduz endereços; firewall
+              pode impedir conexões de entrada. Não é uma afirmação de que conexão direta
+              é sempre impossível. Ela pode exigir descoberta de endereço, portas e
+              técnicas adicionais. O MQTT usa conexões cliente-broker para evitar essa
+              dependência direta entre os clientes. Fonte:
+              <a
+                href="https://www.hivemq.com/blog/mqtt-essentials-part-3-client-broker-connection-establishment/"
+                target="_blank"
+                rel="noopener"
+                >HiveMQ — conexões MQTT e NAT</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide network-slide"
+            id="rede-com-broker"
+            data-location="01.08 · Entender a ideia"
+            data-menu-title="01.08 · Cada app abre uma conexão com o broker."
+            data-auto-animate
+            data-auto-animate-id="mqtt-rede"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Cada app abre uma conexão com o broker.</h2>
+            <p class="postal-lead">
+              Os celulares precisam conhecer <strong>o endereço do broker.</strong>
+            </p>
+            <div class="network-scene network-solved" data-id="network-scene">
+              <article class="network-client" data-id="network-client-A">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="16" y="5" width="32" height="54" rx="7" />
+                  <path d="M27 12h10m-10 39h10" />
+                </svg>
+                <h3>Celular A</h3>
+                <span class="network-badge">Wi-Fi de casa</span><code>192.168.1.10</code>
+              </article>
+              <div class="network-wire" data-id="network-wire-a">
+                <span>A inicia a conexão</span><b>→</b>
+              </div>
+              <article
+                class="network-center network-central-broker"
+                data-id="network-center"
+              >
+                <div class="mqtt-sticker sticker-clerk" aria-hidden="true"></div>
+                <h3>Broker acessível</h3>
+                <span>Servidor na rede</span>
+              </article>
+              <div class="network-wire" data-id="network-wire-b">
+                <span>B inicia a conexão</span><b>←</b>
+              </div>
+              <article class="network-client" data-id="network-client-B">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="16" y="5" width="32" height="54" rx="7" />
+                  <path d="M27 12h10m-10 39h10" />
+                </svg>
+                <h3>Celular B</h3>
+                <span class="network-badge">4G / outra rede</span><code>10.0.0.8</code>
+              </article>
+            </div>
+            <div class="network-explanation">
+              <p class="fragment fade-up" data-fragment-index="0">
+                O broker entrega pela <strong>conexão já aberta</strong> de cada cliente.
+              </p>
+              <p class="fragment fade-up network-requirement" data-fragment-index="1">
+                Precisa funcionar: rede + endereço + porta do broker acessíveis.
+              </p>
+            </div>
+            <aside class="notes">
+              As setas representam a iniciativa de conexão: A inicia sua conexão ao broker
+              e B inicia a sua. Depois cada conexão permite tráfego nos dois sentidos,
+              incluindo mensagens que chegam ao assinante. O broker não precisa abrir uma
+              conexão nova de fora para o celular. Isso simplifica a comunicação entre
+              clientes atrás de NAT e em redes diferentes, mas não elimina a necessidade
+              de conectividade, roteamento, DNS e portas permitidas até o broker. Se o
+              broker estiver numa rede privada sem acesso pelos clientes, a comunicação
+              não funcionará. No exemplo da aula é usado
+              wss://broker.hivemq.com:8884/mqtt: MQTT sobre WebSocket seguro, por uma
+              porta que a rede precisa permitir. Não é necessário pedir o IP de outro
+              celular nem hospedar um servidor em cada aparelho. Fonte:
+              <a
+                href="https://www.hivemq.com/blog/mqtt-essentials-part-3-client-broker-connection-establishment/"
+                target="_blank"
+                rel="noopener"
+                >HiveMQ — conexões MQTT e NAT</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide mqtt-intro-slide"
+            data-location="01.09 · Entender a ideia"
+            data-menu-title="01.09 · No mundo real: do sensor para o app."
+            id="exemplo-sensor"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>No mundo real: do sensor para o app.</h2>
+            <p class="mqtt-definition">
+              O sensor publica a leitura. O app assina <code>sala/temperatura</code>.
+            </p>
+            <div
+              class="mqtt-concept"
+              aria-label="Um sensor publica 28 graus Celsius no tópico sala/temperatura. O broker entrega a mensagem ao app que assinou esse tópico."
+            >
+              <article
+                class="mqtt-concept-device fragment fade-up"
+                data-fragment-index="0"
+              >
+                <svg class="mqtt-concept-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M25 37V15a7 7 0 0 1 14 0v22a13 13 0 1 1-14 0Z" />
+                  <path d="M32 23v23m14-29h8m-8 10h5" />
+                  <circle cx="32" cy="47" r="4" />
+                </svg>
+                <h3>Sensor</h3>
+                <p>Publica um aviso</p>
+                <strong class="mqtt-reading">28 <small>°C</small></strong>
+              </article>
+              <div
+                class="mqtt-concept-arrow fragment fade-in"
+                data-fragment-index="1"
+                aria-hidden="true"
+              >
+                <span>28 °C</span
+                ><svg viewBox="0 0 100 20"><path d="M2 10h92m-10-8 10 8-10 8" /></svg>
+              </div>
+              <article class="mqtt-concept-hub fragment fade-up" data-fragment-index="1">
+                <svg class="mqtt-concept-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="10" y="9" width="44" height="19" rx="5" />
+                  <rect x="10" y="36" width="44" height="19" rx="5" />
+                  <path d="M20 18h1m9 0h14M20 45h1m9 0h14" />
+                </svg>
+                <h3>Broker</h3>
+                <p>Distribui por tópico</p>
+                <div class="mqtt-channel">
+                  <span>CANAL DE AVISOS</span><code>sala/temperatura</code>
+                </div>
+              </article>
+              <div
+                class="mqtt-concept-arrow fragment fade-in"
+                data-fragment-index="2"
+                aria-hidden="true"
+              >
+                <span>28 °C</span
+                ><svg viewBox="0 0 100 20"><path d="M2 10h92m-10-8 10 8-10 8" /></svg>
+              </div>
+              <article
+                class="mqtt-concept-device fragment fade-up"
+                data-fragment-index="2"
+              >
+                <svg class="mqtt-concept-icon" viewBox="0 0 64 64" aria-hidden="true">
+                  <rect x="16" y="5" width="32" height="54" rx="7" />
+                  <path d="M27 12h10m-10 39h10M24 30l6 6 12-14" />
+                </svg>
+                <h3>App</h3>
+                <p>Assina e recebe</p>
+                <strong class="mqtt-reading">28 <small>°C</small></strong>
+              </article>
+            </div>
+            <p class="mqtt-analogy fragment fade-up" data-fragment-index="3">
+              Os personagens mudam. Os papéis continuam:<br /><strong
+                >sensor publica → broker encaminha → app recebe.</strong
+              >
+            </p>
+            <aside class="notes">
+              Apresente MQTT como um protocolo: um conjunto de regras que permite a apps e
+              dispositivos trocar mensagens. Ele é leve e muito usado com sensores e
+              outros dispositivos conectados. Use o exemplo: o sensor publica a
+              temperatura no tópico sala/temperatura; o broker encaminha o texto aos
+              clientes que assinaram esse tópico. O tópico funciona como o nome de um
+              canal de avisos. O broker é o servidor intermediário; MQTT é o protocolo
+              usado na comunicação. A comparação com um canal serve para introduzir
+              publicação/assinatura. Aqui os clientes já estão conectados e o app já
+              assinou o tópico. No próximo slide, mostre essas etapas com a animação dos
+              celulares.
+            </aside>
+          </section>
+          <section
+            class="slide protocol-slide"
+            data-location="01.10 · Entender a ideia"
+            data-menu-title="01.10 · Como o MQTT entrega uma mensagem?"
+            data-stage="0"
+            id="objetivo"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Como o MQTT entrega uma mensagem?</h2>
+            <p class="protocol-intro">Um app publica em um <strong>tópico</strong>. O <strong>broker</strong> entrega a quem assinou.</p>
+            <ol class="protocol-steps" aria-label="Etapas do protocolo">
+              <li aria-current="step"><b>01</b> Conectar</li>
+              <li><b>02</b> Assinar</li>
+              <li><b>03</b> Publicar</li>
+              <li><b>04</b> Entregar</li>
+            </ol>
+            <div class="protocol-diagram" aria-label="Celular A e celular B se comunicam por meio do broker">
+              <svg class="protocol-links" viewBox="0 0 1088 300" aria-hidden="true">
+                <path class="protocol-link protocol-link-left" d="M236 166H404" />
+                <path class="protocol-link protocol-link-right" d="M684 166H852" />
+                <path class="protocol-subscribe-link" d="M852 110H684m10-6-10 6 10 6" />
+                <path class="protocol-publish-arrow" d="m394 160 10 6-10 6" />
+                <path class="protocol-deliver-arrow" d="m842 160 10 6-10 6" />
+              </svg>
+              <article class="protocol-client protocol-publisher">
+                <div class="protocol-notch" aria-hidden="true"></div>
+                <p class="protocol-role">CELULAR A <span>PUBLICADOR</span></p>
+                <h3>Quem envia</h3>
+                <p class="protocol-connection">● Conectado ao broker</p>
+                <p class="protocol-field-label">Mensagem para publicar</p>
+                <div class="protocol-payload">Olá, MQTT!</div>
+                <span class="protocol-publish-label">publica no tópico →</span>
+              </article>
+              <article class="protocol-server">
+                <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="5" width="36" height="15" rx="4"/><rect x="6" y="28" width="36" height="15" rx="4"/><path d="M14 12h1m8 0h11M14 35h1m8 0h11"/></svg>
+                <h3>Broker</h3>
+                <p id="protocol-broker-status">Conecta os clientes</p>
+                <div class="protocol-topic"><small>TÓPICO</small><code>ufc-quixada/aula18b/dupla07</code></div>
+                <p class="protocol-subscription" id="protocol-subscription">Nenhuma assinatura ainda</p>
+              </article>
+              <article class="protocol-client protocol-subscriber">
+                <div class="protocol-notch" aria-hidden="true"></div>
+                <p class="protocol-role">CELULAR B <span>ASSINANTE</span></p>
+                <h3>Quem recebe</h3>
+                <p class="protocol-connection">● Conectado ao broker</p>
+                <p class="protocol-field-label">Última mensagem</p>
+                <div class="protocol-inbox"><span class="protocol-waiting">Aguardando…</span><strong class="protocol-result">Olá, MQTT!</strong></div>
+                <span class="protocol-receive-label" id="protocol-receive-label">Ainda não assinou o tópico</span>
+              </article>
+              <span class="protocol-packet" aria-hidden="true" id="protocol-packet">ASSINAR</span>
+            </div>
+            <div class="protocol-explanation" aria-live="polite" aria-atomic="true">
+              <span class="protocol-step-number" id="protocol-step-number">01</span>
+              <div><h3 id="protocol-title">Os dois apps se conectam ao broker.</h3>
+                <p id="protocol-description">O broker é o servidor intermediário. Cada celular mantém sua própria conexão com ele.</p></div>
+            </div>
+            <div class="protocol-actions">
+              <span id="protocol-count">1 / 4</span>
+              <button id="protocol-prev" type="button" disabled>← Voltar</button>
+              <button class="protocol-primary" id="protocol-next" type="button">Assinar o tópico →</button>
+              <button id="protocol-replay" type="button" hidden>Recomeçar ↺</button>
+              <button class="text-button" id="protocol-play" type="button" aria-pressed="false">▶ Reproduzir</button>
+            </div>
+            <span class="fragment protocol-cue" data-fragment-index="0" aria-hidden="true"></span>
+            <span class="fragment protocol-cue" data-fragment-index="1" aria-hidden="true"></span>
+            <span class="fragment protocol-cue" data-fragment-index="2" aria-hidden="true"></span>
+            <aside class="notes">
+              MQTT é um protocolo de mensagens no modelo publicação/assinatura.
+              Avance pelas quatro etapas com o botão ou pelas setas da apresentação.
+              Reproduzir percorre as etapas automaticamente; Recomeçar repete a explicação.
+              Primeiro, cada cliente se conecta ao broker. Depois B assina o tópico;
+              A publica o texto nesse tópico e o broker o entrega a B.
+              A assinatura seleciona o tópico: A não precisa conhecer o endereço de B.
+              O diagrama destaca um papel por celular para explicar o fluxo. No app
+              da aula, os dois celulares publicam e assinam, então o emissor também
+              recebe a própria mensagem. A animação é uma simulação didática local.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="01.11 · Entender a ideia"
+            data-menu-title="01.11 · Quem faz o quê?"
+            id="papeis"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Quem faz o quê?</h2>
+            <div class="three-cards">
+              <article class="fragment fade-up" data-fragment-index="0">
+                <span class="big-mark">A</span>
+                <h3>Celular A</h3>
+                <p>Publica o texto.</p>
+                <code>publish</code>
+              </article>
+              <article class="fragment fade-up" data-fragment-index="1">
+                <span class="big-mark">⇄</span>
+                <h3>Broker</h3>
+                <p>Encaminha a mensagem.</p>
+                <code>servidor</code>
+              </article>
+              <article class="fragment fade-up" data-fragment-index="2">
+                <span class="big-mark">B</span>
+                <h3>Celular B</h3>
+                <p>Assina e recebe.</p>
+                <code>subscribe</code>
+              </article>
+            </div>
+            <p class="concept-takeaway fragment fade-up" data-fragment-index="3">Um mesmo cliente pode <strong>publicar e assinar.</strong></p>
+            <aside class="notes">
+              MQTT é um protocolo de mensagens. O broker é o servidor que recebe as
+              publicações e as distribui aos clientes que possuem assinaturas
+              correspondentes. Publisher e subscriber são papéis: o mesmo celular
+              pode publicar e assinar. A conexão de cada cliente fica aberta para
+              receber novas mensagens.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="01.12 · Entender a ideia"
+            data-menu-title="01.12 · Canal e mensagem são coisas diferentes."
+            id="topico"
+          >
+            <p class="eyebrow">AULA 18b / Entender a ideia</p>
+            <h2>Canal e mensagem são coisas diferentes.</h2>
+            <div class="two-pieces">
+              <article>
+                <span>1 / TÓPICO</span>
+                <h3>O canal da dupla</h3>
+                <code>ufc-quixada/aula18b/dupla07</code>
+              </article>
+              <article>
+                <span>2 / MENSAGEM</span>
+                <h3>O texto que vai viajar</h3>
+                <strong>Olá, MQTT!</strong>
+              </article>
+            </div>
+            <p class="takeaway">Os dois celulares precisam usar o mesmo tópico.</p>
+            <aside class="notes">
+              O tópico é o nome que encaminha a publicação. O texto Olá, MQTT! é o
+              payload, ou conteúdo. Troque dupla07 pelo identificador da dupla no
+              config.js. O endereço do broker é outra informação: indica o servidor
+              ao qual os clientes se conectam. Neste exercício não vamos introduzir
+              JSON, curingas, QoS ou retain.
+            </aside>
+          </section>
+        </section>
+        
+        <section
+          aria-label="Construir no React Native"
+          class="lesson-group"
+          id="secao-construir"
+        >
+          <section
+            class="slide setup-slide"
+            data-location="02.01 · Construir no React Native"
+            data-menu-title="02 · Construir no React Native"
+            id="preparar"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Crie o projeto e instale o MQTT.</h2>
+            <p class="lead">Comece com um projeto Expo em JavaScript.</p>
+            <div class="editor setup-create-editor">
+              <div class="editor-bar">Terminal · criar → entrar na pasta → instalar</div>
+              <pre><code class="language-bash" data-trim data-line-numbers="1-2|3">npx create-expo-app@latest mqtt-basico --template blank
+cd mqtt-basico
+npm install mqtt</code></pre>
+            </div>
+            <div class="setup-summary">
+              <article>
+                <span>EXPO / TEMPLATE BLANK</span>
+                <p>Cria a estrutura do app.</p>
+              </article>
+              <article>
+                <span>MQTT / BIBLIOTECA MQTT.js</span>
+                <p>Permite conectar, publicar e assinar.</p>
+              </article>
+            </div>
+            <p class="takeaway">
+              Instalamos o <strong>cliente MQTT</strong> no app. O broker fica no
+              servidor.
+            </p>
+            <aside class="notes">
+              Execute os comandos em uma pasta onde a turma cria seus projetos.
+              create-expo-app cria a pasta mqtt-basico e instala as dependências iniciais.
+              O template blank usa JavaScript e uma tela App.js. cd entra no projeto; só
+              então execute npm install mqtt. O pacote se chama mqtt e fornece a
+              biblioteca cliente MQTT.js. Esse comando não instala nem inicia um broker no
+              celular. Avance para destacar a instalação da biblioteca depois da criação.
+              Use Node compatível com o SDK gerado e Expo Go compatível com esse SDK.
+              Referência:
+              <a
+                href="https://docs.expo.dev/more/create-expo/"
+                target="_blank"
+                rel="noopener"
+                >create-expo-app</a
+              >.
+            </aside>
+          </section>
+          <section
+            class="slide setup-files-slide"
+            data-location="02.02 · Construir no React Native"
+            data-menu-title="02.02 · Vamos construir tudo no App.js."
+            id="organizar-projeto"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Vamos construir tudo no App.js.</h2>
+            <p class="lead">
+              Edite o <code>App.js</code> e adicione dois arquivos de apoio na raiz.
+            </p>
+            <div class="setup-files-layout">
+              <div class="setup-file-list" aria-label="Organização dos arquivos">
+                <article class="setup-app-target">
+                  <span>ARQUIVO PRINCIPAL</span><code>App.js</code>
+                  <p>
+                    Primeiro enviar.<br />Depois mostrar status e receber.
+                  </p>
+                </article>
+                <a href="aulas/exemplos/aula18b/config.js" download
+                  ><code>config.js</code><span>Broker e tópico ↧</span></a
+                >
+                <a href="aulas/exemplos/aula18b/estilos.js" download
+                  ><code>estilos.js</code><span>Aparência da tela ↧</span></a
+                >
+              </div>
+              <div class="editor">
+                <div class="editor-bar">App.js · ponto de partida</div>
+                <pre><code class="language-jsx" data-trim>import { useEffect, useState } from 'react';
+import { Button, Text, View } from 'react-native';
+import mqtt from 'mqtt';
+import { BROKER, TOPICO } from './config';
+import estilos from './estilos';
+
+export default function App() {
+  // Primeiro enviar; depois mostrar status e receber.
+  return &lt;Text&gt;MQTT básico&lt;/Text&gt;;
+}</code></pre>
+              </div>
+            </div>
+            <div class="setup-run">
+              <code>npx expo start</code>
+              <p>No celular, abra o Expo Go<br />e leia o QR code.</p>
+            </div>
+            <div class="step-strip">
+              <span>Botão publica</span><b>→</b><span>Mostrar status</span><b>→</b
+              ><span>Receber</span>
+            </div>
+            <aside class="notes">
+              O template blank já possui App.js. Substitua seu conteúdo pelo ponto de
+              partida do slide. Os imports antecipam o que será usado ao longo da prática.
+              Baixe config.js e estilos.js pelos links e salve-os ao lado de App.js e
+              package.json. Ajuste o tópico da dupla em config.js. A função App é o
+              componente que vamos desenvolver: estados e useEffect ficam antes do return;
+              a interface fica no JSX retornado. Execute npx expo start dentro de
+              mqtt-basico. A primeira tela mostra MQTT básico. Nos próximos slides,
+              comece pelo botão de envio; depois acrescente status e recebimento ao mesmo App.js. O código completo
+              está no material de apoio. Use Expo Go compatível com o SDK do projeto.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="02.03 · Construir no React Native"
+            data-menu-title="02.03 · Duas informações para começar."
+            id="configurar"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Duas informações para começar.</h2>
+            <div class="editor">
+              <div class="editor-bar">config.js</div>
+              <pre><code class="language-javascript" data-trim="">export const BROKER =
+  'wss://mqtt.acilab.com.br';
+
+export const TOPICO =
+  'ufc-quixada/aula18b/dupla07';</code></pre>
+            </div>
+            <div class="config-caption">
+              <span><b>BROKER</b> = servidor</span
+              ><span><b>TOPICO</b> = canal da dupla</span>
+            </div>
+            <a
+              class="source-link"
+              href="aulas/exemplos/aula18b/config.js"
+              rel="noopener"
+              target="_blank"
+              >Abrir config.js ↗</a
+            >
+            <aside class="notes">
+              BROKER indica o servidor; TOPICO indica o canal. Mantenha a mesma
+              configuração nos dois aparelhos. Troque dupla07 pelo código da dupla.
+              No app, importamos essas constantes. O import do MQTT.js usa
+              mqtt/dist/mqtt.esm, o bundle WebSocket da biblioteca. O projeto
+              pronto de apoio fixa a versão 5.10.4 no package.json; o projeto
+              criado com npm install mqtt instala a versão disponível no npm.
+            </aside>
+          </section>
+
+          <section
+            class="slide example-slide"
+            data-location="02.05 · Construir no React Native"
+            data-menu-title="02.05 · 1. Conectar e mostrar o status."
+            id="conectar"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>1. Conectar e mostrar o status.</h2>
+            <div class="example">
+              <div class="editor">
+                <div class="editor-bar">App.js · conexão</div>
+                <pre><code class="language-javascript" data-trim="">const [status, setStatus] = useState('Conectando…');
+
+useEffect(() =&gt; {
+  const client = mqtt.connect(BROKER);
+  client.on('connect', () =&gt; {
+    setStatus('Conectado');
+  });
+  return () =&gt; client.end(true);
+}, []);</code></pre>
+              </div>
+              <div class="preview">
+                <p class="preview-label">O QUE APARECE NO CELULAR</p>
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">PASSO 1</p>
+                  <h3>1. Conectar</h3>
+                  <p class="phone-status">● Conectado</p>
+                </div>
+              </div>
+            </div>
+            <div class="example-footer">
+              <p><code>setStatus</code> muda o texto mostrado na tela.</p>
+              <a
+                href="aulas/exemplos/aula18b/App.js"
+                rel="noopener"
+                target="_blank"
+                >App.js completo ↗</a
+              >
+            </div>
+            <aside class="notes">
+              Depois do primeiro envio, mantenha a conexão aberta enquanto a tela estiver
+              montada. Remova mqtt.connect da função enviar: agora ele fica no
+              useEffect. Este trecho fica dentro do componente, com a declaração const
+              [status, setStatus] = useState("Conectando…"). O App.js completo
+              contém imports, estado, interface e tratamento básico de erros. O
+              useEffect executa ao entrar na tela; seu retorno encerra a conexão ao
+              sair. No App.js, adicione o estado e o efeito antes do return e
+              mostre status com &lt;Text&gt;{status}&lt;/Text&gt; na interface.
+              Confirme o texto Conectado antes de acrescentar o recebimento.
+            </aside>
+          </section>
+
+          <section
+            class="slide example-slide publish-first-slide"
+            data-location="02.04 · Construir no React Native"
+            data-menu-title="02.04 · Primeiro: publique ao tocar no botão."
+            id="primeiro-envio"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Primeiro: publique ao tocar no botão.</h2>
+            <div class="example">
+              <div class="editor">
+                <div class="editor-bar">
+                  App.js · função antes do return; botão no JSX
+                </div>
+                <pre><code class="language-jsx" data-trim>function enviar() {
+  const client = mqtt.connect(BROKER);
+  client.once('connect', () =&gt; {
+    client.publish(TOPICO, 'Olá, MQTT!', () =&gt; {
+      client.end();
+    });
+  });
+}
+
+&lt;Button title="Enviar Olá" onPress={enviar} /&gt;</code></pre>
+              </div>
+              <div class="preview">
+                <p class="preview-label">PRIMEIRO APP: SÓ O ENVIO</p>
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">PRIMEIRO ENVIO</p>
+                  <h3>MQTT básico</h3>
+                  <small>Texto a enviar:</small>
+                  <div class="phone-message">Olá, MQTT!</div>
+                  <span class="phone-button">Enviar Olá</span>
+                </div>
+              </div>
+            </div>
+            <div class="example-footer">
+              <p>Toque → conectar → <code>publish</code> → encerrar.</p>
+              <a
+                href="aulas/exemplos/aula18b/README.md#primeiro-envio-no-appjs"
+                rel="noopener"
+                target="_blank"
+                >Versão inicial completa ↗</a
+              >
+            </div>
+            <aside class="notes">
+              Este é o primeiro exemplo prático: o botão publica uma mensagem. Use os
+              imports de Button, mqtt, BROKER e TOPICO do ponto de partida. A função
+              enviar fica dentro de App, antes do return. O Button substitui o Text
+              inicial no JSX. Cada toque cria uma conexão temporária. A conexão ainda é
+              necessária: once espera o evento connect uma vez antes de chamar publish.
+              Encerramos no callback de publish, depois do envio local; esse callback em
+              QoS 0 não confirma entrega ao destinatário. A versão completa no README
+              também trata erro e desativa reconexões automáticas nessa operação pontual.
+              Nenhum status ou assinatura é necessário na interface deste primeiro
+              exemplo. Para observar o envio, mantenha outro cliente já conectado e
+              inscrito no mesmo broker e tópico, como o app completo do professor. A tela
+              publicadora ainda não recebe nem lista mensagens. No próximo slide,
+              substituímos essa conexão por toque por uma conexão mantida no useEffect e
+              passamos a mostrar o status. A última etapa recupera o botão usando a
+              conexão já existente, em vez de criar outra. Referência:
+              <a
+                href="https://github.com/mqttjs/MQTT.js#api"
+                rel="noopener"
+                target="_blank"
+                >MQTT.js — connect, publish e end</a
+              >.
+            </aside>
+          </section>
+
+
+          <section
+            class="slide example-slide"
+            data-location="02.06 · Construir no React Native"
+            data-menu-title="02.06 · 2. Pedir para receber do canal."
+            id="assinar"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>2. Pedir para receber do canal.</h2>
+            <div class="example">
+              <div class="editor">
+                <div class="editor-bar">App.js · recebimento</div>
+                <pre><code class="language-javascript" data-trim="">client.on('connect', () =&gt; {
+  client.subscribe(TOPICO);
+});</code></pre>
+              </div>
+              <div class="preview">
+                <p class="preview-label">O QUE APARECE NO CELULAR</p>
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">PASSO 2</p>
+                  <h3>2. Receber</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Última mensagem:</small>
+                  <div class="phone-message">Nenhuma mensagem ainda.</div>
+                </div>
+              </div>
+            </div>
+            <div class="example-footer">
+              <p><code>subscribe</code> = “quero receber desse tópico”.</p>
+              <a
+                href="aulas/exemplos/aula18b/App.js"
+                rel="noopener"
+                target="_blank"
+                >App.js completo ↗</a
+              >
+            </div>
+            <aside class="notes">
+              A chamada fica dentro do mesmo useEffect que criou o cliente. Conectar
+              permite falar com o broker; assinar informa o canal que queremos
+              acompanhar. Neste slide a tela ainda espera uma mensagem. O App.js
+              completo usa resubscribe false para que a assinatura seja refeita
+              explicitamente no connect após uma reconexão. O status Conectado se
+              refere à conexão, não é uma confirmação de leitura ou da assinatura.
+            </aside>
+          </section>
+          <section
+            class="slide example-slide"
+            data-location="02.07 · Construir no React Native"
+            data-menu-title="02.07 · Quando a mensagem chega, atualize o texto."
+            id="receber"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Quando a mensagem chega, atualize o texto.</h2>
+            <div class="example">
+              <div class="editor">
+                <div class="editor-bar">App.js · recebimento</div>
+                <pre><code class="language-jsx" data-trim="">const [mensagem, setMensagem] = useState('');
+
+client.on('message', (topico, payload) =&gt; {
+  setMensagem(payload.toString());
+});
+
+&lt;Text&gt;{mensagem}&lt;/Text&gt;</code></pre>
+              </div>
+              <div class="preview">
+                <p class="preview-label">O QUE APARECE NO CELULAR</p>
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">PASSO 2</p>
+                  <h3>2. Receber</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Última mensagem:</small>
+                  <div class="phone-message">Olá, MQTT!</div>
+                </div>
+              </div>
+            </div>
+            <div class="example-footer">
+              <p>
+                <code>message</code> → <code>setMensagem</code> → <code>Text</code>.
+              </p>
+              <a
+                href="aulas/exemplos/aula18b/App.js"
+                rel="noopener"
+                target="_blank"
+                >App.js completo ↗</a
+              >
+            </div>
+            <aside class="notes">
+              No App.js, crie o estado mensagem antes do efeito. Na versão completa,
+              ele começa com Nenhuma mensagem ainda. O evento message
+              avisa quando uma publicação chega. payload.toString transforma o
+              conteúdo em texto; setMensagem muda o estado; Text exibe o novo valor.
+              O trecho do evento fica no efeito e o JSX no retorno do componente. O
+              App.js completo separa esses lugares e também verifica o tópico. Envie
+              a publicação pelo app final de outro aparelho para observar o
+              resultado.
+            </aside>
+          </section>
+          <section
+            class="slide example-slide"
+            data-location="02.08 · Construir no React Native"
+            data-menu-title="02.08 · 3. Reutilize a conexão para enviar."
+            id="enviar"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>3. Reutilize a conexão para enviar.</h2>
+            <div class="example">
+              <div class="editor">
+                <div class="editor-bar">App.js</div>
+                <pre><code class="language-jsx" data-trim="">const cliente = useRef(null);
+// No useEffect: cliente.current = client;
+
+function enviar() {
+  cliente.current.publish(TOPICO, 'Olá, MQTT!');
+}
+
+&lt;Button title="Enviar Olá" onPress={enviar} /&gt;</code></pre>
+              </div>
+              <div class="preview">
+                <p class="preview-label">O QUE APARECE NO CELULAR</p>
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">PASSO 3</p>
+                  <h3>MQTT básico</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Última mensagem:</small>
+                  <div class="phone-message">Olá, MQTT!</div>
+                  <span class="phone-button">Enviar Olá</span>
+                </div>
+              </div>
+            </div>
+            <div class="example-footer">
+              <p>
+                <code>cliente.current</code> guarda a conexão; o botão chama
+                <code>enviar</code>.
+              </p>
+              <a href="aulas/exemplos/aula18b/App.js" rel="noopener" target="_blank"
+                >App.js completo ↗</a
+              >
+            </div>
+            <aside class="notes">
+              No app final, acrescente useRef ao import de React. cliente é uma ref
+              criada com useRef(null). Dentro do
+              useEffect, cliente.current recebe o client que já foi conectado. A ref
+              permite usar essa conexão no botão. Substitua o enviar do primeiro
+              exemplo por esta versão, reaproveitando o cliente criado no efeito. O arquivo completo
+              bloqueia o botão enquanto não há conexão e confere connected antes de
+              publicar. A mensagem é fixa: Olá, MQTT!. Não há TextInput, histórico,
+              confirmação de entrega, seletor de usuário ou tela de configuração.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="02.09 · Construir no React Native"
+            data-menu-title="02.09 · Ao sair da tela, feche a conexão."
+            id="limpeza"
+          >
+            <p class="eyebrow">AULA 18b / Construir no React Native</p>
+            <h2>Ao sair da tela, feche a conexão.</h2>
+            <div class="editor">
+              <div class="editor-bar">Retorno do useEffect</div>
+              <pre><code class="language-javascript" data-trim="">return () =&gt; {
+  client.end(true);
+};</code></pre>
+            </div>
+            <div class="step-strip">
+              <span>Entrou → conectar</span><span>Saiu → encerrar</span>
+            </div>
+            <p class="takeaway">Uma conexão acompanha a vida da tela.</p>
+            <aside class="notes">
+              Esse retorno pertence ao mesmo useEffect da conexão. Ele evita deixar
+              conexões abertas depois da saída da tela. No App.js completo, a
+              variável ativo impede atualizações de estado por callbacks atrasados.
+              Esses detalhes ficam no arquivo de apoio para manter a explicação
+              inicial concentrada nas quatro operações MQTT.
+            </aside>
+          </section>
+        </section>
+        <section aria-label="Praticar" class="lesson-group" id="secao-praticar">
+          <section
+            class="slide"
+            data-location="03.01 · Praticar"
+            data-menu-title="03 · Praticar"
+            id="executar"
+          >
+            <p class="eyebrow">AULA 18b / Praticar</p>
+            <h2>Teste nos dois aparelhos.</h2>
+            <div class="message-flow">
+              <div class="phone">
+                <div class="notch"></div>
+                <p class="phone-label">Celular A</p>
+                <h3>MQTT básico</h3>
+                <p class="phone-status">● Conectado</p>
+                <small>Última mensagem:</small>
+                <div class="phone-message">Olá, MQTT!</div>
+                <span class="phone-button">Enviar Olá</span>
+              </div>
+              <div class="flow-middle">
+                <span class="flow-arrow">→</span>
+                <div class="broker">
+                  <svg aria-hidden="true" viewbox="0 0 80 70">
+                    <rect height="22" rx="5" width="60" x="10" y="6"></rect>
+                    <rect height="22" rx="5" width="60" x="10" y="35"></rect>
+                    <path d="M23 17h2m12 0h20M23 46h2m12 0h20"></path></svg
+                  ><strong>Broker</strong><small>encaminha</small>
+                </div>
+                <span class="flow-arrow">→</span><i class="travel">Olá!</i>
+              </div>
+              <div class="phone">
+                <div class="notch"></div>
+                <p class="phone-label">Celular B</p>
+                <h3>MQTT básico</h3>
+                <p class="phone-status">● Conectado</p>
+                <small>Última mensagem:</small>
+                <div class="phone-message">Olá, MQTT!</div>
+              </div>
+            </div>
+            <div class="step-strip">
+              <span>1 · Espere Conectado</span><span>2 · Toque em Enviar Olá</span
+              ><span>3 · Confira o outro celular</span>
+            </div>
+            <aside class="notes">
+              Use o mesmo TOPICO nos dois apps. O App.js foi construído em três
+              etapas e agora publica e assina, então recebe também seu próprio envio.
+              Abra a versão final nos dois aparelhos. Primeiro confirme Conectado;
+              depois toque em Enviar Olá e observe a mensagem no outro celular.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="03.02 · Praticar"
+            data-menu-title="03.02 · Mude só o texto da mensagem."
+            id="atividade"
+          >
+            <p class="eyebrow">AULA 18b / Praticar</p>
+            <h2>Mude só o texto da mensagem.</h2>
+            <div class="editor">
+              <div class="editor-bar">App.js · dentro de enviar()</div>
+              <pre><code class="language-javascript" data-trim="">cliente.current.publish(
+  TOPICO, 'Bom dia!'
+);</code></pre>
+            </div>
+            <div class="expected">
+              <span>ANTES</span><strong>Olá, MQTT!</strong><b>→</b><span>DEPOIS</span
+              ><strong>Bom dia!</strong>
+            </div>
+            <p class="takeaway">Publique de novo. O que mudou no outro celular?</p>
+            <aside class="notes">
+              Este é o único exercício inicial: trocar a mensagem fixa. Mantenha o
+              broker e o tópico iguais. O resultado esperado é Bom dia! no
+              destinatário. Não introduza ainda JSON, formulários, curingas, QoS,
+              presença ou persistência. Quando o aluno conseguir prever e observar
+              este fluxo, pode avançar para esses assuntos.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="03.03 · Praticar"
+            data-menu-title="03.03 · Quatro ações. Agora você sabe o caminho."
+            id="revisao"
+          >
+            <p class="eyebrow">AULA 18b / Praticar</p>
+            <h2>Quatro ações. Agora você sabe o caminho.</h2>
+            <div class="review">
+              <div><code>connect</code><span>Conectar ao broker.</span></div>
+              <div><code>subscribe</code><span>Escolher o canal.</span></div>
+              <div><code>on('message')</code><span>Receber uma mensagem.</span></div>
+              <div><code>publish</code><span>Enviar uma mensagem.</span></div>
+            </div>
+            <aside class="notes">
+              Peça que o aluno reconte o fluxo usando o exemplo do botão e dos dois
+              celulares. Não é necessário decorar callbacks: ele deve saber qual
+              operação conecta, qual assina, qual recebe e qual envia. O broker
+              conecta os dois papéis por meio do tópico.
+            </aside>
+          </section>
+          <section
+            class="slide"
+            data-location="03.04 · Praticar"
+            data-menu-title="03.04 · O App.js completo e os arquivos de apoio."
+            id="apoio"
+          >
+            <p class="eyebrow">AULA 18b / Praticar</p>
+            <h2>O App.js completo e os arquivos de apoio.</h2>
+            <div class="resources">
+              <a href="aulas/exemplos/aula18b/App.js" rel="noopener" target="_blank"><span>ARQUIVO PRINCIPAL</span><strong>App.js completo ↗</strong></a>
+              <a href="aulas/exemplos/aula18b/config.js" rel="noopener" target="_blank"><span>CONFIGURAÇÃO</span><strong>Broker e tópico ↗</strong></a>
+              <a href="aulas/exemplos/aula18b/estilos.js" rel="noopener" target="_blank"><span>APARÊNCIA</span><strong>Estilos da tela ↗</strong></a>
+              <a href="aulas/exemplos/aula18b/README.md" rel="noopener" target="_blank"><span>COMO EXECUTAR</span><strong>Roteiro da prática ↗</strong></a>
+            </div>
+            <p class="references">
+              <a
+                href="https://github.com/mqttjs/MQTT.js"
+                rel="noopener"
+                target="_blank"
+                >MQTT.js</a
+              >
+              ·
+              <a href="https://docs.expo.dev/" rel="noopener" target="_blank"
+                >Expo</a
+              >
+            </p>
+            <aside class="notes">
+              Os slides mostram apenas os trechos centrais e o resultado esperado.
+              O App.js reúne conexão, recebimento e envio no mesmo componente. As notas
+              do professor e o README guardam os detalhes. Os exemplos usam o broker
+              público HiveMQ, sem autenticação, com conteúdo fictício, QoS 0 e sem
+              mensagens retidas ou histórico offline. Não há promessa de confirmação
+              de leitura.
+            </aside>
+          </section>
+        </section>
+        <section class="lesson-group" aria-label="Exemplo completo" id="secao-completo">
+          <section
+            class="slide final-code-slide"
+            id="completo-conectar"
+            data-location="04.01 · Exemplo completo"
+            data-menu-title="04 · Exemplo completo"
+            data-auto-animate
+            data-auto-animate-id="mqtt-final"
+          >
+            <p class="eyebrow">AULA 18b / Exemplo completo · 1 de 3</p>
+            <h2>Conectar, assinar e mostrar o status.</h2>
+            <p class="final-code-caption">
+              Uma conexão, uma assinatura e um Text para o status.
+            </p>
+            <div class="complete-layout">
+              <div class="editor complete-editor">
+                <div class="editor-bar">
+                  App.js · o mesmo arquivo, um trecho de cada vez
+                </div>
+                <pre
+                  data-id="complete-code"
+                ><code class="language-jsx" data-trim data-line-numbers="9-11|12-18|36-38">import { useEffect, useRef, useState } from &#x27;react&#x27;;
+import { Button, FlatList, Text, View }
+  from &#x27;react-native&#x27;;
+import mqtt from &#x27;mqtt&#x27;;
+const BROKER = &#x27;wss://mqtt.acilab.com.br&#x27;;
+const TOPICO = &#x27;ufc-quixada/aula18b/dupla07&#x27;;
+
+export default function App() {
+  const cliente = useRef(null);
+  const [conectado, setConectado] = useState(false);
+  const [mensagens, setMensagens] = useState([]);
+  useEffect(() =&gt; {
+    const client = mqtt.connect(BROKER);
+    cliente.current = client;
+    client.on(&#x27;connect&#x27;, () =&gt; {
+      client.subscribe(TOPICO);
+      setConectado(true);
+    });
+    client.on(&#x27;message&#x27;, (_, payload) =&gt; {
+      setMensagens(lista =&gt;
+        [...lista, payload.toString()]);
+    });
+    client.on(&#x27;close&#x27;, () =&gt; setConectado(false));
+    client.on(&#x27;error&#x27;, () =&gt; setConectado(false));
+    return () =&gt; client.end(true);
+  }, []);
+
+  function enviar() {
+    if (cliente.current?.connected) {
+      cliente.current.publish(TOPICO, &#x27;Olá, MQTT!&#x27;);
+    }
+  }
+  return (
+    &lt;View style={{ flex: 1, padding: 32,
+      paddingTop: 60 }}&gt;
+      &lt;Text&gt;
+        {conectado ? &#x27;Conectado&#x27; : &#x27;Desconectado&#x27;}
+      &lt;/Text&gt;
+      &lt;FlatList
+        style={{ flex: 1 }}
+        data={mensagens}
+        keyExtractor={(_, i) =&gt; String(i)}
+        renderItem={({ item }) =&gt; (
+          &lt;Text&gt;{item}&lt;/Text&gt;
+        )}
+      /&gt;
+      &lt;Button title=&quot;Enviar Olá&quot; onPress={enviar}
+        disabled={!conectado} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+              </div>
+              <div class="final-preview" data-id="final-preview">
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">UM ÚNICO App.js</p>
+                  <h3>MQTT básico</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Mensagens recebidas</small>
+                  <p class="final-list-empty">Nenhuma mensagem ainda.</p>
+                  <span class="phone-button">Enviar Olá</span>
+                </div>
+              </div>
+            </div>
+            <div class="final-source">
+              <span>Avance para destacar o próximo trecho.</span
+              ><a href="aulas/exemplos/aula18b/completo/App.js" download="App.js"
+                >Baixar App.js completo ↧</a
+              >
+            </div>
+            <aside class="notes">
+              O exemplo inteiro está no mesmo App.js. Comece pelos estados: conectado é
+              um booleano e mensagens é um array. O useEffect cria o cliente uma vez; o
+              callback connect assina o tópico e altera o status. O texto Conectado
+              representa a conexão, não confirmação da assinatura ou de entrega. O
+              evento close volta ao estado desconectado e error evita um erro não
+              tratado. O retorno encerra a conexão ao sair da tela. Use o mesmo broker e
+              tópico nos dois aparelhos. O código completo mostrado nos três slides é
+              idêntico ao arquivo de download. As mudanças de destaque e a rolagem do
+              código acompanham os avanços. A prévia é ilustrativa, sem conexão de rede
+              na apresentação.
+            </aside>
+          </section>
+          <section
+            class="slide final-code-slide"
+            id="completo-lista"
+            data-location="04.02 · Exemplo completo"
+            data-menu-title="04.02 · Receber uma mensagem. Acrescentar à lista."
+            data-auto-animate
+            data-auto-animate-id="mqtt-final"
+          >
+            <p class="eyebrow">AULA 18b / Exemplo completo · 2 de 3</p>
+            <h2>Receber uma mensagem. Acrescentar à lista.</h2>
+            <p class="final-code-caption">
+              Cada evento message acrescenta um item; FlatList mostra o array.
+            </p>
+            <div class="complete-layout">
+              <div class="editor complete-editor">
+                <div class="editor-bar">
+                  App.js · o mesmo arquivo, um trecho de cada vez
+                </div>
+                <pre
+                  data-id="complete-code"
+                ><code class="language-jsx" data-trim data-line-numbers="19-22|39-46">import { useEffect, useRef, useState } from &#x27;react&#x27;;
+import { Button, FlatList, Text, View }
+  from &#x27;react-native&#x27;;
+import mqtt from &#x27;mqtt&#x27;;
+const BROKER = &#x27;wss://mqtt.acilab.com.br&#x27;;
+const TOPICO = &#x27;ufc-quixada/aula18b/dupla07&#x27;;
+
+export default function App() {
+  const cliente = useRef(null);
+  const [conectado, setConectado] = useState(false);
+  const [mensagens, setMensagens] = useState([]);
+  useEffect(() =&gt; {
+    const client = mqtt.connect(BROKER);
+    cliente.current = client;
+    client.on(&#x27;connect&#x27;, () =&gt; {
+      client.subscribe(TOPICO);
+      setConectado(true);
+    });
+    client.on(&#x27;message&#x27;, (_, payload) =&gt; {
+      setMensagens(lista =&gt;
+        [...lista, payload.toString()]);
+    });
+    client.on(&#x27;close&#x27;, () =&gt; setConectado(false));
+    client.on(&#x27;error&#x27;, () =&gt; setConectado(false));
+    return () =&gt; client.end(true);
+  }, []);
+
+  function enviar() {
+    if (cliente.current?.connected) {
+      cliente.current.publish(TOPICO, &#x27;Olá, MQTT!&#x27;);
+    }
+  }
+  return (
+    &lt;View style={{ flex: 1, padding: 32,
+      paddingTop: 60 }}&gt;
+      &lt;Text&gt;
+        {conectado ? &#x27;Conectado&#x27; : &#x27;Desconectado&#x27;}
+      &lt;/Text&gt;
+      &lt;FlatList
+        style={{ flex: 1 }}
+        data={mensagens}
+        keyExtractor={(_, i) =&gt; String(i)}
+        renderItem={({ item }) =&gt; (
+          &lt;Text&gt;{item}&lt;/Text&gt;
+        )}
+      /&gt;
+      &lt;Button title=&quot;Enviar Olá&quot; onPress={enviar}
+        disabled={!conectado} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+              </div>
+              <div class="final-preview" data-id="final-preview">
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">UM ÚNICO App.js</p>
+                  <h3>MQTT básico</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Mensagens recebidas</small>
+                  <ul class="final-message-list">
+                    <li data-id="final-msg-0"><small>01</small> Olá, MQTT!</li>
+                    <li data-id="final-msg-1"><small>02</small> Olá, MQTT!</li>
+                  </ul>
+                  <span class="phone-button">Enviar Olá</span>
+                </div>
+              </div>
+            </div>
+            <div class="final-source">
+              <span>Avance para destacar o próximo trecho.</span
+              ><a href="aulas/exemplos/aula18b/completo/App.js" download="App.js"
+                >Baixar App.js completo ↧</a
+              >
+            </div>
+            <aside class="notes">
+              payload.toString transforma o conteúdo recebido em texto. A atualização
+              funcional setMensagens(lista => [...lista, texto]) mantém as mensagens
+              anteriores, inclusive quando várias chegam rapidamente. FlatList recebe o
+              array e renderiza cada texto. O índice é usado como chave porque este
+              exemplo apenas acrescenta itens, sem remover ou reordenar. A lista existe
+              apenas na memória da tela; não há banco ou histórico persistido. As duas
+              mensagens na ilustração representam dois eventos recebidos. O código
+              completo mostrado nos três slides é idêntico ao arquivo de download. As
+              mudanças de destaque e a rolagem do código acompanham os avanços. A prévia
+              é ilustrativa, sem conexão de rede na apresentação.
+            </aside>
+          </section>
+          <section
+            class="slide final-code-slide"
+            id="completo-publicar"
+            data-location="04.03 · Exemplo completo"
+            data-menu-title="04.03 · Publicar pelo botão. Receber na própria lista."
+            data-auto-animate
+            data-auto-animate-id="mqtt-final"
+          >
+            <p class="eyebrow">AULA 18b / Exemplo completo · 3 de 3</p>
+            <h2>Publicar pelo botão. Receber na própria lista.</h2>
+            <p class="final-code-caption">
+              O botão publica no mesmo tópico que o app já assinou.
+            </p>
+            <div class="complete-layout">
+              <div class="editor complete-editor">
+                <div class="editor-bar">
+                  App.js · o mesmo arquivo, um trecho de cada vez
+                </div>
+                <pre
+                  data-id="complete-code"
+                ><code class="language-jsx" data-trim data-line-numbers="28-32|47-48">import { useEffect, useRef, useState } from &#x27;react&#x27;;
+import { Button, FlatList, Text, View }
+  from &#x27;react-native&#x27;;
+import mqtt from &#x27;mqtt&#x27;;
+const BROKER = &#x27;wss://mqtt.acilab.com.br&#x27;;
+const TOPICO = &#x27;ufc-quixada/aula18b/dupla07&#x27;;
+
+export default function App() {
+  const cliente = useRef(null);
+  const [conectado, setConectado] = useState(false);
+  const [mensagens, setMensagens] = useState([]);
+  useEffect(() =&gt; {
+    const client = mqtt.connect(BROKER);
+    cliente.current = client;
+    client.on(&#x27;connect&#x27;, () =&gt; {
+      client.subscribe(TOPICO);
+      setConectado(true);
+    });
+    client.on(&#x27;message&#x27;, (_, payload) =&gt; {
+      setMensagens(lista =&gt;
+        [...lista, payload.toString()]);
+    });
+    client.on(&#x27;close&#x27;, () =&gt; setConectado(false));
+    client.on(&#x27;error&#x27;, () =&gt; setConectado(false));
+    return () =&gt; client.end(true);
+  }, []);
+
+  function enviar() {
+    if (cliente.current?.connected) {
+      cliente.current.publish(TOPICO, &#x27;Olá, MQTT!&#x27;);
+    }
+  }
+  return (
+    &lt;View style={{ flex: 1, padding: 32,
+      paddingTop: 60 }}&gt;
+      &lt;Text&gt;
+        {conectado ? &#x27;Conectado&#x27; : &#x27;Desconectado&#x27;}
+      &lt;/Text&gt;
+      &lt;FlatList
+        style={{ flex: 1 }}
+        data={mensagens}
+        keyExtractor={(_, i) =&gt; String(i)}
+        renderItem={({ item }) =&gt; (
+          &lt;Text&gt;{item}&lt;/Text&gt;
+        )}
+      /&gt;
+      &lt;Button title=&quot;Enviar Olá&quot; onPress={enviar}
+        disabled={!conectado} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+              </div>
+              <div class="final-preview" data-id="final-preview">
+                <div class="phone">
+                  <div class="notch"></div>
+                  <p class="phone-label">UM ÚNICO App.js</p>
+                  <h3>MQTT básico</h3>
+                  <p class="phone-status">● Conectado</p>
+                  <small>Mensagens recebidas</small>
+                  <ul class="final-message-list">
+                    <li data-id="final-msg-0"><small>01</small> Olá, MQTT!</li>
+                    <li data-id="final-msg-1"><small>02</small> Olá, MQTT!</li>
+                    <li data-id="final-msg-2"><small>03</small> Olá, MQTT!</li>
+                  </ul>
+                  <span class="phone-button">Enviar Olá</span>
+                </div>
+              </div>
+            </div>
+            <div class="final-source">
+              <span>Avance para destacar o próximo trecho.</span
+              ><a href="aulas/exemplos/aula18b/completo/App.js" download="App.js"
+                >Baixar App.js completo ↧</a
+              >
+            </div>
+            <aside class="notes">
+              enviar usa a ref para acessar o cliente já conectado e confere connected
+              antes de publicar. O botão é desabilitado quando conectado é false. O
+              envio não altera o array diretamente: a mensagem aparece somente no evento
+              message vindo do broker. Como o app também assinou o tópico, ele recebe o
+              próprio envio. Em outro celular com o mesmo app e tópico, a mensagem
+              também entra na lista. O texto é fixo para concentrar a aula em subscribe,
+              publish e estado. O código completo mostrado nos três slides é idêntico ao
+              arquivo de download. As mudanças de destaque e a rolagem do código
+              acompanham os avanços. A prévia é ilustrativa, sem conexão de rede na
+              apresentação.
+            </aside>
+          </section>
+          <section
+            class="slide final-code-slide final-code-overview"
+            id="completo-codigo"
+            data-location="04.04 · Exemplo completo"
+            data-menu-title="04.04 · App.js completo: copie e execute."
+            data-auto-animate
+            data-auto-animate-id="mqtt-final"
+          >
+            <p class="eyebrow">AULA 18b / Exemplo completo</p>
+            <h2>App.js completo: copie e execute.</h2>
+            <div class="complete-code-columns">
+              <div class="editor">
+                <div class="editor-bar">1 / 2 · Conexão, status e recebimento</div>
+                <pre
+                  data-id="complete-code"
+                ><code class="language-jsx" data-trim data-line-numbers>import { useEffect, useRef, useState } from &#x27;react&#x27;;
+import { Button, FlatList, Text, View }
+  from &#x27;react-native&#x27;;
+import mqtt from &#x27;mqtt&#x27;;
+const BROKER = &#x27;wss://mqtt.acilab.com.br&#x27;;
+const TOPICO = &#x27;ufc-quixada/aula18b/dupla07&#x27;;
+
+export default function App() {
+  const cliente = useRef(null);
+  const [conectado, setConectado] = useState(false);
+  const [mensagens, setMensagens] = useState([]);
+  useEffect(() =&gt; {
+    const client = mqtt.connect(BROKER);
+    cliente.current = client;
+    client.on(&#x27;connect&#x27;, () =&gt; {
+      client.subscribe(TOPICO);
+      setConectado(true);
+    });
+    client.on(&#x27;message&#x27;, (_, payload) =&gt; {
+      setMensagens(lista =&gt;
+        [...lista, payload.toString()]);
+    });
+    client.on(&#x27;close&#x27;, () =&gt; setConectado(false));
+    client.on(&#x27;error&#x27;, () =&gt; setConectado(false));
+    return () =&gt; client.end(true);
+  }, []);</code></pre>
+              </div>
+              <div class="editor">
+                <div class="editor-bar">2 / 2 · Botão e lista na tela</div>
+                <pre
+                  data-id="complete-code-ui"
+                ><code class="language-jsx" data-trim data-line-numbers data-ln-start-from="28">
+  function enviar() {
+    if (cliente.current?.connected) {
+      cliente.current.publish(TOPICO, &#x27;Olá, MQTT!&#x27;);
+    }
+  }
+  return (
+    &lt;View style={{ flex: 1, padding: 32,
+      paddingTop: 60 }}&gt;
+      &lt;Text&gt;
+        {conectado ? &#x27;Conectado&#x27; : &#x27;Desconectado&#x27;}
+      &lt;/Text&gt;
+      &lt;FlatList
+        style={{ flex: 1 }}
+        data={mensagens}
+        keyExtractor={(_, i) =&gt; String(i)}
+        renderItem={({ item }) =&gt; (
+          &lt;Text&gt;{item}&lt;/Text&gt;
+        )}
+      /&gt;
+      &lt;Button title=&quot;Enviar Olá&quot; onPress={enviar}
+        disabled={!conectado} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+              </div>
+            </div>
+            <div class="final-source">
+              <span>Use o mesmo BROKER e TOPICO nos dois celulares.</span
+              ><a href="aulas/exemplos/aula18b/completo/App.js" download="App.js"
+                >Baixar e salvar como App.js ↧</a
+              >
+            </div>
+            <aside class="notes">
+              Este é um exemplo adicional e independente, com tudo em um único App.js:
+              imports, broker, tópico, estado, conexão, assinatura, lista e botão. A
+              leitura continua da coluna esquerda para a direita; os dois blocos juntos
+              formam exatamente o arquivo para download. Após criar o projeto Expo e
+              executar npm install mqtt, salve esse arquivo como App.js. Inicie com npx
+              expo start. Mantenha BROKER e TOPICO iguais nos aparelhos e ajuste o
+              identificador da dupla. O endereço do broker segue o usado no slide de
+              configuração. Os exemplos anteriores continuam disponíveis. Este exemplo
+              usa os componentes básicos do React Native e estilos inline para reduzir
+              arquivos de apoio.
+            </aside>
+          </section>
+        </section>
+      </div>
+    </div>
+    <div aria-hidden="true" class="lesson-footer">
+      <span id="lesson-location">AULA 18b · MQTT</span
+      ><span>→ SEÇÕES · ↓ PASSOS</span>
+    </div>
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/menu/menu.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="aulas/js/aula18b.js"></script>
+  </body>
+</html>

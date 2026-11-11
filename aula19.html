@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Aula 19 de React Native: armazenamento local com AsyncStorage e Expo SecureStore, exemplos práticos e atividades." />
+    <title>Aula 19 · Armazenamento com AsyncStorage e SecureStore</title>
+    <link href="dist/reset.css" rel="stylesheet" />
+    <link href="dist/reveal.css" rel="stylesheet" />
+    <link href="dist/theme/white.css" rel="stylesheet" />
+    <link href="plugin/highlight/atom-one-dark.css" rel="stylesheet" />
+    <link href="plugin/menu/menu.css" rel="stylesheet" />
+    <link href="aulas/css/aula19.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+<section class="lesson-group" id="secao-conceitos" aria-label="Entender a persistência">
+<section data-location="01.01 · Entender a persistência" class="slide cover" id="abertura" data-background-color="#0d212b" data-menu-title="Aula 19 · Armazenamento local">
+<div class="cover-top"><p class="eyebrow">Programação para Dispositivos Móveis</p><span>AULA 19</span></div>
+<div class="cover-grid"><div><p class="eyebrow">React Native + Expo</p><h1>O app fecha.<br /><em>Os dados ficam.</em></h1><p class="lead">AsyncStorage + SecureStore</p></div>
+<div class="cover-art" role="img" aria-label="Um apelido no celular e uma cópia persistida no dispositivo"><div class="phone"><div class="app-label">MEU APP</div><h3>Meu apelido</h3><div class="phone-field">Nator</div><span class="phone-button">Salvar</span><div class="phone-note">Apelido salvo ✓</div></div><div class="cover-orbit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 3v7h7"/></svg></div><div class="storage-mini"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 14h18M7 18h.01M11 18h6M7 7h10"/></svg><div><span>NO DISPOSITIVO</span><b>"Nator"</b></div></div></div></div>
+<p class="cover-credit">Prof. Msc. Nator Junior Carvalho da Costa<br />UFC · Campus de Quixadá</p>
+<aside class="notes">Apresente a diferença entre estado em memória e armazenamento persistente. A aula usa exemplos completos de apelido, perfil com JSON e sessão fictícia. A introdução de JSON mantém auto-animate; os exemplos podem ser executados no Expo a partir dos arquivos para download.</aside></section>
+<section data-location="01.02 · Entender a persistência" class="slide " id="objetivos" data-menu-title="O que vamos construir?">
+            <p class="eyebrow">AULA 19 / Entender a persistência</p>
+            <h2>O que vamos construir?</h2>
+            <p class="lead">Vamos persistir preferências e uma sessão de demonstração.</p><div class="columns"><article class="card"><h3>Meu apelido</h3><p>Salvar um texto, fechar o app, abrir novamente e recuperar o valor com AsyncStorage.</p></article><article class="card"><h3>Sessão de demonstração</h3><p>Guardar um token fictício no SecureStore, restaurar o estado local e remover ao sair.</p></article></div><ol class="steps"><li>Escolher onde armazenar cada tipo de dado.</li><li>Escrever, ler e remover usando async/await.</li><li>Tratar carregamento, ausência de valor e falhas.</li></ol>
+            <aside class="notes">Pré-requisitos: useState, useEffect, funções assíncronas e componentes básicos. Não precisamos de navegação, MQTT ou API externa. Use Android/iOS para o segundo exemplo.</aside>
+          </section>
+<section data-location="01.03 · Entender a persistência" class="slide " id="memoria-e-persistencia" data-menu-title="useState lembra até quando?">
+            <p class="eyebrow">AULA 19 / Entender a persistência</p>
+            <h2>useState lembra até quando?</h2>
+            <div class="columns"><article class="card"><h3>Estado em memória</h3><p><code>useState</code> atualiza a interface. Seu valor não é recuperado automaticamente quando o processo do app reinicia.</p></article><article class="card"><h3>Armazenamento persistente</h3><p>Mantém um valor local para a próxima execução. O app precisa ler esse valor e colocá-lo no estado.</p></article></div><div class="flow"><div><strong>1. Digitar</strong><p>O estado muda.</p></div><span aria-hidden="true">→</span><div><strong>2. Salvar</strong><p>O valor vai para o dispositivo.</p></div><span aria-hidden="true">→</span><div><strong>3. Reabrir</strong><p>A leitura restaura o estado.</p></div></div><div class="callout"><p>Persistir um dado e atualizar a tela são duas ações diferentes.</p></div>
+            <aside class="notes">Fechar uma tela, colocar o app em segundo plano e encerrar o processo são eventos distintos. Para verificar persistência, encerre e abra novamente o mesmo projeto, sem desinstalar. Fast Refresh pode preservar o estado e confundir a observação.</aside>
+          </section>
+<section data-location="01.04 · Entender a persistência" class="slide " id="qual-armazenamento" data-menu-title="Qual dado vai para onde?">
+            <p class="eyebrow">AULA 19 / Entender a persistência</p>
+            <h2>Qual dado vai para onde?</h2>
+            <table><thead><tr><th>Dado</th><th>Escolha nesta aula</th><th>Motivo</th></tr></thead><tbody><tr><td>Tema, idioma, apelido</td><td>AsyncStorage</td><td>Preferências sem segredo.</td></tr><tr><td>Token de sessão</td><td>SecureStore</td><td>Pequeno valor sensível.</td></tr><tr><td>Listas com consultas complexas</td><td>Banco local, como SQLite</td><td>Dados estruturados e consultas.</td></tr><tr><td>Fotos e arquivos grandes</td><td>Sistema de arquivos</td><td>Conteúdo binário ou volumoso.</td></tr></tbody></table><div class="callout"><p>Armazenamento local pertence ao dispositivo. Sincronizar aparelhos exige outra camada.</p></div>
+            <aside class="notes">O nome de uma biblioteca não decide sozinho a classificação: avalie sensibilidade, volume e necessidade de consulta. Não vamos implementar SQLite ou arquivos nesta aula. Os exemplos são pequenos para concentrar a atenção no ciclo escrever, ler e remover.</aside>
+          </section>
+</section>
+<section class="lesson-group" id="secao-asyncstorage" aria-label="AsyncStorage">
+<section data-location="02.01 · AsyncStorage" class="slide " id="preparar-projeto" data-menu-title="Preparando um projeto Expo">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>Preparando um projeto Expo</h2>
+            <div class="editor"><div class="editor-bar">Terminal · template JavaScript com App.js</div><pre><code class="language-bash" data-trim data-line-numbers>npx create-expo-app@latest armazenamento-aula19 --template blank
+cd armazenamento-aula19
+npx expo install @react-native-async-storage/async-storage
+npx expo install expo-secure-store
+npx expo start</code></pre></div><div class="columns" style="margin-top:26px"><article class="card"><h3>No projeto criado</h3><p>Edite o <code>App.js</code> da raiz. Use um exemplo por vez.</p></article><article class="card"><h3>Onde executar</h3><p>AsyncStorage: Android, iOS e web.<br />SecureStore: Android/iOS, pelo Expo Go.</p></article></div>
+            <aside class="notes">O template blank evita a estrutura de rotas para quem está acompanhando pelo App.js. npx expo install escolhe as versões compatíveis com o SDK do projeto. Na web, o Expo pode pedir react-dom, react-native-web e @expo/metro-runtime; instale com npx expo install. No Snack, adicione os pacotes em Dependencies e escolha Android/iOS para SecureStore. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/async-storage/">AsyncStorage no Expo</a> e <a href="https://docs.expo.dev/versions/latest/sdk/securestore/">SecureStore no Expo</a>.</aside>
+          </section>
+<section data-location="02.02 · AsyncStorage" class="slide " id="chave-valor" data-menu-title="Um pequeno mapa de chave e valor">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>Um pequeno mapa de chave e valor</h2>
+            <p class="lead">AsyncStorage é assíncrono, persistente e sem criptografia própria.</p><table><thead><tr><th>Chave · string</th><th>Valor · string</th></tr></thead><tbody><tr><td><code>@aula19/apelido</code></td><td><code>"Nator"</code></td></tr><tr><td><code>@aula19/tema</code></td><td><code>"escuro"</code></td></tr></tbody></table><div class="columns"><article class="card"><h3>A mesma chave</h3><p>Salvar novamente substitui o valor anterior. Um prefixo ajuda a organizar as chaves do projeto.</p></article><article class="card"><h3>Uma chave ausente</h3><p>A leitura retorna <code>null</code>. Isso é diferente de uma falha na operação.</p></article></div>
+            <aside class="notes">O prefixo @aula19 é uma convenção de organização, sem efeito de proteção. Os valores são strings. Não importe AsyncStorage de react-native: usamos o pacote da comunidade. Fonte: <a href="https://react-native-async-storage.github.io/2.0/Usage/">Uso do AsyncStorage</a>.</aside>
+          </section>
+<section data-location="02.03 · AsyncStorage" class="slide " id="async-await" data-menu-title="Por que usar await?">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>Por que usar await?</h2>
+            <div class="code-layout"><div class="editor"><div class="editor-bar">A confirmação vem depois da gravação</div><pre><code class="language-jsx" data-trim data-line-numbers>async function salvarApelido() {
+  try {
+    await AsyncStorage.setItem(CHAVE, &#x27;Nator&#x27;);
+    setMensagem(&#x27;Salvo!&#x27;);
+  } catch {
+    setMensagem(&#x27;Falha ao salvar.&#x27;);
+  }
+}</code></pre></div><article class="card"><h3>Uma Promise</h3><p>A operação termina depois. <code>await</code> aguarda o resultado; <code>catch</code> trata uma rejeição.</p></article></div><div class="callout"><p>await não bloqueia toda a interface. Desabilite o botão enquanto a operação estiver em andamento.</p></div>
+            <aside class="notes">Esse trecho será executado dentro de um componente e depende do import, de CHAVE e de setMensagem apresentados depois. Não use o retorno sem await, porque você teria uma Promise. Sem catch, uma falha pode virar uma rejeição não tratada. A operação nativa é assíncrona; serializar um objeto enorme ainda ocupa o JavaScript.</aside>
+          </section>
+<section data-location="02.04 · AsyncStorage" class="slide " id="api-asyncstorage" data-menu-title="Três operações para começar">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>Três operações para começar</h2>
+            <div class="editor"><div class="editor-bar">Execute dentro de uma função async com try/catch</div><pre><code class="language-jsx" data-trim data-line-numbers>import AsyncStorage from &#x27;@react-native-async-storage/async-storage&#x27;;
+
+const CHAVE = &#x27;@aula19/apelido&#x27;;
+
+// Criar ou substituir
+await AsyncStorage.setItem(CHAVE, &#x27;Nator&#x27;);
+
+// Ler: string ou null
+const salvo = await AsyncStorage.getItem(CHAVE);
+
+// Remover apenas esta chave
+await AsyncStorage.removeItem(CHAVE);</code></pre></div><div class="callout"><p>Prefira remover as chaves da funcionalidade. <code>clear()</code> limpa todo o AsyncStorage disponível ao app.</p></div>
+            <aside class="notes">O bloco reúne a API para consulta, não é um programa completo. Na prática, salvar, ler e remover são ações separadas, cada uma com tratamento de erros. clear não limpa o SecureStore. Fonte: <a href="https://react-native-async-storage.github.io/2.0/API/">API do AsyncStorage</a>.</aside>
+          </section>
+<section data-location="02.05 · AsyncStorage" class="slide " id="apelido-estado" data-menu-title="1. Preparar o estado da tela">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>1. Preparar o estado da tela</h2>
+            <div class="code-layout"><div class="editor"><div class="editor-bar">App.js · imports e estado</div><pre><code class="language-jsx" data-trim data-line-numbers>import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, TextInput, View } from &#x27;react-native&#x27;;
+import AsyncStorage from &#x27;@react-native-async-storage/async-storage&#x27;;
+
+const CHAVE = &#x27;@aula19/apelido&#x27;;
+
+export default function App() {
+  const [apelido, setApelido] = useState(&#x27;&#x27;);
+  const [carregando, setCarregando] = useState(true);
+  const [ocupado, setOcupado] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);</code></pre></div><article class="card"><h3>Cada estado tem um papel</h3><p><code>apelido</code>: texto do campo. <code>carregando</code>: leitura inicial. <code>ocupado</code>: gravação ou remoção. <code>mensagem</code>: retorno para a pessoa.</p></article></div>
+            <aside class="notes">O código continua nos próximos slides. Os trechos pertencem ao mesmo App.js. A CHAVE deve permanecer igual em todas as operações. A mensagem não deve incluir informações sensíveis. Apelido é apenas um exemplo de preferência comum.</aside>
+          </section>
+<section data-location="02.06 · AsyncStorage" class="slide " id="apelido-carregar" data-menu-title="2. Ler ao abrir o app">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>2. Ler ao abrir o app</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · leitura inicial</div><pre><code class="language-jsx" data-trim data-line-numbers>useEffect(() =&gt; {
+    let ativo = true;
+    async function carregar() {
+      try {
+        const salvo = await AsyncStorage.getItem(CHAVE);
+        if (ativo) setApelido(salvo ?? &#x27;&#x27;);
+      } catch {
+        if (ativo) setMensagem(&#x27;Não foi possível ler o apelido.&#x27;);
+      } finally {
+        if (ativo) setCarregando(false);
+      }
+    }
+    carregar();
+    return () =&gt; { ativo = false; };
+  }, []);</code></pre></div><article class="card"><h3>Restaurar a interface</h3><p>A leitura ocorre na montagem. <code>null</code> vira campo vazio com <code>??</code>. <code>finally</code> encerra o carregamento.</p></article></div>
+            <aside class="notes">ativo evita atualizar o estado se o componente tiver sido desmontado enquanto a Promise estava pendente. Não é cancelamento da operação de armazenamento. O array vazio indica a leitura na montagem. A tela de carregamento impede edição antes dessa leitura. Em desenvolvimento, Strict Mode pode repetir a montagem.</aside>
+          </section>
+<section data-location="02.07 · AsyncStorage" class="slide " id="apelido-salvar" data-menu-title="3. Salvar pelo botão">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>3. Salvar pelo botão</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · ação salvar</div><pre><code class="language-jsx" data-trim data-line-numbers>async function salvar() {
+    if (ocupado || carregando || !apelido.trim()) return;
+    setOcupado(true);
+    try {
+      await AsyncStorage.setItem(CHAVE, apelido.trim());
+      setApelido(apelido.trim());
+      setMensagem(&#x27;Apelido salvo. Feche e abra o app!&#x27;);
+    } catch {
+      setMensagem(&#x27;Não foi possível salvar. Tente novamente.&#x27;);
+    } finally {
+      setOcupado(false);
+    }
+  }</code></pre></div><article class="card"><h3>Persistir antes de confirmar</h3><p>O campo não pode estar vazio. O botão fica indisponível durante a escrita. Se falhar, o texto digitado continua no campo.</p></article></div>
+            <aside class="notes">O componente usa salvamento explícito. Não há um useEffect que grava a cada mudança do apelido: isso evita escrever o estado inicial vazio antes de recuperar o valor salvo. Explique trim para remover espaços nas extremidades. O finally libera o botão tanto no sucesso quanto no erro.</aside>
+          </section>
+<section data-location="02.08 · AsyncStorage" class="slide " id="apelido-remover" data-menu-title="4. Remover do dispositivo e da tela">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>4. Remover do dispositivo e da tela</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · ação remover</div><pre><code class="language-jsx" data-trim data-line-numbers>async function remover() {
+    if (ocupado || carregando) return;
+    setOcupado(true);
+    try {
+      await AsyncStorage.removeItem(CHAVE);
+      setApelido(&#x27;&#x27;);
+      setMensagem(&#x27;Apelido removido do armazenamento.&#x27;);
+    } catch {
+      setMensagem(&#x27;Não foi possível remover. Tente novamente.&#x27;);
+    } finally {
+      setOcupado(false);
+    }
+  }</code></pre></div><article class="card"><h3>Duas mudanças</h3><p><code>removeItem</code> exclui o valor persistido. <code>setApelido</code> limpa o estado exibido. A tela só é limpa após a exclusão terminar.</p></article></div>
+            <aside class="notes">Limpar apenas o TextInput deixa o dado persistido e ele reaparece no próximo início. Remover só a chave não muda automaticamente o estado React. Se a exclusão falhar, preservamos o campo e informamos a falha.</aside>
+          </section>
+<section data-location="02.09 · AsyncStorage" class="slide " id="apelido-interface" data-menu-title="5. Conectar o campo e os botões">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>5. Conectar o campo e os botões</h2>
+            <div class="editor"><div class="editor-bar">App.js · versão resumida da interface</div><pre><code class="language-jsx" data-trim data-line-numbers>if (carregando) return &lt;Text&gt;Carregando preferências…&lt;/Text&gt;;
+
+return (
+  &lt;View style={{ flex: 1, padding: 32, paddingTop: 64, gap: 16 }}&gt;
+    &lt;TextInput placeholder=&quot;Digite seu apelido&quot;
+      value={apelido} onChangeText={setApelido}
+      editable={!ocupado} /&gt;
+    &lt;Button title=&quot;Salvar&quot; onPress={salvar}
+      disabled={ocupado || !apelido.trim()} /&gt;
+    &lt;Button title=&quot;Remover&quot; onPress={remover} disabled={ocupado} /&gt;
+    &lt;Text&gt;{mensagem}&lt;/Text&gt;
+  &lt;/View&gt;
+);</code></pre></div><div class="callout"><p>O campo controla o estado. O botão Salvar controla a persistência.</p></div>
+            <aside class="notes">A interface está resumida para leitura. O arquivo para download inclui estilos, rótulo acessível e uma View para a tela de carregamento. Todos os nomes pertencem ao mesmo componente App. A UI pode renderizar antes de haver dados; por isso existe o estado carregando.</aside>
+          </section>
+<section data-location="02.10 · AsyncStorage" class="slide " id="apelido-testar" data-menu-title="Execute e comprove a persistência">
+            <p class="eyebrow">AULA 19 / AsyncStorage</p>
+            <h2>Execute e comprove a persistência</h2>
+            <ol class="steps"><li>Baixe o arquivo e substitua o App.js do projeto.</li><li>Digite um apelido e toque em Salvar. Aguarde a confirmação.</li><li>Encerre e abra o mesmo app: o apelido deve reaparecer.</li><li>Toque em Remover e reabra: o campo deve estar vazio.</li></ol><div class="download"><span>Exemplo completo · AsyncStorage</span><a href="aulas/exemplos/aula19/preferencias/App.js" download="App.js">Baixar App.js ↓</a></div><div class="callout"><p>Experimente digitar outro apelido sem salvar e reabrir. Qual valor volta?</p></div>
+            <aside class="notes">Espera-se o último valor confirmado por Salvar. Não desinstale nem limpe os dados do Expo Go durante o teste. No navegador, faça recarregamento completo e mantenha a mesma origem. O material de apoio explica a instalação das dependências web quando necessário.</aside>
+          </section>
+<section data-location="02.11 · AsyncStorage" class="slide" id="atividade-asyncstorage" data-menu-title="Atividade · Tema persistente"><p class="eyebrow">AULA 19 / AsyncStorage</p><h2>Atividade · Tema persistente</h2><p class="lead">Acrescente uma preferência de tema ao aplicativo.</p><ol class="steps"><li>Crie um controle para alternar entre claro e escuro.</li><li>Salve a escolha em <code>@aula19/tema</code> usando AsyncStorage.</li><li>Recupere o tema ao abrir e aplique as cores na tela.</li><li>Adicione “Restaurar padrão” removendo apenas essa chave.</li></ol><div class="callout"><p>Demonstre: salvar → reabrir com o mesmo tema → restaurar o padrão.</p></div><aside class="notes">Esta atividade encerra AsyncStorage e usa apenas uma string: claro ou escuro. Não depende de JSON, que será apresentado na próxima seção. Bloqueie o controle durante a leitura inicial, aguarde a gravação antes de confirmar e mostre uma mensagem se houver erro. A restauração padrão deve atualizar o estado e remover só a chave do tema. Não use clear().</aside></section>
+</section>
+<section class="lesson-group" id="secao-json" aria-label="Guardar um objeto">
+<section data-location="03.01 · Guardar um objeto" class="slide" id="objetos-json" data-menu-title="1. Para salvar: objeto vira texto." data-auto-animate data-auto-animate-id="json-cycle" data-auto-animate-duration="0.8" >
+            <p class="eyebrow">AULA 19 / Guardar um objeto</p>
+            <h2 data-id="slide-title">1. Para salvar: objeto vira texto.</h2>
+            <div class="json-scene"><div class="json-tile" data-id="json-object"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-14-2 16"/></svg><p class="small">OBJETO JAVASCRIPT</p><pre>{ apelido: 'Nator',
+  tema: 'escuro' }</pre></div><span data-id="json-arrow"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6"/></svg></span><div class="json-tile" data-id="json-string"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8h10m-5 0v9m-3 0h6"/></svg><p class="small">TEXTO NO ARMAZENAMENTO</p><pre>{"apelido":"Nator",
+ "tema":"escuro"}</pre></div></div><div class="editor" data-id="json-build-editor"><div class="editor-bar">Trecho de uma função async com try/catch</div><pre data-id="json-build-code"><code class="language-jsx" data-trim data-line-numbers="1-4">const perfil = { apelido: &#x27;Nator&#x27;, tema: &#x27;escuro&#x27; };
+await AsyncStorage.setItem(
+  &#x27;@aula19/perfil&#x27;, JSON.stringify(perfil)
+);</code></pre></div><p class="caption"><strong>JSON.stringify</strong> transforma o objeto em string.</p>
+            <aside class="notes">A ilustração mostra objeto e texto trocando de lado com auto-animate. stringify prepara os dados para escrita; parse recupera o objeto. Os próximos slides completam o exemplo com um app de perfil executável, validação e interface.</aside>
+          </section>
+<section data-location="03.02 · Guardar um objeto" class="slide" id="json-ler" data-menu-title="2. Ao ler: texto vira objeto." data-auto-animate data-auto-animate-id="json-cycle" data-auto-animate-duration="0.8" >
+            <p class="eyebrow">AULA 19 / Guardar um objeto</p>
+            <h2 data-id="slide-title">2. Ao ler: texto vira objeto.</h2>
+            <div class="json-scene"><div class="json-tile" data-id="json-string"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 8h10m-5 0v9m-3 0h6"/></svg><p class="small">TEXTO NO ARMAZENAMENTO</p><pre>{"apelido":"Nator",
+ "tema":"escuro"}</pre></div><span data-id="json-arrow"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18m-6-6 6 6-6 6"/></svg></span><div class="json-tile" data-id="json-object"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-14-2 16"/></svg><p class="small">OBJETO JAVASCRIPT</p><pre>{ apelido: 'Nator',
+  tema: 'escuro' }</pre></div></div><div class="editor" data-id="json-build-editor"><div class="editor-bar">Trecho de uma função async com try/catch</div><pre data-id="json-build-code"><code class="language-jsx" data-trim data-line-numbers="6-7">const perfil = { apelido: &#x27;Nator&#x27;, tema: &#x27;escuro&#x27; };
+await AsyncStorage.setItem(
+  &#x27;@aula19/perfil&#x27;, JSON.stringify(perfil)
+);
+
+const texto = await AsyncStorage.getItem(&#x27;@aula19/perfil&#x27;);
+const perfilSalvo = texto === null ? null : JSON.parse(texto);</code></pre></div><p class="caption"><strong>JSON.parse</strong> recupera o objeto. Valide o formato antes de usar.</p>
+            <aside class="notes">A ilustração mostra objeto e texto trocando de lado com auto-animate. stringify prepara os dados para escrita; parse recupera o objeto. Os próximos slides completam o exemplo com um app de perfil executável, validação e interface.</aside>
+          </section>
+<section data-location="03.03 · Guardar um objeto" class="slide" id="json-salvar-perfil" data-menu-title="Perfil completo: salvar o objeto"><p class="eyebrow">AULA 19 / Guardar um objeto</p><h2>Perfil completo: salvar o objeto</h2><div class="editor"><div class="editor-bar">App.js · trecho em foco</div><pre><code class="language-jsx" data-trim data-line-numbers>const CHAVE_PERFIL = &#x27;@aula19/perfil&#x27;;
+const PADRAO = { apelido: &#x27;&#x27;, tema: &#x27;claro&#x27; };
+
+async function salvarPerfil(perfil) {
+  const texto = JSON.stringify(perfil);
+  await AsyncStorage.setItem(CHAVE_PERFIL, texto);
+}</code></pre></div><div class="callout"><p>Um único objeto guarda <strong>apelido + tema</strong>. O botão Salvar chama <code>salvarPerfil(perfil)</code>.</p></div><aside class="notes">Este é um exemplo independente, com um único App.js para download. salvarPerfil é chamada pelo handler salvar dentro do componente, com await e try/catch. O handler também remove espaços nas extremidades do apelido, controla ocupado e exibe mensagens. Os helpers mantêm a serialização em um único lugar.</aside></section>
+<section data-location="03.04 · Guardar um objeto" class="slide" id="json-recuperar-perfil" data-menu-title="Perfil completo: ler com um padrão"><p class="eyebrow">AULA 19 / Guardar um objeto</p><h2>Perfil completo: ler com um padrão</h2><div class="editor"><div class="editor-bar">App.js · trecho em foco</div><pre><code class="language-jsx" data-trim data-line-numbers>async function lerPerfil() {
+  const texto = await AsyncStorage.getItem(CHAVE_PERFIL);
+  if (texto === null) return { ...PADRAO };
+  const perfil = JSON.parse(texto);
+  if (!validarPerfil(perfil)) {
+    throw new Error(&#x27;Formato de perfil inválido.&#x27;);
+  }
+  return perfil;
+}</code></pre></div><div class="callout"><p>Sem chave: usar <code>PADRAO</code>. Com chave: converter, validar e devolver o perfil.</p></div><aside class="notes">lerPerfil é chamada na montagem por um useEffect com o mesmo padrão do exemplo de apelido. O efeito usa try/catch/finally e o sinal ativo. Uma falha de leitura, parse ou formato mostra uma mensagem, sem gravar automaticamente os valores padrão. A função validarPerfil é definida no próximo slide. O operador spread devolve uma cópia do padrão.</aside></section>
+<section data-location="03.05 · Guardar um objeto" class="slide" id="json-validar-perfil" data-menu-title="JSON válido também precisa de formato"><p class="eyebrow">AULA 19 / Guardar um objeto</p><h2>JSON válido também precisa de formato</h2><div class="editor"><div class="editor-bar">App.js · trecho em foco</div><pre><code class="language-jsx" data-trim data-line-numbers>function validarPerfil(valor) {
+  return valor !== null &amp;&amp; typeof valor === &#x27;object&#x27;
+    &amp;&amp; typeof valor.apelido === &#x27;string&#x27;
+    &amp;&amp; [&#x27;claro&#x27;, &#x27;escuro&#x27;].includes(valor.tema);
+}</code></pre></div><div class="columns" style="margin-top:26px"><article class="card"><h3>Formato esperado</h3><p><code>apelido</code> deve ser texto.<br /><code>tema</code> deve ser claro ou escuro.</p></article><article class="card"><h3>Formato inesperado</h3><p>Mostre a falha e permita restaurar o padrão.</p></article></div><aside class="notes">JSON.parse verifica a sintaxe do JSON; não garante o formato de negócio. Exemplos inválidos: null, [], {apelido: 42, tema: "azul"}. O app valida antes de aplicar os dados e não sobrescreve automaticamente o armazenamento em caso de erro. A validação aceita campos extras sem usá-los.</aside></section>
+<section data-location="03.06 · Guardar um objeto" class="slide" id="json-exemplo-completo" data-menu-title="Perfil completo: campo, tema e restauração"><p class="eyebrow">AULA 19 / Guardar um objeto</p><h2>Perfil completo: campo, tema e restauração</h2><div class="editor compact"><div class="editor-bar">App.js · componentes centrais da interface</div><pre><code class="language-jsx" data-trim data-line-numbers>&lt;TextInput value={perfil.apelido}
+  onChangeText={apelido =&gt; setPerfil(atual =&gt; ({
+    ...atual, apelido,
+  }))} editable={!ocupado} /&gt;
+&lt;Switch value={perfil.tema === &#x27;escuro&#x27;}
+  onValueChange={valor =&gt; setPerfil(atual =&gt; ({
+    ...atual, tema: valor ? &#x27;escuro&#x27; : &#x27;claro&#x27;,
+  }))} disabled={ocupado} /&gt;
+&lt;Button title=&quot;Salvar perfil&quot; onPress={salvar}
+  disabled={ocupado || !perfil.apelido.trim()} /&gt;
+&lt;Button title=&quot;Restaurar padrão&quot;
+  onPress={restaurarPadrao} disabled={ocupado} /&gt;</code></pre></div><div class="download"><span>Exemplo completo · perfil com JSON</span><a href="aulas/exemplos/aula19/perfil/App.js" download="App.js">Baixar App.js ↓</a></div><div class="callout"><p>Salve apelido e tema escuro. Reabra. Depois restaure o padrão e reabra novamente.</p></div><aside class="notes">O arquivo completo contém imports, constantes, validação, serialização, leitura inicial, handlers, carregamento, mensagens e estilos claros/escuros. O trecho resume a UI. O handler salvar aguarda salvarPerfil antes de confirmar. restaurarPadrao aguarda removeItem(CHAVE_PERFIL), limpa o estado e aplica o tema claro. Se a exclusão falhar, mantém o perfil. Não copie apenas os componentes acima como um App.js inteiro. Baixe a versão completa. Verifique também que editar sem salvar não altera o perfil recuperado no próximo início.</aside></section>
+</section>
+<section class="lesson-group" id="secao-securestore" aria-label="SecureStore">
+<section data-location="04.01 · SecureStore" class="slide " id="securestore" data-menu-title="Secure storage com Expo SecureStore">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>Secure storage com Expo SecureStore</h2>
+            <p class="lead">Uma opção para guardar pequenos valores sensíveis no dispositivo.</p><div class="columns"><article class="card"><h3>Proteção nativa</h3><p>No Android, usa armazenamento criptografado com apoio do Keystore. No iOS, usa o Keychain.</p></article><article class="card"><h3>Uso nesta aula</h3><p>Um token fictício representa a sessão. Não vamos guardar senha nem criar um servidor de autenticação.</p></article></div><div class="callout"><p>SecureStore protege o dado armazenado. A validade de um token continua sendo responsabilidade do servidor.</p></div>
+            <aside class="notes">Não confunda criptografia com autenticação de uma pessoa ou autorização de uma requisição. Um token expirado pode continuar armazenado; um app real deve lidar com essa situação. Não coloque chave privada de servidor no aplicativo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/securestore/">Expo SecureStore</a>.</aside>
+          </section>
+<section data-location="04.02 · SecureStore" class="slide " id="api-securestore" data-menu-title="A mesma ideia, outros métodos">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>A mesma ideia, outros métodos</h2>
+            <div class="editor"><div class="editor-bar">API · use em funções async com try/catch</div><pre><code class="language-jsx" data-trim data-line-numbers>import * as SecureStore from &#x27;expo-secure-store&#x27;;
+
+const CHAVE_TOKEN = &#x27;aula19.token&#x27;;
+
+await SecureStore.setItemAsync(CHAVE_TOKEN, &#x27;token-ficticio-da-aula&#x27;);
+
+const tokenSalvo = await SecureStore.getItemAsync(CHAVE_TOKEN);
+
+await SecureStore.deleteItemAsync(CHAVE_TOKEN);</code></pre></div><div class="callout"><p>Use chaves com letras, números, ponto, hífen ou sublinhado: <code>aula19.token</code>.</p></div>
+            <aside class="notes">SecureStore também recebe strings. A leitura retorna string ou null e pode rejeitar. Evite copiar @ e / das chaves do AsyncStorage: esses caracteres não fazem parte do formato aceito pelo SecureStore. Os três comandos ilustram operações separadas. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/securestore/">API SecureStore</a>.</aside>
+          </section>
+<section data-location="04.03 · SecureStore" class="slide " id="sessao-estado" data-menu-title="1. Preparar a sessão de demonstração">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>1. Preparar a sessão de demonstração</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · segundo exemplo independente</div><pre><code class="language-jsx" data-trim data-line-numbers>import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Platform, Text, View } from &#x27;react-native&#x27;;
+import * as SecureStore from &#x27;expo-secure-store&#x27;;
+
+const CHAVE_TOKEN = &#x27;aula19.token&#x27;;
+// Valor fictício: este exemplo ensina armazenamento, sem autenticação real.
+const TOKEN_DEMO = &#x27;token-ficticio-da-aula&#x27;;
+
+export default function App() {
+  const [token, setToken] = useState(null);
+  const [carregando, setCarregando] = useState(true);
+  const [ocupado, setOcupado] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);</code></pre></div><article class="card"><h3>Sem credencial real</h3><p><code>token</code> começa em <code>null</code>. O valor de demonstração é fixo. O app mostrará apenas se encontrou uma sessão local.</p></article></div>
+            <aside class="notes">Não cole este segundo componente no primeiro App.js: substitua o arquivo. TOKEN_DEMO é intencionalmente fictício e não dá acesso a nenhum serviço. Em um app real, esse valor viria de um fluxo de autenticação. Não registre o token em logs.</aside>
+          </section>
+<section data-location="04.04 · SecureStore" class="slide " id="sessao-restaurar" data-menu-title="2. Restaurar ao abrir">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>2. Restaurar ao abrir</h2>
+            <div class="editor"><div class="editor-bar">App.js · trecho da leitura inicial</div><pre><code class="language-jsx" data-trim data-line-numbers>// Dentro do useEffect, no Android/iOS:
+async function restaurar() {
+  try {
+    const salvo = await SecureStore.getItemAsync(CHAVE_TOKEN);
+    if (ativo) setToken(salvo);
+  } catch {
+    if (ativo) setMensagem(&#x27;Não foi possível restaurar a sessão.&#x27;);
+  } finally {
+    if (ativo) setCarregando(false);
+  }
+}
+restaurar();</code></pre></div><div class="callout"><p>Durante a leitura, mostre “Restaurando sessão…”. Depois, apresente o estado encontrado.</p></div>
+            <aside class="notes">Este é um trecho do efeito do arquivo completo. ativo é declarado como true antes da função e passa a false no cleanup, como no primeiro exemplo. O arquivo verifica Platform.OS antes de chamar a API: na web, apresenta uma orientação. Encontrar o token não valida a sessão junto a um servidor.</aside>
+          </section>
+<section data-location="04.05 · SecureStore" class="slide " id="sessao-entrar" data-menu-title="3. Simular uma entrada">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>3. Simular uma entrada</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · escrita no SecureStore</div><pre><code class="language-jsx" data-trim data-line-numbers>async function entrar() {
+    if (ocupado || carregando || Platform.OS === &#x27;web&#x27;) return;
+    setOcupado(true);
+    try {
+      await SecureStore.setItemAsync(CHAVE_TOKEN, TOKEN_DEMO);
+      setToken(TOKEN_DEMO);
+      setMensagem(&#x27;Sessão fictícia salva. Feche e abra o app!&#x27;);
+    } catch {
+      setMensagem(&#x27;Não foi possível salvar a sessão.&#x27;);
+    } finally {
+      setOcupado(false);
+    }
+  }</code></pre></div><article class="card"><h3>A ordem da confirmação</h3><p>Primeiro gravar. Depois atualizar o estado e a mensagem. O exemplo não mostra o conteúdo do token.</p></article></div>
+            <aside class="notes">O guard de plataforma impede chamadas na web também dentro dos handlers. O guard de carregamento evita uma ação enquanto a restauração ainda está pendente. As ações ficam desabilitadas quando ocupado está true. Em um fluxo real, setItemAsync receberia um token emitido pelo backend.</aside>
+          </section>
+<section data-location="04.06 · SecureStore" class="slide " id="sessao-sair" data-menu-title="4. Sair e apagar o token local">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>4. Sair e apagar o token local</h2>
+            <div class="code-layout compact"><div class="editor"><div class="editor-bar">App.js · exclusão no SecureStore</div><pre><code class="language-jsx" data-trim data-line-numbers>async function sair() {
+    if (ocupado || carregando || Platform.OS === &#x27;web&#x27;) return;
+    setOcupado(true);
+    try {
+      await SecureStore.deleteItemAsync(CHAVE_TOKEN);
+      setToken(null);
+      setMensagem(&#x27;Sessão fictícia removida.&#x27;);
+    } catch {
+      setMensagem(&#x27;Não foi possível sair. Tente novamente.&#x27;);
+    } finally {
+      setOcupado(false);
+    }
+  }</code></pre></div><article class="card"><h3>Limpar a sessão local</h3><p>A exclusão persistida acontece antes de <code>setToken(null)</code>. Uma falha mantém o estado e permite tentar novamente.</p></article></div>
+            <aside class="notes">Este é um logout local de demonstração. Em produção, pode haver revogação no servidor e limpeza de dados privados em cache. Não afirmamos que a simples exclusão local revoga todas as sessões em todos os aparelhos.</aside>
+          </section>
+<section data-location="04.07 · SecureStore" class="slide " id="sessao-testar" data-menu-title="Execute no Android ou iOS">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>Execute no Android ou iOS</h2>
+            <div class="editor"><div class="editor-bar">Trecho da interface · após a leitura inicial</div><pre><code class="language-jsx" data-trim data-line-numbers>&lt;Text&gt;{token ? &#x27;Sessão local encontrada&#x27; : &#x27;Sem sessão local&#x27;}&lt;/Text&gt;
+&lt;Button title={token ? &#x27;Sair&#x27; : &#x27;Simular entrada&#x27;}
+  onPress={token ? sair : entrar} disabled={ocupado} /&gt;</code></pre></div><ol class="steps"><li>Substitua o App.js e abra o projeto no Expo Go.</li><li>Simule a entrada, aguarde a confirmação e reabra o app.</li><li>Saia e reabra: a sessão local deve ter sido removida.</li></ol><div class="download"><span>Exemplo completo · SecureStore</span><a href="aulas/exemplos/aula19/sessao/App.js" download="App.js">Baixar App.js ↓</a></div>
+            <aside class="notes">No arquivo completo, o retorno para a plataforma web vem antes de qualquer botão de sessão. Na tela não há credencial, somente uma indicação de existência local. O estado token é usado aqui para facilitar a observação, não para provar autenticação real.</aside>
+          </section>
+<section data-location="04.08 · SecureStore" class="slide " id="securestore-limites" data-menu-title="O que muda no ciclo de vida?">
+            <p class="eyebrow">AULA 19 / SecureStore</p>
+            <h2>O que muda no ciclo de vida?</h2>
+            <table><thead><tr><th>Situação</th><th>O que considerar</th></tr></thead><tbody><tr><td>Fechar e reabrir</td><td>O objetivo é recuperar o valor salvo.</td></tr><tr><td>Desinstalar no Android</td><td>Os dados do SecureStore são removidos.</td></tr><tr><td>Desinstalar no iOS</td><td>Itens podem permanecer no Keychain. Não dependa disso.</td></tr><tr><td>Guardar um valor grande</td><td>A plataforma pode rejeitar a gravação.</td></tr></tbody></table><div class="callout"><p>Biometria é uma etapa extra. <code>requireAuthentication</code> exige configuração e testes próprios.</p></div>
+            <aside class="notes">Não usamos biometria nos exemplos básicos. A opção requireAuthentication tem restrições no Expo Go; mudanças na biometria cadastrada podem invalidar os dados protegidos por essa opção. Não trate SecureStore como backup único de dados insubstituíveis. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/securestore/">Persistência e limitações do SecureStore</a>.</aside>
+          </section>
+<section data-location="04.09 · SecureStore" class="slide" id="atividade-securestore" data-menu-title="Atividade · Sessão e preferências"><p class="eyebrow">AULA 19 / SecureStore</p><h2>Atividade · Sessão e preferências</h2><p class="lead">Integre o token fictício com as preferências do perfil.</p><ol class="steps"><li>Guarde apenas o token no SecureStore.</li><li>Mantenha apelido e tema no AsyncStorage, em outra chave.</li><li>Restaure os dados antes de liberar os controles.</li><li>Ao sair, apague o token e preserve o tema escolhido.</li></ol><div class="callout"><p>Após sair e reabrir: <strong>tema mantido + “Sem sessão local”</strong>.</p></div><aside class="notes">Esta atividade encerra SecureStore. Pode usar o exemplo completo de perfil da seção anterior ou as preferências feitas pela turma. Não inclua o token no JSON do perfil e não o imprima no console. Use chaves válidas para cada biblioteca. Teste entrada, reinício, saída e novo reinício no Android/iOS. Os dados continuam fictícios, sem backend. Preservar o tema é um requisito da atividade; caches privados de usuário podem exigir outra política em um app real.</aside></section>
+</section>
+<section class="lesson-group" id="secao-revisao" aria-label="Revisar e consultar">
+<section data-location="05.01 · Revisar e consultar" class="slide " id="fluxo-completo" data-menu-title="O ciclo que se repete nos exemplos">
+            <p class="eyebrow">AULA 19 / Revisar e consultar</p>
+            <h2>O ciclo que se repete nos exemplos</h2>
+            <div class="flow"><div><strong>Abrir</strong><p>Ler do armazenamento e restaurar o estado.</p></div><span aria-hidden="true">→</span><div><strong>Editar / entrar</strong><p>A pessoa dispara uma ação.</p></div><span aria-hidden="true">→</span><div><strong>Persistir</strong><p>Aguardar a escrita e confirmar na tela.</p></div></div><div class="columns"><article class="card"><h3>Remoção</h3><p>Apagar no armazenamento e então atualizar o estado da interface.</p></article><article class="card"><h3>Falha</h3><p>Informar o problema e permitir outra tentativa. Não anunciar sucesso antes do await.</p></article></div><div class="callout"><p>A leitura inicial precisa terminar antes de liberar as ações que dependem dela.</p></div>
+            <aside class="notes">Peça aos alunos que localizem cada etapa nos dois arquivos. Não esconda um erro de leitura como se fosse simplesmente null. Nossos exemplos exibem mensagens distintas. Uma restauração de sessão real ainda pode exigir consulta ao servidor.</aside>
+          </section>
+<section data-location="05.02 · Revisar e consultar" class="slide " id="erros-frequentes" data-menu-title="Erros que explicam muitos bugs">
+            <p class="eyebrow">AULA 19 / Revisar e consultar</p>
+            <h2>Erros que explicam muitos bugs</h2>
+            <table><thead><tr><th>Sintoma</th><th>Verifique</th></tr></thead><tbody><tr><td>Voltou o valor antigo</td><td>Atualizou só o estado? A gravação foi aguardada?</td></tr><tr><td>O valor salvo sumiu ao abrir</td><td>Um efeito gravou o estado vazio antes da leitura?</td></tr><tr><td>O objeto não foi recuperado</td><td>Usou stringify/parse e validou o formato?</td></tr><tr><td>SecureStore falhou no navegador</td><td>O exemplo está sendo executado em Android/iOS?</td></tr><tr><td>O apelido reapareceu após limpar</td><td>Limpou a chave persistida e o estado da tela?</td></tr></tbody></table>
+            <aside class="notes">Use as perguntas para depuração em sala. Também confira se a chave é idêntica na gravação e na leitura. clear do AsyncStorage não remove um token guardado no SecureStore. Nenhum desses storages sincroniza automaticamente dispositivos.</aside>
+          </section>
+<section data-location="05.03 · Revisar e consultar" class="slide " id="checklist" data-menu-title="Antes de entregar, demonstre">
+            <p class="eyebrow">AULA 19 / Revisar e consultar</p>
+            <h2>Antes de entregar, demonstre</h2>
+            <table><thead><tr><th>Teste</th><th>Resultado esperado</th></tr></thead><tbody><tr><td>Primeira abertura</td><td>Valores padrão, sem falha por chave ausente.</td></tr><tr><td>Salvar e reabrir</td><td>O último valor salvo é recuperado.</td></tr><tr><td>Editar sem salvar e reabrir</td><td>O valor persistido continua igual.</td></tr><tr><td>Remover / sair e reabrir</td><td>A chave removida não é restaurada.</td></tr><tr><td>Durante leitura e escrita</td><td>A interface mostra o estado e bloqueia ações concorrentes.</td></tr></tbody></table>
+            <aside class="notes">Evite avaliar apenas com Fast Refresh. Se houver erro, confirme que o app não informa sucesso. É possível discutir falhas de armazenamento por indisponibilidade ou dados inválidos sem pedir que os alunos encham o dispositivo. No perfil JSON, mostre a necessidade de validação do formato.</aside>
+          </section>
+<section data-location="05.04 · Revisar e consultar" class="slide " id="perguntas" data-menu-title="Você consegue explicar?">
+            <p class="eyebrow">AULA 19 / Revisar e consultar</p>
+            <h2>Você consegue explicar?</h2>
+            <p class="lead">Clique ou use Enter para revelar cada resposta.</p><details><summary>Por que useState sozinho não resolve a persistência?</summary><p>Ele mantém o estado da interface em memória. Após reiniciar, precisamos ler o valor persistido para restaurá-lo.</p></details><details><summary>Um token pode ir no mesmo JSON do tema?</summary><p>Nesta aula, o tema vai para AsyncStorage e o token para SecureStore, em chaves separadas.</p></details><details><summary>Encontrar um token local prova que o login é válido?</summary><p>Não. Em um app real, o servidor precisa validar o token, inclusive sua expiração ou revogação.</p></details>
+            <aside class="notes">Abra uma resposta por vez para discussão. Retome a diferença entre proteger o valor em repouso e autorizar uma requisição. A separação dos dados permite manter preferências enquanto removemos a sessão.</aside>
+          </section>
+<section data-location="05.05 · Revisar e consultar" class="slide " id="referencias" data-menu-title="Material para continuar">
+            <p class="eyebrow">AULA 19 / Revisar e consultar</p>
+            <h2>Material para continuar</h2>
+            <div class="columns"><article class="card"><h3>Documentação oficial</h3><ul><li><a href="https://docs.expo.dev/versions/latest/sdk/async-storage/">AsyncStorage no Expo</a></li><li><a href="https://react-native-async-storage.github.io/2.0/Usage/">AsyncStorage · uso 2.x</a></li><li><a href="https://react-native-async-storage.github.io/2.0/API/">AsyncStorage · API 2.x</a></li><li><a href="https://docs.expo.dev/versions/latest/sdk/securestore/">Expo SecureStore</a></li></ul></article><article class="card"><h3>Exemplos da aula</h3><ul><li><a href="aulas/exemplos/aula19/preferencias/App.js" download="App.js">App.js · preferências</a></li><li><a href="aulas/exemplos/aula19/perfil/App.js" download="App.js">App.js · perfil com JSON</a></li><li><a href="aulas/exemplos/aula19/sessao/App.js" download="App.js">App.js · sessão fictícia</a></li><li><a href="aulas/exemplos/aula19/README.md">Instruções de execução</a></li></ul></article></div><div class="callout"><p>Escolha pelo tipo de dado. Leia ao abrir. Aguarde a escrita. Remova de forma explícita.</p></div>
+            <aside class="notes">Os links da API correspondem à interface 2.x de AsyncStorage usada nos exemplos e à versão selecionada pelo Expo. Evitamos fixar manualmente versões de dependências do SDK. As referências também estão no README dos exemplos.</aside>
+          </section>
+</section>
+      </div>
+    </div>
+    <div class="lesson-footer" aria-hidden="true"><span id="lesson-location">AULA 19 · Armazenamento</span><span>→ SEÇÕES · ↓ PASSOS</span></div>
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/menu/menu.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <script src="aulas/js/aula19.js"></script>
+  </body>
+</html>

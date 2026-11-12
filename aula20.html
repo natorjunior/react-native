@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Aula 20 · Apresentação do SQLite, setup, importação e inicialização do banco." />
+  <title>Aula 20 · Do repository em memória ao SQLite</title>
+  <link href="dist/reset.css" rel="stylesheet" />
+  <link href="dist/reveal.css" rel="stylesheet" />
+  <link href="dist/theme/white.css" rel="stylesheet" />
+  <link href="plugin/highlight/atom-one-dark.css" rel="stylesheet" />
+  <link href="plugin/menu/menu.css" rel="stylesheet" />
+  <link href="aulas/css/aula20.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal"><div class="slides">
+<section class="lesson-group" id="secao-capa" aria-label="Capa da Aula 20">
+<section class="slide cover" id="abertura" data-background-color="#0d212b" data-location="01.01 · Persistência com SQLite" data-menu-title="Aula 20 · Persistência com SQLite">
+          <div class="cover-top"><p class="eyebrow">Programação para Dispositivos Móveis</p><span>AULA 20</span></div>
+          <div class="cover-grid"><div><p class="eyebrow">React Native + Expo</p><h1>Uma lista.<br /><em>Depois, SQLite.</em></h1><p class="lead">Do array à persistência<br />Oficina bate e volta</p></div>
+          <div class="cover-art" role="img" aria-label="Uma lista de tarefas no celular é salva no banco local aula20.db">
+            <div class="phone"><span class="app-label">MEU APP</span><h3>Minhas tarefas</h3><div class="cover-task"><span class="task-dot"></span>Estudar SQLite</div><div class="cover-task done"><span class="task-dot"></span>Revisar a aula 19</div><div class="phone-note">2 tarefas salvas ✓</div></div>
+            <div class="cover-orbit"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></svg></div>
+            <div class="storage-mini"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 10h18M10 10v11M3 15h18"/></svg><div><span>BANCO NO DISPOSITIVO</span><b>aula20.db · tarefas</b></div></div>
+        
+
+  </div></div>
+          <p class="cover-credit">Prof. Msc. Nator Junior Carvalho da Costa<br />UFC · Campus de Quixadá</p>
+        </section>
+</section>
+<section class="lesson-group" id="secao-apresentacao" aria-label="Apresentação do SQLite">
+  <section class="slide concept-slide" id="sqlite-apresentacao"
+    data-teaching-role="conceito" data-location="02.01 · Apresentação do SQLite"
+    data-menu-title="SQLite · Banco de dados completo"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <p class="eyebrow">AULA 20 / APRESENTAÇÃO DO SQLITE</p>
+    <h2>SQLite</h2>
+    <div class="concept-panel">
+      <h3>Banco de dados completo</h3>
+      <ul>
+        <li>Banco relacional com SQL</li>
+        <li>Dados estruturados e complexos</li>
+        <li>Consultas avançadas</li>
+      </ul>
+    </div>
+    <aside class="notes">
+      SQLite é um banco embutido: funciona dentro do aplicativo, sem um processo
+      de servidor separado. Organiza registros em tabelas e permite filtros,
+      ordenação, agregações e consultas que relacionam tabelas. No aplicativo
+      móvel, os dados podem ser mantidos localmente e consultados offline.
+      Fonte: <a href="https://www.sqlite.org/whentouse.html">SQLite · usos apropriados</a>.
+    </aside>
+  </section>
+  <section class="slide concept-slide" id="sqlite-limitacoes"
+    data-teaching-role="conceito" data-location="02.02 · Limitações do SQLite"
+    data-menu-title="SQLite · Limitações"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <p class="eyebrow">AULA 20 / APRESENTAÇÃO DO SQLITE</p>
+    <h2>Limitações</h2>
+    <div class="concept-panel">
+      <h3>O que considerar no aplicativo</h3>
+      <ul>
+        <li>Uma escrita por vez em cada banco</li>
+        <li>Não sincroniza dados entre dispositivos</li>
+        <li>Criptografia não vem ativada por padrão</li>
+      </ul>
+    </div>
+    <aside class="notes">
+      Vários leitores podem coexistir, mas há apenas um escritor por vez em um
+      banco. Isso atende muitos aplicativos locais; uma carga com muitas escritas
+      simultâneas pode exigir outra arquitetura. Sincronizar aparelhos requer uma
+      camada adicional. O SQLite padrão não é um cofre de segredos; no Expo,
+      SQLCipher exige configuração e uma compilação compatível, enquanto pequenos
+      segredos podem ser tratados com SecureStore.
+      Fontes: <a href="https://www.sqlite.org/whentouse.html">SQLite · concorrência e usos</a>
+      e <a href="https://docs.expo.dev/versions/latest/sdk/sqlite/">Expo SQLite · configuração de criptografia</a>.
+    </aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-setup" aria-label="Setup do projeto">
+  <section class="slide concept-slide setup-slide" id="setup-projeto"
+    data-location="03.01 · Setup do projeto" data-menu-title="Setup · projeto e dependências"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2>Setup</h2>
+    <div class="editor">
+      <div class="editor-bar">1. Criar o projeto</div>
+      <pre><code class="language-bash" data-trim>npx create-expo-app@latest task-app --template blank
+cd task-app</code></pre>
+    </div>
+    <div class="editor">
+      <div class="editor-bar">2. Instalar as dependências</div>
+      <pre><code class="language-bash" data-trim>npx expo install expo-sqlite</code></pre>
+    </div>
+    <div class="editor">
+      <div class="editor-bar">3. Executar</div>
+      <pre><code class="language-bash" data-trim>npx expo start</code></pre>
+    </div>
+  </section>
+
+
+  <section class="slide concept-slide" id="instancia-banco"
+    data-auto-animate data-auto-animate-id="initdb-evolution"
+    data-location="03.02 · Abrir o banco de dados"
+    data-menu-title="Instância do banco de dados"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="initdb-title">Instância do banco de dados</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="initdb-code"><code class="language-js" data-trim data-line-numbers>import { openDatabaseAsync } from &#x27;expo-sqlite&#x27;;
+
+let db = null;
+db = await openDatabaseAsync(&#x27;app.db&#x27;);
+</code></pre>
+      </div>
+    </div>
+    <aside class="notes">Primeiro, initDB abre app.db e devolve a conexão. Avance para acrescentar a criação da tabela na mesma função.</aside>
+  </section>
+
+
+
+  <section class="slide concept-slide" id="instancia-banco"
+    data-auto-animate data-auto-animate-id="initdb-evolution"
+    data-location="03.02 · Abrir o banco de dados"
+    data-menu-title="Instância do banco de dados"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="initdb-title">Instância do banco de dados</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="initdb-code"><code class="language-js" data-trim data-line-numbers>import { openDatabaseAsync } from &#x27;expo-sqlite&#x27;;
+
+let db = null;
+
+export async function initDB() {
+  db = await openDatabaseAsync(&#x27;app.db&#x27;);
+
+  return db;
+}</code></pre>
+      </div>
+    </div>
+    <aside class="notes">Primeiro, initDB abre app.db e devolve a conexão. Avance para acrescentar a criação da tabela na mesma função.</aside>
+  </section>
+
+
+
+
+  <section class="slide concept-slide" id="instancia-banco-tabela"
+    data-auto-animate data-auto-animate-id="initdb-evolution"
+    data-location="03.03 · Criar a tabela usuarios"
+    data-menu-title="initDB · Criar a tabela usuarios"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="initdb-title">Instância do banco de dados</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="initdb-code"><code class="language-js" data-trim data-line-numbers>import { openDatabaseAsync } from &#x27;expo-sqlite&#x27;;
+
+let db = null;
+
+export async function initDB() {
+  db = await openDatabaseAsync(&#x27;app.db&#x27;);
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL
+    );
+  `);
+
+  return db;
+}</code></pre>
+      </div>
+    </div>
+    <aside class="notes">O auto-animate evidencia o bloco execAsync acrescentado. initDB agora abre o banco, cria usuarios se a tabela não existir e devolve a conexão. Explique id e nome antes de avançar para a atividade.</aside>
+  </section>
+
+
+
+
+
+  <section class="slide concept-slide" id="instancia-banco-atividade"
+    data-auto-animate data-auto-animate-id="initdb-evolution"
+    data-location="03.04 · Atividade: db.js e initDB"
+    data-menu-title="Atividade · db.js e initDB"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="initdb-title">Instância do banco de dados</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="initdb-code"><code class="language-js" data-trim data-line-numbers>import { openDatabaseAsync } from &#x27;expo-sqlite&#x27;;
+
+let db = null;
+
+export async function initDB() {
+  db = await openDatabaseAsync(&#x27;app.db&#x27;);
+
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL
+    );
+  `);
+
+  return db;
+}</code></pre>
+      </div>
+      <div class="concept-panel">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Crie <code>db.js</code> na raiz do projeto.</li>
+          <li>Exporte a função assíncrona <code>initDB()</code>.</li>
+          <li>Abra <code>app.db</code>, crie a tabela <code>usuarios</code> e retorne a conexão.</li>
+          <li>Teste <code>await initDB()</code> em uma função async.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      initDB abre app.db, cria a tabela usuarios caso ainda não exista e devolve
+      a conexão. Copie o arquivo de exemplo para a raiz do projeto Expo. Na
+      retomada, peça que demonstrem a chamada em uma função async e expliquem
+      os campos id e nome. CREATE TABLE IF NOT EXISTS preserva uma tabela já
+      existente; ele não migra a estrutura caso as colunas mudem no futuro.
+    </aside>
+  </section>
+
+
+
+
+  <section class="slide concept-slide" id="importacao-inicializacao"
+    data-location="04.01 · Importação e inicialização"
+    data-menu-title="Importação e inicialização"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2>Importação e inicialização</h2>
+    <div class="db-init-layout">
+    <div class="editor compact">
+      <pre><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        console.log(&#x27;Banco inicializado!&#x27;);
+      } catch (error) {
+        console.error(&#x27;Erro ao iniciar banco:&#x27;, error);
+      }
+    }
+
+    iniciar();
+  }, []);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    </div>
+    <div class="concept-panel">
+      <h3>Atividade</h3>
+      <ul>
+        <li>No <code>App.js</code>, importe <code>initDB</code> de <code>./db</code>.</li>
+        <li>Reproduza a chamada no <code>useEffect</code>, com <code>async/await</code> e <code>try/catch</code>.</li>
+        <li>Execute o app e confira “Meu aplicativo” na tela.</li>
+        <li>Confirme “Banco inicializado!” no console.</li>
+      </ul>
+    </div>
+    </div>
+    <aside class="notes">
+      App.js importa initDB de db.js, na mesma pasta. O efeito chama a função
+      interna iniciar, que aguarda a preparação do banco. try/catch registra o
+      sucesso ou o erro no console, enquanto a tela exibe Meu aplicativo.
+      O callback do useEffect permanece síncrono; a função iniciar é async.
+      Pause para os alunos reproduzirem o exemplo e mostrarem a mensagem
+      de sucesso no console antes de seguir.
+    </aside>
+</section>
+  <section class="slide concept-slide" id="insert-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.02 · Função de INSERT" data-menu-title="INSERT · Adicionar usuário"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">INSERT · Adicionar usuário</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-js" data-trim data-line-numbers>export async function insertUsuario(nome) {
+  if (!db) throw new Error(&#x27;Chame initDB() antes.&#x27;);
+  if (!nome.trim()) throw new Error(&#x27;Informe o nome.&#x27;);
+
+  const result = await db.runAsync(
+    &#x27;INSERT INTO usuarios (nome) VALUES (?);&#x27;,
+    [nome.trim()]
+  );
+
+  return result.lastInsertRowId;
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Em <code>db.js</code>, exporte <code>insertUsuario(nome)</code>.</li>
+          <li>Use <code>runAsync</code> com <code>?</code> para gravar o nome.</li>
+          <li>Retorne <code>lastInsertRowId</code>.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">Acrescente esta função após initDB no mesmo db.js. A tabela usuarios já foi criada. O parâmetro ? recebe o nome como dado, sem concatená-lo ao SQL. Os valores são enviados em um array. A função rejeita a chamada antes da inicialização e o nome vazio. lastInsertRowId identifica o novo registro. Não inclua o INSERT dentro de initDB: a inicialização prepara a estrutura e a nova função cadastra o dado.</aside>
+  </section>
+  <section class="slide concept-slide" id="app-insert-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.03 · INSERT no aplicativo" data-menu-title="Importar e inserir"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">Importar e inserir</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB, insertUsuario } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        console.log(&#x27;Banco inicializado!&#x27;);
+        const id = await insertUsuario(&#x27;Ana&#x27;);
+        console.log(&#x27;Usuário inserido:&#x27;, id);
+      } catch (error) {
+        console.error(&#x27;Erro no banco:&#x27;, error);
+      }
+    }
+
+    iniciar();
+  }, []);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Importe <code>initDB</code> e <code>insertUsuario</code> no <code>App.js</code>.</li>
+          <li>Aguarde <code>initDB()</code> antes do INSERT.</li>
+          <li>Insira um nome e confira o ID no console.</li>
+          <li>Troque o nome e execute novamente.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">App.js e db.js ficam na mesma pasta. O exemplo evolui a inicialização já apresentada: após criar a tabela, ele chama insertUsuario e mostra o ID retornado. Aguarde a preparação antes de inserir. Cada execução da rotina pode criar uma nova linha; em desenvolvimento, Strict Mode pode repetir o efeito. Isso é uma demonstração de INSERT, não um cadastro disparado por um botão. Em uma tela de cadastro, a chamada deve acontecer por uma ação explícita. O auto-animate mantém o bloco de código e a atividade durante a passagem da função para seu uso.</aside>
+  </section>
+  <section class="slide concept-slide" id="select-usuarios"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.04 · SELECT: buscar todos" data-menu-title="SELECT · Buscar todos"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">SELECT · Buscar todos</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-js" data-trim data-line-numbers>// Buscar todos
+export const getAll = async () =&gt; {
+  if (!db) throw new Error(&#x27;Chame initDB() antes.&#x27;);
+  return await db.getAllAsync(&#x27;SELECT * FROM usuarios;&#x27;);
+};</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Em <code>db.js</code>, exporte <code>getAll()</code>.</li>
+          <li>Consulte a tabela <code>usuarios</code> com <code>getAllAsync</code>.</li>
+          <li>Após <code>initDB()</code>, teste <code>await getAll()</code>.</li>
+          <li>Mostre os usuários retornados no console.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      Usamos usuarios porque é o nome da tabela criada em initDB. getAllAsync
+      devolve um array de objetos com id e nome; uma tabela vazia devolve [].
+      SELECT * consulta todas as colunas e não altera os registros. Sem ORDER BY,
+      não prometa uma ordenação específica. Para testar no App.js, importe getAll
+      de ./db e faça a chamada após a inicialização, dentro do try/catch existente.
+    </aside>
+  </section>
+  <section class="slide concept-slide" id="app-select-usuarios"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.05 · SELECT no aplicativo" data-menu-title="Importar e consultar"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">Importar e consultar</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB, getAll } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        console.log(&#x27;Banco inicializado!&#x27;);
+        const usuarios = await getAll();
+        console.log(&#x27;Usuários:&#x27;, usuarios);
+      } catch (error) {
+        console.error(&#x27;Erro no banco:&#x27;, error);
+      }
+    }
+
+    iniciar();
+  }, []);
+
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>No <code>App.js</code>, importe <code>initDB</code> e <code>getAll</code>.</li>
+          <li>Aguarde <code>initDB()</code> antes de consultar.</li>
+          <li>Guarde o resultado de <code>await getAll()</code> e mostre no console.</li>
+          <li>Confira os usuários cadastrados na etapa anterior.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">
+      O exemplo substitui a chamada de INSERT pela consulta. Inicialize o banco
+      antes de chamar getAll e mantenha o try/catch. O array usa os campos id e
+      nome. Uma tabela vazia devolve []; se necessário, execute o exemplo de
+      INSERT anterior para cadastrar dados e volte para esta versão. Recarregar
+      este exemplo não cadastra novos usuários: ele apenas consulta os registros.
+    </aside>
+  </section>
+  <section class="slide concept-slide" id="buscar-usuario-id"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.06 · Buscar por ID" data-menu-title="SELECT · Buscar por ID"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">SELECT · Buscar por ID</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-js" data-trim data-line-numbers>// Buscar por ID
+export const getById = async (id) =&gt; {
+  if (!db) throw new Error(&#x27;Chame initDB() antes.&#x27;);
+  return await db.getFirstAsync(
+    &#x27;SELECT * FROM usuarios WHERE id = ?;&#x27;,
+    [id]
+  );
+};</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Em <code>db.js</code>, exporte <code>getById(id)</code>.</li>
+          <li>Use <code>getFirstAsync</code> com <code>WHERE id = ?</code>.</li>
+          <li>Teste um ID existente e outro inexistente.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">A tabela da aula é usuarios, com id e nome. getFirstAsync devolve um objeto quando encontra a linha e null quando não encontra. O ID é enviado como parâmetro; não concatene o ID ao SQL. A consulta não altera o banco e será usada para conferir os resultados do UPDATE e DELETE.</aside>
+  </section>
+  <section class="slide concept-slide crud-app-slide" id="app-buscar-usuario-id"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.07 · Busca por ID no aplicativo" data-menu-title="Importar e buscar por ID"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">Importar e buscar por ID</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB, getById } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        const usuario = await getById(1);
+        console.log(&#x27;Usuário:&#x27;, usuario);
+      } catch (error) {
+        console.error(&#x27;Erro no banco:&#x27;, error);
+      }
+    }
+    iniciar();
+  }, []);
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Reproduza o exemplo no <code>App.js</code>.</li>
+          <li>Importe <code>initDB</code> e <code>getById</code>.</li>
+          <li>Use um ID mostrado na consulta anterior.</li>
+          <li>Confira o objeto ou <code>null</code> no console.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">Aguarde initDB antes da consulta. O valor 1 é um exemplo: use um ID que exista na sua base, visto com getAll. Depois teste um ID inexistente. O arquivo de conferência é AppGetById.js; copie seu conteúdo para App.js, junto de db.js. A tela continua mostrando Meu aplicativo; a resposta é observada no console.</aside>
+  </section>
+  <section class="slide concept-slide" id="update-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.08 · Função de UPDATE" data-menu-title="UPDATE · Atualizar usuário"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">UPDATE · Atualizar usuário</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-js" data-trim data-line-numbers>export const updateUser = async (id, nome) =&gt; {
+  if (!db) throw new Error(&#x27;Chame initDB() antes.&#x27;);
+  if (!nome.trim()) throw new Error(&#x27;Informe o nome.&#x27;);
+  const result = await db.runAsync(
+    &#x27;UPDATE usuarios SET nome = ? WHERE id = ?;&#x27;,
+    [nome.trim(), id]
+  );
+  return result.changes &gt; 0;
+};</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Em <code>db.js</code>, exporte <code>updateUser(id, nome)</code>.</li>
+          <li>Atualize apenas o nome do ID recebido.</li>
+          <li>Envie os valores como parâmetros.</li>
+          <li>Retorne <code>result.changes &gt; 0</code>.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">Adaptamos o exemplo à tabela usuarios (id, nome), sem acrescentar email ou idade, que não existem no esquema apresentado. O primeiro parâmetro do SQL é nome e o segundo é ID. WHERE limita a atualização ao registro escolhido. changes maior que zero indica que uma linha foi afetada; um ID ausente devolve false. Atualizar para o mesmo nome não deve ser interpretado como prova de mudança no conteúdo: changes indica linhas afetadas pelo comando.</aside>
+  </section>
+  <section class="slide concept-slide crud-app-slide" id="app-update-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.09 · UPDATE no aplicativo" data-menu-title="Importar e atualizar"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">Importar e atualizar</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB, updateUser, getById } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        const atualizado = await updateUser(
+          1, &#x27;João Silva&#x27;
+        );
+        console.log(&#x27;Atualizado:&#x27;, atualizado);
+        console.log(&#x27;Usuário:&#x27;, await getById(1));
+      } catch (error) {
+        console.error(&#x27;Erro no banco:&#x27;, error);
+      }
+    }
+    iniciar();
+  }, []);
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Importe <code>updateUser</code> e <code>getById</code> no <code>App.js</code>.</li>
+          <li>Escolha um ID existente e altere seu nome.</li>
+          <li>Confira o retorno e busque o mesmo ID.</li>
+          <li>Repita com um ID inexistente.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">O arquivo de conferência é AppUpdate.js. Aguarde initDB e use um ID de um usuário cadastrado. O exemplo mostra o booleano da atualização e o registro consultado depois dela. Verifique também que os demais usuários permanecem iguais. Cada abertura deste exemplo executa a atualização novamente; em uma tela de edição, a ação seria disparada por um botão.</aside>
+  </section>
+  <section class="slide concept-slide" id="delete-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.10 · Função de DELETE" data-menu-title="DELETE · Remover usuário"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">DELETE · Remover usuário</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-js" data-trim data-line-numbers>export const deleteUser = async (id) =&gt; {
+  if (!db) throw new Error(&#x27;Chame initDB() antes.&#x27;);
+  const result = await db.runAsync(
+    &#x27;DELETE FROM usuarios WHERE id = ?;&#x27;,
+    [id]
+  );
+  return result.changes &gt; 0;
+};</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Em <code>db.js</code>, exporte <code>deleteUser(id)</code>.</li>
+          <li>Mantenha <code>WHERE id = ?</code>.</li>
+          <li>Retorne <code>result.changes &gt; 0</code>.</li>
+          <li>Teste um ID existente e outro inexistente.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">A operação remove apenas o usuário do ID informado. DELETE sem WHERE removeria todas as linhas da tabela; DROP TABLE removeria a estrutura. O retorno é true quando há linha afetada e false quando não há. Não coloque esta função dentro de initDB, pois a inicialização não deve apagar os dados.</aside>
+  </section>
+  <section class="slide concept-slide crud-app-slide" id="app-delete-usuario"
+    data-auto-animate data-auto-animate-id="usuarios-crud-evolution"
+    data-location="04.11 · DELETE no aplicativo" data-menu-title="Importar e excluir"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2 data-id="usuarios-crud-title">Importar e excluir</h2>
+    <div class="db-init-layout">
+      <div class="editor compact">
+        <pre data-id="usuarios-crud-code"><code class="language-jsx" data-trim data-line-numbers>import { useEffect } from &#x27;react&#x27;;
+import { Text, View } from &#x27;react-native&#x27;;
+import { initDB, deleteUser, getById } from &#x27;./db&#x27;;
+
+export default function App() {
+  useEffect(() =&gt; {
+    async function iniciar() {
+      try {
+        await initDB();
+        const deletado = await deleteUser(1);
+        console.log(&#x27;Deletado:&#x27;, deletado);
+        console.log(&#x27;Após excluir:&#x27;, await getById(1));
+      } catch (error) {
+        console.error(&#x27;Erro no banco:&#x27;, error);
+      }
+    }
+    iniciar();
+  }, []);
+  return (
+    &lt;View&gt;
+      &lt;Text&gt;Meu aplicativo&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+      </div>
+      <div class="concept-panel" data-id="usuarios-crud-atividade">
+        <h3>Atividade</h3>
+        <ul>
+          <li>Reproduza a chamada no <code>App.js</code>.</li>
+          <li>Escolha um ID existente para excluir.</li>
+          <li>Confira <code>deletado</code> e o resultado de <code>getById</code>.</li>
+          <li>Repita e observe <code>false</code> e <code>null</code>.</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes">O arquivo de conferência é AppDelete.js; App.js contém essa última etapa. Use um ID conhecido e confirme que getById devolve null após a exclusão. Um ID já excluído devolve false em deleteUser. Recarregar este exemplo executa a tentativa de exclusão novamente; em desenvolvimento o efeito também pode repetir. Esta é uma demonstração do comando, não uma recomendação de excluir dados automaticamente na abertura de um app real.</aside>
+  </section>
+
+
+
+
+
+
+
+
+
+</section>
+
+<section class="lesson-group" id="secao-atividade-final" aria-label="Atividade final">
+  <section class="slide concept-slide" id="atividade-final-tasklist"
+    data-teaching-role="alunos" data-location="05.01 · Atividade final: TaskList"
+    data-menu-title="Atividade final · TaskList com SQLite"
+    data-background-gradient="radial-gradient(#283b95, #17b2c3)">
+    <h2>Atividade final</h2>
+    <div class="concept-panel">
+      <h3>Implemente uma TaskList com SQLite</h3>
+      <ul>
+        <li>Crie a tabela <code>tarefas</code> com <code>id</code>, <code>titulo</code> e <code>concluida</code>.</li>
+        <li>Cadastre tarefas e exiba a lista na tela.</li>
+        <li>Permita editar, concluir/reabrir e excluir tarefas pelo ID.</li>
+        <li>Feche e reabra o app: tarefas e status devem permanecer.</li>
+      </ul>
+    </div>
+    <aside class="notes">
+      Os alunos devem adaptar o CRUD de usuarios para uma lista de tarefas.
+      Organizem a inicialização e as operações SQL em db.js, usando parâmetros
+      e aguardando as operações antes de atualizar a interface. Sugira id como
+      chave primária, titulo como texto e concluida como 0 ou 1, com padrão 0.
+      Se aproveitarem app.db, acrescentem a tabela tarefas sem apagar usuarios.
+      Na apresentação, peça que cadastrem duas tarefas, editem um título,
+      concluam uma e excluam outra. Encerrem e reabram para verificar a
+      persistência. Não usem desinstalação ou limpeza de dados nesse teste.
+      Incentive também a validação de título vazio e o tratamento de erros.
+    </aside>
+  </section>
+</section>
+  </div></div>
+  <div class="lesson-footer" aria-hidden="true"><span id="lesson-location">AULA 20 · Oficina SQLite</span><span id="lesson-turn">→ SEÇÕES · ↓ PASSOS</span></div>
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script src="plugin/menu/menu.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="aulas/js/aula20.js"></script>
+</body>
+</html>

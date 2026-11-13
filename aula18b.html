@@ -859,7 +859,7 @@ export const TOPICO = &#x27;ufc-quixada/aula18b/dupla07&#x27;;</code></pre></div
 <section class="slide code-workshop" id="mqtt-configuracao" data-auto-animate data-auto-animate-id="mqtt-service"
  data-location="02.03 · Uma conexão compartilhada" data-menu-title="Uma conexão compartilhada">
 <h2 data-id="mqtt-title">Uma conexão compartilhada</h2>
-<div class="workshop-layout"><div class="editor"><div class="editor-bar">mqttService.js</div><pre data-id="mqtt-service"><code class="language-js" data-trim data-line-numbers="">import mqtt from &#x27;mqtt/dist/mqtt.esm&#x27;;
+<div class="workshop-layout"><div class="editor"><div class="editor-bar">mqttService.js</div><pre data-id="mqtt-service"><code class="language-js" data-trim data-line-numbers="">import mqtt from &#x27;mqtt&#x27;;
 import { BROKER, TOPICO } from &#x27;./config&#x27;;
 
 const client = mqtt.connect(BROKER);
@@ -872,7 +872,7 @@ client.on(&#x27;connect&#x27;, () =&gt; {
 <section class="slide code-workshop" id="mqtt-publish" data-auto-animate data-auto-animate-id="mqtt-service"
  data-location="02.04 · Função publish" data-menu-title="Função publish">
 <h2 data-id="mqtt-title">Função publish</h2>
-<div class="workshop-layout"><div class="editor"><div class="editor-bar">mqttService.js</div><pre data-id="mqtt-service"><code class="language-js" data-trim data-line-numbers="10-12">import mqtt from &#x27;mqtt/dist/mqtt.esm&#x27;;
+<div class="workshop-layout"><div class="editor"><div class="editor-bar">mqttService.js</div><pre data-id="mqtt-service"><code class="language-js" data-trim data-line-numbers="10-12">import mqtt from &#x27;mqtt&#x27;;
 import { BROKER, TOPICO } from &#x27;./config&#x27;;
 
 const client = mqtt.connect(BROKER);

@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Aula 21: introdução prática a câmera, flash, localização e acelerômetro no React Native com Expo." />
+  <title>Aula 21 · Recursos do dispositivo</title>
+  <link href="dist/reset.css" rel="stylesheet" />
+  <link href="dist/reveal.css" rel="stylesheet" />
+  <link href="dist/theme/white.css" rel="stylesheet" />
+  <link href="plugin/highlight/atom-one-dark.css" rel="stylesheet" />
+  <link href="plugin/menu/menu.css" rel="stylesheet" />
+  <link href="aulas/css/aula21.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal"><div class="slides">
+<section class="lesson-group" id="secao-introducao" aria-label="Começar">
+  <section class="slide cover" id="abertura" data-location="Aula 21" data-background-color="#0d212b"
+    data-menu-title="Aula 21 · Recursos do dispositivo">
+    <div class="cover-top">
+      <p>Programação para Dispositivos Móveis</p>
+      <span>AULA 21</span>
+    </div>
+    <div class="cover-grid">
+      <div class="cover-copy">
+        <p class="eyebrow">React Native + Expo</p>
+        <h1>O app vê.<br /><em>Sente. Localiza.</em></h1>
+        <p class="lead">Câmera, flash, localização<br />e movimento.</p>
+      </div>
+      <div class="device-art" role="img" aria-label="Celular com uma câmera e um marcador de localização">
+        <div class="device-halo"></div>
+        <div class="phone">
+          <span class="phone-label">DIÁRIO DE CAMPO</span>
+          <div class="viewfinder">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 15h9l4-6h10l4 6h9v25H6z"/><circle cx="24" cy="27" r="8"/></svg>
+          </div>
+          <div class="phone-location">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <span>LAT / LON</span>
+          </div>
+          <span class="shutter"></span>
+        </div>
+      </div>
+    </div>
+    <p class="credit">Prof. Msc. Nator Junior Carvalho da Costa<br />UFC · Campus de Quixadá</p>
+    <aside class="notes">Aula introdutória de 60 a 80 minutos. Apresente um recurso por vez. Os slides mostram somente a operação que está sendo ensinada; os arquivos completos incluem imports, estados, estilos, tratamento de erros e limpeza. Use um celular físico. Conhecimentos prévios: useState, useEffect, useRef e async/await.</aside>
+  </section>
+  <section class="slide" id="objetivos"
+    data-location="Começar" data-menu-title="Vamos usar o celular para…">
+    <h2>Vamos usar o celular para…</h2>
+    <ul class="plain-list"><li>Fotografar.</li><li>Obter a localização.</li><li>Ler o movimento.</li></ul>
+    <aside class="notes">Apresente três ações concretas. A câmera captura imagens, a localização é estimada pelo sistema e o acelerômetro mede aceleração nos eixos do aparelho. O LED é uma saída: emite luz. Evite antecipar todas as APIs agora.</aside>
+  </section>
+  <section class="slide" id="setup"
+    data-location="Começar" data-menu-title="Criar o projeto">
+    <h2>Criar o projeto</h2>
+    <pre><code class="language-bash" data-trim>npx create-expo-app@latest dispositivos --template blank
+cd dispositivos</code></pre>
+    <aside class="notes">O template blank mantém App.js e evita introduzir roteamento nesta oficina. expo install seleciona versões compatíveis com o SDK do projeto. Os três módulos utilizados estão incluídos no Expo Go, mas as capacidades dependem do aparelho. Fontes: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>. <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>. <a href="https://docs.expo.dev/versions/latest/sdk/sensors/">Expo Sensors</a>.</aside>
+  </section>
+  <section class="slide" id="instalar"
+    data-location="Começar" data-menu-title="Instalar e executar">
+    <h2>Instalar e executar</h2>
+    <pre><code class="language-bash" data-trim>npx expo install expo-camera expo-location expo-sensors
+npx expo start</code></pre><p class="hint">Abra no celular com Expo Go.</p>
+    <aside class="notes">O template blank mantém App.js e evita introduzir roteamento nesta oficina. expo install seleciona versões compatíveis com o SDK do projeto. Os três módulos utilizados estão incluídos no Expo Go, mas as capacidades dependem do aparelho. Fontes: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>. <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>. <a href="https://docs.expo.dev/versions/latest/sdk/sensors/">Expo Sensors</a>. Edite App.js. Execute um exemplo por vez, copiando o arquivo completo disponível ao final de cada prática.</aside>
+  </section>
+  <section class="slide" id="fluxo-permissoes"
+    data-location="Começar" data-menu-title="Antes de usar: pedir permissão">
+    <h2>Antes de usar: pedir permissão</h2>
+    <p class="sequence">Pedir <span>→</span> Aguardar <span>→</span> Usar</p>
+    <aside class="notes">Não peça câmera, localização e movimento automaticamente de uma vez na abertura. Solicite no contexto da ação. A negação deve ser uma possibilidade normal do fluxo. A permissão pode ser revogada nos ajustes; ao retornar ao app, consulte novamente quando necessário. Fontes: <a href="https://docs.expo.dev/guides/permissions/">Expo Permissions</a>. Permissão concedida não garante hardware disponível nem serviço ativo. As configurações de compilação estão no roteiro de apoio, sem acrescentar uma etapa à demonstração inicial.</aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-camera" aria-label="Câmera e flash">
+  <section class="slide camera-evolution" id="camera-importar"
+    data-location="Câmera e flash" data-menu-title="Acessar a câmera"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Acessar a câmera</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="1-6">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  return null;
+}</code></pre>
+    <aside class="notes">Comece pelos imports e pelo hook dentro de App. Os imports de React e React Native já incluem os componentes que usaremos adiante. return null deixa a tela vazia nesta etapa. O mesmo App será mantido e ampliado em cada avanço. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-carregando"
+    data-location="Câmera e flash" data-menu-title="Aguardar a permissão"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Aguardar a permissão</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="8-8">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  return null;
+}</code></pre>
+    <aside class="notes">Acrescente somente a guarda de carregamento. Enquanto a consulta inicial não terminou, permission é null. O restante do código permanece no mesmo lugar. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-permissao"
+    data-location="Câmera e flash" data-menu-title="Pedir acesso"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Pedir acesso</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="9-13">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+  return null;
+}</code></pre>
+    <aside class="notes">Acrescente a condição para quem ainda não concedeu acesso. O botão chama requestPermission diretamente pelo onPress. Os imports e a guarda de carregamento permanecem. O exemplo completo para download também trata canAskAgain e oferece as configurações quando a solicitação está bloqueada. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-preview"
+    data-location="Câmera e flash" data-menu-title="Mostrar a câmera"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Mostrar a câmera</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="15-19">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+
+  return (
+    &lt;CameraView
+      style={{ width: &#x27;100%&#x27;, height: 360 }}
+      facing=&quot;back&quot;
+    /&gt;
+  );
+}</code></pre>
+    <aside class="notes">Substitua apenas o return null pela CameraView. A autorização já foi resolvida pelas guardas anteriores. A prévia tem tamanho e usa a câmera traseira. Observe que a evolução conserva os imports, o hook e a solicitação. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-ref"
+    data-location="Câmera e flash" data-menu-title="Preparar a captura"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Preparar a captura</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="7-8">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [pronta, setPronta] = useState(false);
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+
+  return (
+    &lt;CameraView
+      style={{ width: &#x27;100%&#x27;, height: 360 }}
+      facing=&quot;back&quot;
+    /&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente a referência e o estado pronta antes de qualquer retorno condicional. Os hooks precisam manter a ordem em todas as renderizações. A câmera já criada continua no return; no próximo passo ligaremos essas duas variáveis a ela. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-vincular"
+    data-location="Câmera e flash" data-menu-title="Conectar a referência"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Conectar a referência</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="18-23">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [pronta, setPronta] = useState(false);
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+
+  return (
+    &lt;CameraView
+      style={{ width: &#x27;100%&#x27;, height: 360 }}
+      facing=&quot;back&quot;
+      ref={cameraRef}
+      onCameraReady={() =&gt; setPronta(true)}
+    /&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente ref e onCameraReady à mesma CameraView. Preserve style e facing, apresentados anteriormente. cameraRef dará acesso a takePictureAsync e pronta habilitará o botão só após o início da prévia. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-captura"
+    data-location="Câmera e flash" data-menu-title="Tirar a foto"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Tirar a foto</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="9-17">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [pronta, setPronta] = useState(false);
+  const [foto, setFoto] = useState(null);
+
+  async function fotografar() {
+    if (!pronta || !cameraRef.current) return;
+    try {
+      const resultado = await cameraRef.current.takePictureAsync();
+      setFoto(resultado.uri);
+    } catch { alert(&#x27;Falha ao fotografar.&#x27;); }
+  }
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+
+  return (
+    &lt;CameraView
+      style={{ width: &#x27;100%&#x27;, height: 360 }}
+      facing=&quot;back&quot;
+      ref={cameraRef}
+      onCameraReady={() =&gt; setPronta(true)}
+    /&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente o estado foto e a função fotografar. A função verifica a prontidão, captura a imagem, guarda a URI e trata uma falha. No próximo avanço conectaremos a função ao botão. O arquivo completo para download acrescenta controle de captura simultânea e ciclo de vida. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide camera-evolution" id="camera-botao"
+    data-location="Câmera e flash" data-menu-title="Acionar pelo botão"
+    data-auto-animate data-auto-animate-id="camera-evolution">
+    <h2 data-id="camera-title">Acionar pelo botão</h2>
+    <pre data-id="camera-code"><code class="language-jsx" data-trim data-line-numbers="27-36">import { useRef, useState } from &#x27;react&#x27;;
+import { Button, Image, Text, View } from &#x27;react-native&#x27;;
+import { CameraView, useCameraPermissions } from &#x27;expo-camera&#x27;;
+
+export default function App() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [pronta, setPronta] = useState(false);
+  const [foto, setFoto] = useState(null);
+
+  async function fotografar() {
+    if (!pronta || !cameraRef.current) return;
+    try {
+      const resultado = await cameraRef.current.takePictureAsync();
+      setFoto(resultado.uri);
+    } catch { alert(&#x27;Falha ao fotografar.&#x27;); }
+  }
+
+  if (!permission) return &lt;Text&gt;Carregando…&lt;/Text&gt;;
+  if (!permission.granted) {
+    return (
+      &lt;Button title=&quot;Permitir câmera&quot; onPress={requestPermission} /&gt;
+    );
+  }
+
+  return (
+    &lt;View style={{ flex: 1, justifyContent: &#x27;center&#x27; }}&gt;
+      &lt;CameraView
+        style={{ width: &#x27;100%&#x27;, height: 360 }}
+        facing=&quot;back&quot;
+        ref={cameraRef}
+        onCameraReady={() =&gt; setPronta(true)}
+      /&gt;
+        &lt;Button title=&quot;Fotografar&quot; onPress={fotografar}
+          disabled={!pronta} /&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Envolva a prévia e o botão numa View. O botão chama a função já construída e fica desabilitado enquanto a câmera não está pronta. Esse é o vínculo entre o toque e a captura; as partes anteriores continuam no mesmo componente. O Auto-Animate acompanha as linhas preservadas; o destaque e a rolagem mostram o trecho em construção. Use as setas para avançar e voltar. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide" id="flash-e-lanterna"
+    data-location="Câmera e flash" data-menu-title="Flash: luz na hora da foto">
+    <h2>Flash: luz na hora da foto</h2>
+    <pre><code class="language-jsx" data-trim>&lt;CameraView flash=&quot;on&quot; /&gt;</code></pre><p class="hint">Modos: off · on · auto</p>
+    <aside class="notes">Acrescente a propriedade à CameraView existente. O flash atua na captura. Teste num aparelho físico com câmera traseira e LED; a propriedade não cria hardware ausente. No arquivo completo, um botão alterna on/off. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <section class="slide" id="camera-led"
+    data-location="Câmera e flash" data-menu-title="Lanterna: luz contínua">
+    <h2>Lanterna: luz contínua</h2>
+    <pre><code class="language-jsx" data-trim>const [lanterna, setLanterna] = useState(false);
+
+&lt;CameraView enableTorch={lanterna} /&gt;</code></pre><p class="hint">Um botão alterna entre true e false.</p>
+    <aside class="notes">Acrescente enableTorch à prévia. O botão usa setLanterna(atual => !atual). Compare com o flash da fotografia. O arquivo completo desliga um modo ao ligar o outro e desmonta a câmera ao colocar o app em segundo plano. Em apps com navegação, libere a câmera também quando a tela perder o foco. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a>.</aside>
+  </section>
+  <!-- <section class="slide practice" id="pratica-camera"
+    data-location="Câmera e flash" data-menu-title="Agora você">
+    <h2>Agora você</h2>
+    <ul class="plain-list"><li>Tire uma foto.</li><li>Teste o flash e a lanterna.</li></ul><p class="material"><a href="aulas/exemplos/aula21/camera/App.js" download="App-camera.js">Baixar exemplo</a></p>
+    <aside class="notes">Copie camera/App.js para o App.js do projeto. A tela apresenta a prévia e três ações: fotografar, alternar flash e alternar lanterna. Depois de fotografar, mostra somente a imagem e Nova foto. Teste também uma recusa de permissão e confira se a lanterna desliga ao sair do app. Reserve 8 minutos.</aside>
+  </section> -->
+  <section class="slide practice" id="atividade-lanterna"
+    data-location="Câmera e flash" data-menu-title="Atividade · Minha lanterna">
+    <h2>Atividade · Minha lanterna</h2>
+    <ul class="plain-list">
+      <li>Crie um aplicativo com um botão.</li>
+      <li>Ao tocar, acenda a lanterna.</li>
+    </ul>
+    <p class="hint">Teste em um celular com flash.</p>
+    <aside class="notes">Reserve 10 minutos. Reaproveite a permissão de câmera, um estado booleano inicialmente false e a propriedade enableTorch da CameraView. O botão deve mudar esse estado para true. Mantenha a câmera traseira montada e aguarde sua prontidão antes de habilitar o controle. Peça uma demonstração do botão acendendo o LED. Como desafio opcional, permita apagar a lanterna com um segundo toque. Ao sair do app, desligue a luz, como no exemplo apresentado.</aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-localizacao" aria-label="Localização">
+  <section class="slide location-evolution" id="localizacao-importar"
+    data-location="Localização" data-menu-title="Acessar a localização"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Acessar a localização</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="1-8">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+  return null;
+}</code></pre>
+    <aside class="notes">Comece pelos imports e pelos estados dentro de App. latitude e longitude começam como texto vazio e guardarão as coordenadas. mensagem informará uma falha. return null mantém a tela vazia por enquanto. O mesmo componente será ampliado nos próximos passos. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-botao"
+    data-location="Localização" data-menu-title="Acionar pelo botão"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Acionar pelo botão</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="10-20">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente a função localizar e o botão que a chama. Por enquanto a função apenas limpa o resultado e a mensagem anteriores. Text exibe diretamente mensagem. Quando a string está vazia, não há texto para mostrar; não precisamos de !! nem de &&. O acesso ao dispositivo será acrescentado a seguir. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-permissao"
+    data-location="Localização" data-menu-title="Pedir permissão"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Pedir permissão</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="14-19">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao =
+        await Location.requestForegroundPermissionsAsync();
+    } catch {
+      setMensagem(&#x27;Não foi possível localizar.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Dentro da função localizar, solicite acesso à localização durante o uso. try/catch trata uma falha da chamada. Neste passo ainda não consultamos a posição. No próximo, verificaremos a decisão do usuário antes de acessar o recurso. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-negada"
+    data-location="Localização" data-menu-title="Tratar a recusa"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Tratar a recusa</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="17-20">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao =
+        await Location.requestForegroundPermissionsAsync();
+      if (!permissao.granted) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+    } catch {
+      setMensagem(&#x27;Não foi possível localizar.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente a guarda logo após a solicitação. Se a permissão for negada, informe a situação e encerre a função com return. Esse caminho mantém o restante da interface utilizável. Se a permissão estiver bloqueada pelo sistema, o aluno poderá alterá-la nas configurações do aplicativo. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-servico"
+    data-location="Localização" data-menu-title="Conferir se está ativada"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Conferir se está ativada</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="22-26">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao =
+        await Location.requestForegroundPermissionsAsync();
+      if (!permissao.granted) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+
+      const ativa = await Location.hasServicesEnabledAsync();
+      if (!ativa) {
+        setMensagem(&#x27;Ative a localização do aparelho.&#x27;);
+        return;
+      }
+    } catch {
+      setMensagem(&#x27;Não foi possível localizar.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Depois de conferir a permissão, verifique o serviço do aparelho. Permitir o aplicativo e ativar o serviço são condições diferentes. Se estiver desligado, informe isso e encerre a consulta. O bloco anterior é preservado. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-consulta"
+    data-location="Localização" data-menu-title="Obter a posição"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Obter a posição</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="28-32">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao =
+        await Location.requestForegroundPermissionsAsync();
+      if (!permissao.granted) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+
+      const ativa = await Location.hasServicesEnabledAsync();
+      if (!ativa) {
+        setMensagem(&#x27;Ative a localização do aparelho.&#x27;);
+        return;
+      }
+
+      const resultado = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      setLatitude(resultado.coords.latitude);
+      setLongitude(resultado.coords.longitude);
+    } catch {
+      setMensagem(&#x27;Não foi possível localizar.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Depois das duas verificações, obtenha uma posição e coloque cada coordenada no seu estado: setLatitude e setLongitude. Balanced é a precisão desejada, não uma garantia. A consulta pode demorar ou falhar; catch informa a falha. Em emulador ou simulador, forneça uma posição pelos controles da plataforma. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide location-evolution" id="localizacao-resultado"
+    data-location="Localização" data-menu-title="Mostrar as coordenadas"
+    data-auto-animate data-auto-animate-id="location-evolution">
+    <h2 data-id="location-title">Mostrar as coordenadas</h2>
+    <pre data-id="location-code"><code class="language-jsx" data-trim data-line-numbers="42-43">import { useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import * as Location from &#x27;expo-location&#x27;;
+
+export default function App() {
+  const [latitude, setLatitude] = useState(&#x27;&#x27;);
+  const [longitude, setLongitude] = useState(&#x27;&#x27;);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function localizar() {
+    setLatitude(&#x27;&#x27;);
+    setLongitude(&#x27;&#x27;);
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao =
+        await Location.requestForegroundPermissionsAsync();
+      if (!permissao.granted) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+
+      const ativa = await Location.hasServicesEnabledAsync();
+      if (!ativa) {
+        setMensagem(&#x27;Ative a localização do aparelho.&#x27;);
+        return;
+      }
+
+      const resultado = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      setLatitude(resultado.coords.latitude);
+      setLongitude(resultado.coords.longitude);
+    } catch {
+      setMensagem(&#x27;Não foi possível localizar.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Obter localização&quot; onPress={localizar} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;Latitude: {latitude}&lt;/Text&gt;
+      &lt;Text&gt;Longitude: {longitude}&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Exiba latitude e longitude diretamente em dois Text. Ambos os estados começam com uma string vazia, portanto a tela pode renderizá-los desde o início, sem condições no JSX ou acesso a um objeto null. A consulta preenche os dois valores. Latitude e longitude são dadas em graus. O arquivo para download contém esta mesma versão simples. O Auto-Animate preserva as linhas anteriores e destaca o trecho em construção. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a>.</aside>
+  </section>
+  <section class="slide practice" id="pratica-localizacao"
+    data-location="Localização" data-menu-title="Atividade · Onde estou?">
+    <h2>Atividade · Onde estou?</h2>
+    <ul class="plain-list">
+      <li>Crie uma tela com um botão.</li>
+      <li>Ao tocar, mostre latitude e longitude.</li>
+    </ul>
+    <p class="hint">Teste também com a localização desligada.</p>
+    <!-- <p class="material"><a href="aulas/exemplos/aula21/localizacao/App.js" download="App-localizacao.js">Baixar exemplo</a></p> -->
+    <aside class="notes">Reserve de 8 a 10 minutos. Peça que reconstruam o fluxo apresentado: botão, permissão, serviço ativo, consulta e resultado. Demonstrem uma leitura e uma mensagem ao desligar a localização. Testem também a permissão negada. Como desafio opcional, exibam coords.accuracy e impeçam novas consultas enquanto uma estiver em andamento. O arquivo para download contém a versão básica construída nos slides; os desafios ficam para a turma. Usem dados de teste nas demonstrações.</aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-sensores" aria-label="Movimento">
+  <section class="slide" id="acelerometro-eixos"
+    data-location="Movimento" data-menu-title="Acelerômetro: movimento em três eixos">
+    <h2>Acelerômetro: movimento em três eixos</h2>
+    <p class="axes"><span>x</span><span>y</span><span>z</span></p>
+    <aside class="notes">Incline o celular e observe os eixos. As medidas são dadas em g (1 g aproximadamente 9,81 m/s²) e incluem a gravidade; parado não significa três zeros. O módulo costuma ficar perto de 1 g, com componentes diferentes conforme a posição do aparelho. O acelerômetro não fornece coordenadas geográficas. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-importar"
+    data-location="Movimento" data-menu-title="Preparar os estados"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Preparar os estados</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="1-8">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+  return null;
+}</code></pre>
+    <aside class="notes">Comece pelos imports e por três estados. dados começa com os três eixos zerados; lendo indica se desejamos acompanhar o sensor; mensagem guarda uma informação de erro. O mesmo componente será ampliado em todos os passos. useEffect será usado mais adiante para iniciar e encerrar a assinatura. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-valores"
+    data-location="Movimento" data-menu-title="Mostrar os três eixos"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Mostrar os três eixos</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="12-15">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Mostre cada propriedade diretamente em um Text. Como dados já possui x, y e z desde a primeira renderização, não precisamos de !!, &&, ternários ou verificações de null no JSX. A unidade é g. Uma mensagem vazia apenas não mostra texto. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-botao"
+    data-location="Movimento" data-menu-title="Criar o botão Iniciar"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Criar o botão Iniciar</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="10-12">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function iniciar() {
+    setMensagem(&#x27;&#x27;);
+    setLendo(true);
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Iniciar&quot; onPress={iniciar} disabled={lendo} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente a função iniciar e o botão que a chama. Por enquanto a função apenas limpa a mensagem e muda lendo para true. disabled recebe esse mesmo booleano para impedir novos toques depois de iniciar. Ainda não assinamos o sensor; primeiro acrescentaremos permissão e disponibilidade. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-permissao"
+    data-location="Movimento" data-menu-title="Pedir permissão"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Pedir permissão</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="13-17">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function iniciar() {
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao = await Accelerometer.requestPermissionsAsync();
+      if (permissao.granted === false) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+      setLendo(true);
+    } catch {
+      setMensagem(&#x27;Não foi possível iniciar o sensor.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Iniciar&quot; onPress={iniciar} disabled={lendo} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Antes de ativar lendo, solicite permissão. Se granted for false, informe a recusa e retorne. try/catch informa uma falha da solicitação. Nem todo sistema apresenta um diálogo para esse sensor; a API uniformiza a consulta. Na web móvel, a solicitação deve partir do toque. O alvo da oficina é um celular Android/iOS. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-disponivel"
+    data-location="Movimento" data-menu-title="Conferir o sensor"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Conferir o sensor</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="18-22">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  async function iniciar() {
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao = await Accelerometer.requestPermissionsAsync();
+      if (permissao.granted === false) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+      const disponivel = await Accelerometer.isAvailableAsync();
+      if (disponivel === false) {
+        setMensagem(&#x27;Sensor indisponível.&#x27;);
+        return;
+      }
+      setLendo(true);
+    } catch {
+      setMensagem(&#x27;Não foi possível iniciar o sensor.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Iniciar&quot; onPress={iniciar} disabled={lendo} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Depois da permissão, confira se o acelerômetro está disponível. Se não estiver, mostre a mensagem e encerre a função. Somente depois das duas verificações mudamos lendo para true. Ter a biblioteca instalada não garante um sensor disponível no ambiente. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-assinatura"
+    data-location="Movimento" data-menu-title="Receber as leituras"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Receber as leituras</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="10-15">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  useEffect(() =&gt; {
+    if (lendo === false) return;
+    Accelerometer.setUpdateInterval(300);
+    const assinatura = Accelerometer.addListener(setDados);
+    return () =&gt; assinatura.remove();
+  }, [lendo]);
+
+  async function iniciar() {
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao = await Accelerometer.requestPermissionsAsync();
+      if (permissao.granted === false) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+      const disponivel = await Accelerometer.isAvailableAsync();
+      if (disponivel === false) {
+        setMensagem(&#x27;Sensor indisponível.&#x27;);
+        return;
+      }
+      setLendo(true);
+    } catch {
+      setMensagem(&#x27;Não foi possível iniciar o sensor.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Iniciar&quot; onPress={iniciar} disabled={lendo} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">O efeito acompanha lendo. Quando false, não inicia nada. Quando true, solicita atualizações a cada 300 ms e cria uma assinatura. addListener chama setDados a cada leitura, atualizando os três Text. O retorno remove essa assinatura ao mudar lendo ou desmontar o componente. Assim, a limpeza já faz parte da leitura desde o início e repetidas chamadas setLendo(true) não duplicam listeners. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide accelerometer-evolution" id="acelerometro-limpeza"
+    data-location="Movimento" data-menu-title="Parar a leitura"
+    data-auto-animate data-auto-animate-id="accelerometer-evolution">
+    <h2 data-id="accelerometer-title">Parar a leitura</h2>
+    <pre data-id="accelerometer-code"><code class="language-jsx" data-trim data-line-numbers="39-40">import { useEffect, useState } from &#x27;react&#x27;;
+import { Button, Text, View } from &#x27;react-native&#x27;;
+import { Accelerometer } from &#x27;expo-sensors&#x27;;
+
+export default function App() {
+  const [dados, setDados] = useState({ x: 0, y: 0, z: 0 });
+  const [lendo, setLendo] = useState(false);
+  const [mensagem, setMensagem] = useState(&#x27;&#x27;);
+
+  useEffect(() =&gt; {
+    if (lendo === false) return;
+    Accelerometer.setUpdateInterval(300);
+    const assinatura = Accelerometer.addListener(setDados);
+    return () =&gt; assinatura.remove();
+  }, [lendo]);
+
+  async function iniciar() {
+    setMensagem(&#x27;&#x27;);
+    try {
+      const permissao = await Accelerometer.requestPermissionsAsync();
+      if (permissao.granted === false) {
+        setMensagem(&#x27;Permissão negada.&#x27;);
+        return;
+      }
+      const disponivel = await Accelerometer.isAvailableAsync();
+      if (disponivel === false) {
+        setMensagem(&#x27;Sensor indisponível.&#x27;);
+        return;
+      }
+      setLendo(true);
+    } catch {
+      setMensagem(&#x27;Não foi possível iniciar o sensor.&#x27;);
+    }
+  }
+
+  return (
+    &lt;View style={{ flex: 1, padding: 24, paddingTop: 64 }}&gt;
+      &lt;Button title=&quot;Iniciar&quot; onPress={iniciar} disabled={lendo} /&gt;
+      &lt;Button title=&quot;Parar&quot; onPress={() =&gt; setLendo(false)}
+        disabled={lendo === false} /&gt;
+      &lt;Text&gt;{mensagem}&lt;/Text&gt;
+      &lt;Text&gt;x: {dados.x} g&lt;/Text&gt;
+      &lt;Text&gt;y: {dados.y} g&lt;/Text&gt;
+      &lt;Text&gt;z: {dados.z} g&lt;/Text&gt;
+    &lt;/View&gt;
+  );
+}</code></pre>
+    <aside class="notes">Acrescente um segundo botão, sempre presente na tela. Ao tocar, ele muda lendo para false. Antes de executar novamente o efeito, React chama a limpeza anterior e assinatura.remove() encerra o listener. Iniciar e Parar têm rótulos fixos e disabled recebe apenas um booleano. Os valores permanecem com a última leitura. Não há cancelamento de uma solicitação de permissão pendente neste exemplo. O Auto-Animate preserva as linhas anteriores e destaca o acréscimo. Fonte: <a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a>.</aside>
+  </section>
+  <section class="slide practice" id="pratica-acelerometro"
+    data-location="Movimento" data-menu-title="Atividade · Movimento na tela">
+    <h2>Atividade · Movimento na tela</h2>
+    <ul class="plain-list">
+      <li>Mostre os valores de x, y e z.</li>
+      <li>Use botões para iniciar e parar.</li>
+    </ul>
+    <p class="hint">Incline o celular e observe os valores.</p>
+    <p class="material"><a href="aulas/exemplos/aula21/acelerometro/App.js" download="App-acelerometro.js">Baixar exemplo</a></p>
+    <aside class="notes">Reserve de 8 a 10 minutos. Reproduza a construção progressiva e demonstre os valores mudando ao inclinar o aparelho. Depois de Parar, os valores devem ficar estáveis. Reinicie a leitura e repita o teste. O arquivo para download é igual à última etapa dos slides. Como desafio opcional, altere o intervalo de leitura ou acrescente uma pausa ao colocar o aplicativo em segundo plano.</aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-atividade" aria-label="Prática final">
+  <section class="slide practice" id="atividade-final"
+    data-location="Prática final" data-menu-title="Junte câmera e localização">
+    <h2>Junte câmera e localização</h2>
+    <ul class="plain-list"><li>Tire uma foto.</li><li>Obtenha as coordenadas.</li><li>Mostre tudo na mesma tela.</li></ul>
+    <aside class="notes">Atividade de 15 a 20 minutos. Reutilize os dois exemplos. Cada recurso deve ser solicitado por uma ação explícita. Verifique o fluxo autorizado e um caso de falha. O app precisa continuar utilizável após uma recusa e não deve iniciar operações duplicadas. A câmera deve encerrar o uso ao sair da tela/app. Persistência, mapa, SQLite e geocodificação ficam como extensões opcionais.</aside>
+  </section>
+  <section class="slide" id="referencias"
+    data-location="Prática final" data-menu-title="Material de apoio">
+    <h2>Material de apoio</h2>
+    <ul class="links"><li><a href="aulas/exemplos/aula21/README.md">Exemplos completos e roteiro</a></li><li><a href="https://docs.expo.dev/versions/latest/sdk/camera/">Expo Camera</a></li><li><a href="https://docs.expo.dev/versions/latest/sdk/location/">Expo Location</a></li><li><a href="https://docs.expo.dev/versions/latest/sdk/accelerometer/">Expo Accelerometer</a></li></ul>
+    <aside class="notes">Os arquivos completos têm os detalhes que foram retirados dos slides: imports de React/React Native, estados auxiliares, tratamento de erros, mensagens de permissão, controle de operações simultâneas e limpeza dos recursos. A configuração para compilação própria está no roteiro. Não é necessária para a demonstração no Expo Go compatível.</aside>
+  </section>
+</section>
+  </div></div>
+  <div class="lesson-footer" aria-hidden="true"><span id="lesson-location">Aula 21</span></div>
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script src="plugin/menu/menu.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="aulas/js/aula21.js"></script>
+</body>
+</html>

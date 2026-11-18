@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Dispositivos Aula 21",
+    "slug": "dispositivos-aula21",
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Usamos a câmera para fotografar seu registro de campo.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Usamos sua localização para marcar o local do registro.",
+          "locationAlwaysAndWhenInUsePermission": "Usamos sua localização apenas enquanto você utiliza o app."
+        }
+      ],
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Usamos os sensores de movimento para demonstrar os eixos do aparelho."
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+:root {
+  --paper: #f7f8fa;
+  --ink: #172e3b;
+  --muted: #637681;
+  --accent: #087e72;
+  --r-background-color: var(--paper);
+  --r-main-color: var(--ink);
+  --r-link-color: var(--accent);
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); }
+.reveal { font: 30px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--ink); }
+.reveal .slides { text-align: left; }
+.reveal .slides section.lesson-group { padding: 0; }
+.reveal .slides section.slide { height: 800px; padding: 84px 84px 90px; }
+.reveal h1, .reveal h2 { font-family: inherit; font-weight: 650; text-transform: none; color: inherit; letter-spacing: -.035em; line-height: 1.15; text-shadow: none; }
+.reveal h1 { font-size: 84px; margin: 32px 0; }
+.reveal h2 { font-size: 46px; margin: 0 0 64px; }
+.reveal p { margin: 0; }
+.reveal a { color: var(--accent); text-decoration: underline; text-underline-offset: 6px; }
+.reveal a:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; }
+.reveal code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.reveal pre { width: 100%; margin: 0; box-shadow: none; font-size: 25px; line-height: 1.6; overflow: visible; }
+.reveal pre code { padding: 28px 32px; max-height: none; overflow: visible; font-size: inherit; line-height: inherit; border-radius: 12px; tab-size: 2; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) pre { font-size: 22px; line-height: 1.4; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) pre code { max-height: 500px; padding: 22px 28px; overflow: auto; scrollbar-width: thin; scrollbar-color: #637681 #282c34; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) .hljs-ln { width: 100%; margin: 0; border-collapse: collapse; font-size: inherit; line-height: inherit; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) .hljs-ln td { padding: 0; border: 0; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) .hljs-ln-numbers { display: none; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) .has-highlights tr { opacity: .5; }
+.reveal :is(.camera-evolution, .location-evolution, .accelerometer-evolution) .has-highlights tr.highlight-line { opacity: 1; }
+.reveal .hint { font-size: 27px; color: var(--muted); margin-top: 36px; }
+.reveal .plain-list, .reveal .links { display: block; list-style: none; padding: 0; margin: 0; }
+.reveal .plain-list li { font-size: 39px; margin: 0 0 28px; line-height: 1.5; }
+.reveal .plain-list li::before { content: '·'; color: var(--accent); margin-right: 20px; }
+.reveal .sequence { font-size: 45px; margin-top: 90px; }
+.reveal .sequence span { color: var(--accent); margin: 0 24px; }
+.reveal .axes { display: flex; gap: 100px; margin: 80px 0 0 40px; color: var(--accent); }
+.reveal .axes span { font: 96px/1.3 ui-monospace, monospace; }
+.reveal .material { margin-top: 64px; font-size: 23px; }
+.reveal .links li { font-size: 29px; margin-bottom: 28px; }
+.reveal .practice h2 { color: var(--accent); }
+.reveal .slides section.cover { padding: 56px 68px 80px; color: #edf6f1; background: radial-gradient(ellipse at 80% 45%, #225c573d, transparent 65%); }
+.reveal .cover-top { display: flex; align-items: center; justify-content: space-between; }
+.reveal .cover-top p { font-size: 16px; color: #afc9c4; }
+.reveal .cover-top > span { font: 14px ui-monospace, monospace; letter-spacing: .06em; border: 1px solid #6a9a8a; border-radius: 6px; padding: 8px 12px; }
+.reveal .cover-grid { display: grid; grid-template-columns: 1.45fr 1fr; gap: 32px; align-items: center; margin: 58px 0 44px; }
+.reveal .cover .eyebrow { font-size: 18px; color: #afc9c4; }
+.reveal .cover h1 { font-size: 66px; margin: 24px 0 28px; line-height: 1.15; }
+.reveal .cover h1 em { font-style: normal; color: #bce9cc; }
+.reveal .cover .lead { font-size: 25px; color: #bcd0ce; }
+.reveal .cover .credit { border-top: 1px solid #ffffff20; padding-top: 22px; font-size: 18px; line-height: 1.6; color: #afc9c4; }
+.reveal .device-art { position: relative; height: 365px; display: grid; place-items: center; }
+.reveal .device-halo { position: absolute; width: 340px; height: 340px; border-radius: 50%; background: #a9dfc606; border: 1px solid #a9dfc612; }
+.reveal .phone { position: relative; width: 236px; height: 350px; padding: 30px 18px 20px; border: 6px solid #6a9a8a; border-radius: 32px; background: #15343e; transform: rotate(-6deg); box-shadow: 0 22px 45px #0003; }
+.reveal .phone::before { content: ''; position: absolute; width: 54px; height: 6px; top: 9px; left: calc(50% - 27px); border-radius: 4px; background: #6a9a8a; }
+.reveal .phone-label { display: block; margin-bottom: 20px; font: 10px ui-monospace, monospace; letter-spacing: .08em; color: #afc9c4; }
+.reveal .viewfinder { height: 156px; border: 1px solid #9acbb7; border-radius: 10px; background: linear-gradient(150deg, #315459, #102c36); display: grid; place-items: center; }
+.reveal .viewfinder svg { width: 62px; height: 62px; fill: none; stroke: #bce9cc; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.reveal .phone-location { display: flex; align-items: center; gap: 9px; margin-top: 17px; color: #bce9cc; font: 12px ui-monospace, monospace; }
+.reveal .phone-location svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.reveal .shutter { display: block; width: 32px; height: 32px; margin: 17px auto 0; border: 3px solid #bce9cc; border-radius: 50%; }
+.lesson-footer { position: fixed; left: 30px; bottom: 23px; color: #7c8d96; z-index: 20; font: 13px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; pointer-events: none; }
+.reveal .slide-number { color: #7c8d96; background: transparent; font: 13px ui-monospace, monospace; right: 24px; bottom: 22px; }
+.reveal .controls { color: var(--accent); opacity: .65; transform: scale(.8); transform-origin: bottom right; bottom: 38px; }
+.reveal .progress { color: var(--accent); height: 2px; }
+.reveal .slide-menu-button { bottom: 46px; }
+.reveal .slide-menu-button a { display: inline-block; padding: 4px; text-decoration: none; font-size: 17px; }
+.reveal .slide-menu-button a::before { content: '☰'; color: #7c8d96; }
+@media (max-width: 700px) { .lesson-footer { left: 12px; bottom: 10px; font-size: 10px; } }
+@media print { .lesson-footer { display: none; } }

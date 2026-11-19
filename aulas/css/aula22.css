@@ -101,3 +101,30 @@ body { background: var(--paper); }
 .reveal .palette span { width: 14px; height: 14px; border-radius: 50%; background: #bce9cc; }
 .reveal .palette span:nth-child(2) { background: #087e72; }
 .reveal .palette span:nth-child(3) { background: #637681; }
+
+/* Sequência didática: alvo, caixa, tamanho, parentesco e organização. */
+.reveal .lesson-route { display: grid; gap: 22px; margin: 0; padding-left: 40px; }
+.reveal .lesson-route li { padding-left: 12px; font-size: 29px; }
+.reveal .lesson-route li::marker { color: var(--accent); }
+.reveal .lesson-route strong { display: block; font-weight: 650; }
+.reveal .lesson-route span { display: block; font-size: 23px; color: var(--muted); }
+.reveal .box-model { max-width: 760px; margin: 0 auto; padding: 18px 36px 30px; border: 2px dashed #b99354; background: #f8ecd7; text-align: center; font-size: 24px; }
+.reveal .box-model span { display: block; margin-bottom: 14px; }
+.reveal .box-border { padding: 14px; background: #d2e2e6; border: 5px solid #637681; }
+.reveal .box-padding { padding: 18px 32px 28px; background: #e2f0ea; }
+.reveal .box-content { padding: 20px; background: #fff; border: 1px dashed #087e72; }
+.reveal .concept-table { width: 100%; margin: 0; font-size: 25px; line-height: 1.45; }
+.reveal .concept-table th, .reveal .concept-table td { padding: 18px 14px; border-bottom: 1px solid #dbe4e8; }
+.reveal .concept-table th { color: var(--accent); font-weight: 650; }
+.reveal .concept-table code { white-space: nowrap; font-size: 23px; }
+.reveal .dimension-demo { display: grid; justify-items: center; gap: 20px; color: var(--muted); }
+.reveal .fixed-avatar { display: grid; place-items: center; width: 112px; height: 112px; border-radius: 50%; background: #e2f0ea; color: var(--accent); font-size: 35px; }
+.reveal .percent-demo { margin-top: 30px; padding: 0; border: 2px dashed #637681; background: #fff; }
+.reveal .percent-demo > span { display: block; width: 80%; padding: 16px 20px; background: var(--accent); color: white; font-size: 24px; }
+.reveal .element-tree, .reveal .relation-tree { font-size: 27px; line-height: 1.6; }
+.reveal .element-tree ul, .reveal .relation-tree ul { display: block; margin: 10px 0 10px 26px; padding-left: 22px; border-left: 2px solid #dbe4e8; list-style: none; }
+.reveal .relation-tree { margin-top: 28px; }
+.reveal .matched { color: var(--accent); font-weight: 650; }
+.reveal .matched > span { display: inline-block; margin-left: 16px; padding: 2px 12px; background: #e2f0ea; border-radius: 6px; font-size: 19px; font-weight: 400; }
+.reveal .sibling-demo { display: block; margin: 28px 0 0; padding-left: 40px; font-size: 28px; line-height: 1.8; }
+.reveal .sibling-demo li::marker { color: var(--muted); font-size: 20px; }

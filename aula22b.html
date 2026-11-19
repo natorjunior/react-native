@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Aula 22b: atividade prática de React Native. Bloco de notas em duas telas e arquitetura sugerida com db, repository, service e persistência SQLite." />
+  <title>Aula 22b · Atividade: bloco de notas</title>
+  <link href="dist/reset.css" rel="stylesheet" />
+  <link href="dist/reveal.css" rel="stylesheet" />
+  <link href="dist/theme/white.css" rel="stylesheet" />
+  <link href="plugin/highlight/atom-one-dark.css" rel="stylesheet" />
+  <link href="plugin/menu/menu.css" rel="stylesheet" />
+  <link href="aulas/css/aula22.css" rel="stylesheet" />
+  <link href="aulas/css/aula22b.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="reveal"><div class="slides">
+
+<section class="lesson-group" id="secao-desafio" aria-label="O desafio">
+  <section class="slide cover challenge-overview" id="abertura" data-location="O desafio" data-background-color="#0d212b" data-menu-title="O desafio · Bloco de notas em duas telas">
+    <div class="cover-top"><p>Programação para Dispositivos Móveis</p><span>AULA 22B · ATIVIDADE</span></div>
+    <h1>Minhas notas. <em>Duas telas.</em></h1>
+    <p class="lead">Construa um bloco de notas com React Native + Expo </p>
+    <div class="challenge-grid">
+      <div class="challenge-copy">
+        <h2>O que deve funcionar</h2>
+        <ul class="challenge-requirements">
+          <li><strong>Listar</strong> listar as notas (titulo)</li>
+          <li><strong>Criar</strong> uma nota com título e conteúdo.</li>
+          <li><strong>Cancelar</strong> e voltar sem salvar alterações.</li>
+        </ul>
+        <p class="challenge-hint">Mantenha a contagem e uma mensagem de lista vazia. Personalize cores, espaços, bordas e Flexbox.</p>
+      </div>
+      <div class="screen-pair">
+        <div><p class="screen-label">1 · Minhas notas</p><div class="notes-phone"><p class="mock-nav"><strong>Minhas notas</strong></p><div class="mock-toolbar"><span>2 notas</span><strong>+ Nova nota</strong></div><div class="mock-note"><strong>Ideias para o projeto</strong><p>Criar um app simples<br />com duas telas.</p></div><div class="mock-note"><strong>Revisar estilos</strong><p>Praticar padding, margin,<br />bordas e Flexbox.</p></div></div></div>
+        <span class="screen-arrow" aria-hidden="true">⇄</span>
+        <div><p class="screen-label">2 · Nova / Editar nota</p><div class="notes-phone"><p class="mock-nav">‹ Notas <strong>Editar nota</strong></p><span class="mock-label">Título</span><div class="mock-input">Ideias para o projeto</div><span class="mock-label">Conteúdo</span><div class="mock-input mock-textarea">Criar um app simples<br />com duas telas.</div><div class="mock-actions"><span>Cancelar</span><strong>Salvar</strong></div><div class="mock-delete">Excluir nota</div></div></div>
+      </div>
+    </div>
+    <p class="credit">Prof. Msc. Nator Junior Carvalho da Costa<br />UFC · Campus de Quixadá</p>
+    <aside class="notes">Apresente o desafio de listar os títulos das notas, criar uma nota com título e conteúdo e cancelar sem salvar. Mantenha a contagem e uma mensagem de lista vazia. As ilustrações são referências visuais. A seção seguinte sugere a organização em db, repository e service com SQLite, para a turma implementar.</aside>
+  </section>
+</section>
+<section class="lesson-group" id="secao-arquitetura" aria-label="Arquitetura sugerida">
+  <section class="slide architecture-slide" id="arquitetura" data-location="Arquitetura sugerida" data-menu-title="Estrutura e responsabilidades">
+    <p class="architecture-kicker">ARQUITETURA SUGERIDA</p>
+    <h2>Um papel para cada camada</h2>
+    <div class="architecture-flow" aria-label="Fluxo de chamadas: telas, service, repository e db">
+      <span>Telas</span><b aria-hidden="true">→</b><span>Service</span><b aria-hidden="true">→</b><span>Repository</span><b aria-hidden="true">→</b><span>DB · SQLite</span>
+    </div>
+    <div class="architecture-columns">
+      <div><h3>Organização dos arquivos</h3><pre><code class="language-text" data-trim>App.js
+src/
+  db/database.js
+  repositories/NotaRepository.js
+  services/NotaService.js
+  telas/
+    ListaNotas.js
+    EditorNota.js
+  estilos.js</code></pre></div>
+      <dl class="architecture-roles">
+        <div><dt>db</dt><dd>Abre notas.db e cria a tabela notas.</dd></div>
+        <div><dt>repository</dt><dd>Executa o SQL para listar e inserir notas.</dd></div>
+        <div><dt>service</dt><dd>Valida título e conteúdo antes de salvar.</dd></div>
+        <div><dt>telas</dt><dd>Exibem os dados, recebem o texto e chamam o service.</dd></div>
+      </dl>
+    </div>
+    <aside class="notes">Proposta de organização para a turma implementar, retomando a persistência SQLite da aula 20. App.js configura a navegação e aguarda a inicialização do banco antes de liberar as telas. database.js concentra a conexão e a criação da tabela. NotaRepository.js usa essa conexão; NotaService.js importa o repository; as telas importam o service. Os resultados e erros retornam no sentido inverso das chamadas. O estado dos campos fica no editor e o estado da lista fica na tela de listagem. Os exemplos antigos em memória não implementam esta arquitetura.</aside>
+  </section>
+  <section class="slide architecture-slide" id="modelo-nota" data-location="Arquitetura sugerida" data-menu-title="Formato da nota · id, titulo e conteudo">
+    <p class="architecture-kicker">MODELO DO DADO</p>
+    <h2>Uma nota, três campos</h2>
+    <div class="architecture-columns data-columns">
+      <div><h3>Objeto retornado pelo repository</h3><pre><code class="language-json" data-trim>{
+  "id": 1,
+  "titulo": "Ideias do projeto",
+  "conteudo": "Criar meu app."
+}</code></pre></div>
+      <div><h3>Tabela no banco notas.db</h3><pre><code class="language-sql" data-trim>CREATE TABLE IF NOT EXISTS notas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  titulo TEXT NOT NULL,
+  conteudo TEXT NOT NULL
+);</code></pre></div>
+    </div>
+    <table class="concept-table data-rules"><thead><tr><th>Campo</th><th>Regra</th></tr></thead><tbody>
+      <tr><td><code>id</code></td><td>Inteiro único, gerado pelo banco. O formulário não envia esse campo ao criar.</td></tr>
+      <tr><td><code>titulo</code></td><td>Texto obrigatório. Pode se repetir: quem identifica a nota é o ID.</td></tr>
+      <tr><td><code>conteudo</code></td><td>Texto obrigatório, com suporte a várias linhas.</td></tr>
+    </tbody></table>
+    <p class="architecture-tip">O service aplica trim() nos textos e rejeita campos vazios antes de chamar o repository.</p>
+    <aside class="notes">O JSON representa o formato do objeto JavaScript retornado pela consulta; no SQLite, cada nota é uma linha da tabela, não um arquivo JSON. O repository insere apenas titulo e conteudo e devolve o objeto completo com o ID gerado. Use parâmetros na consulta: INSERT INTO notas (titulo, conteudo) VALUES (?, ?). Nunca monte SQL concatenando o texto digitado. Na FlatList, converta o ID para string no keyExtractor: item =&gt; String(item.id). Não use o índice ou o título como identidade. O service deve validar o texto mesmo que os campos já tenham validação visual.</aside>
+  </section>
+  <section class="slide architecture-slide" id="contratos-camadas" data-location="Arquitetura sugerida" data-menu-title="Operações e fluxo de dados">
+    <p class="architecture-kicker">OPERAÇÕES E FLUXO</p>
+    <h2>O que cada arquivo oferece</h2>
+    <table class="concept-table architecture-contracts"><thead><tr><th>Camada</th><th>Função sugerida</th><th>Resultado ao concluir</th></tr></thead><tbody>
+      <tr><td>db</td><td><code>inicializar()</code></td><td>Banco e tabela prontos.</td></tr>
+      <tr><td>repository</td><td><code>listar()</code></td><td>Array de notas; [] se estiver vazio.</td></tr>
+      <tr><td>repository</td><td><code>criar({ titulo, conteudo })</code></td><td>Nota salva com o ID gerado.</td></tr>
+      <tr><td>service</td><td><code>listar()</code></td><td>Notas obtidas pelo repository.</td></tr>
+      <tr><td>service</td><td><code>criar({ titulo, conteudo })</code></td><td>Nota validada e salva pelo repository.</td></tr>
+    </tbody></table>
+    <ol class="architecture-steps">
+      <li><strong>Abrir a lista:</strong> aguarde service.listar() e atualize a tela. Recarregue ao voltar do editor.</li>
+      <li><strong>Salvar:</strong> aguarde service.criar(), desative o botão durante a gravação e volte após o sucesso.</li>
+      <li><strong>Cancelar:</strong> volte sem chamar o service. Se houver erro ao salvar, mantenha o rascunho e mostre a mensagem.</li>
+    </ol>
+    <aside class="notes">As operações de banco e as funções do service são assíncronas: os resultados descritos na tabela são os valores obtidos após await. A lista deve mostrar carregamento, erro ou estado vazio conforme o resultado. Recarregue os dados quando a tela receber foco após salvar uma nota. Em caso de falha na inicialização, informe o erro antes de permitir operações. Em uma gravação, use try/catch/finally para informar falhas e reativar o botão. O repository pode listar por id DESC para mostrar as notas mais novas primeiro. A tela nunca executa SQL. O escopo aqui é listar e criar; edição e exclusão não são necessárias para esta proposta.</aside>
+  </section>
+</section>
+  </div></div>
+  <div class="lesson-footer" aria-hidden="true"><span id="lesson-location">Aula 22b</span></div>
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script src="plugin/menu/menu.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="aulas/js/aula22b.js"></script>
+</body>
+</html>

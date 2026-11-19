@@ -1,0 +1,28 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+  tela: { flex: 1, backgroundColor: '#f4f6f8' },
+  flexivel: { flex: 1 },
+  conteiner: { flex: 1, width: '100%', maxWidth: 560, alignSelf: 'center', paddingHorizontal: 24 },
+  cabecalho: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 16, paddingVertical: 20, flexWrap: 'wrap' },
+  contador: { fontSize: 16, color: '#637681' },
+  lista: { gap: 16, paddingBottom: 24 },
+  card: { padding: 20, borderWidth: 1, borderColor: '#dbe4e8', borderRadius: 16, backgroundColor: '#ffffff' },
+  tituloNota: { fontSize: 20, fontWeight: '700', color: '#172e3b' },
+  resumo: { fontSize: 16, color: '#637681', marginTop: 8 },
+  vazio: { fontSize: 18, color: '#637681', textAlign: 'center', paddingVertical: 48 },
+  formulario: { width: '100%', maxWidth: 560, alignSelf: 'center', padding: 24, gap: 12 },
+  rotulo: { fontSize: 16, fontWeight: '700', color: '#172e3b' },
+  campo: { minHeight: 48, padding: 14, borderWidth: 1, borderColor: '#bacbd2', borderRadius: 12, fontSize: 16, color: '#172e3b', backgroundColor: '#ffffff' },
+  campoConteudo: { minHeight: 180 },
+  acoes: { flexDirection: 'row', gap: 12, marginTop: 12, flexWrap: 'wrap' },
+  acao: { flexGrow: 1, flexBasis: 120 },
+  botao: { minHeight: 48, paddingHorizontal: 20, paddingVertical: 14, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#087e72' },
+  textoBotao: { color: '#ffffff', fontSize: 16, fontWeight: '700' },
+  botaoSecundario: { backgroundColor: '#e2f0ea' },
+  textoSecundario: { color: '#075d54', fontSize: 16, fontWeight: '700' },
+  botaoExcluir: { backgroundColor: '#fbe9e7', marginTop: 8 },
+  textoExcluir: { color: '#a32d26', fontSize: 16, fontWeight: '700' },
+  pressionado: { opacity: 0.65 },
+  erro: { color: '#a32d26', fontSize: 16 },
+});
